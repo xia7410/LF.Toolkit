@@ -37,7 +37,7 @@ namespace LF.Toolkit.Util
         /// <summary>
         /// HTTP POST FROM multipart/form-data
         /// </summary>
-        public const string CONTENTTYPE_FORMDATA = "multipart/form-data, boundary=";
+        public const string CONTENTTYPE_FORMDATA = "multipart/form-data; boundary=";
     }
 
     public class HttpProvider
@@ -147,7 +147,6 @@ namespace LF.Toolkit.Util
                         {
                             failCallback(e);
                         }
-                        catch (Exception ex) { }
                     }, request);
                 }
                 if (method == HttpConst.HTTPMETHOD_HEAD || method == HttpConst.HTTPMETHOD_GET)
@@ -285,8 +284,10 @@ namespace LF.Toolkit.Util
         {
             try
             {
-                string boundary = StringProvider.CreateRandomAlphanumeric(12);
+                var charSet = Encoding.UTF8;
+                string boundary = "----HttpProviderBoundary" + DateTime.Now.Ticks.ToString("x");
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url));
+                request.KeepAlive = true;
                 request.Method = HttpConst.HTTPMETHOD_POST;
                 request.ContentType = HttpConst.CONTENTTYPE_FORMDATA + boundary;
 
@@ -299,56 +300,73 @@ namespace LF.Toolkit.Util
 
                 request.BeginGetRequestStream((ar) =>
                 {
-                    var _request = (HttpWebRequest)ar.AsyncState;
-                    Stream stream = _request.EndGetRequestStream(ar);             
-                    byte[] ending = Encoding.UTF8.GetBytes("\r\n");
-                    byte[] closing = Encoding.UTF8.GetBytes("--" + boundary + "--\r\n");
-                    var tempStream = new MemoryStream();
+                    #region  [RFC2045]
 
+                    //Content-Type: multipart/form-data; boundary=AaB03x
+
+                    //--AaB03x
+                    //Content-Disposition: form-data; name="submit-name"
+
+                    //Larry
+                    //--AaB03x
+                    //Content-Disposition: form-data; name="files"; filename="file1.txt"
+                    //Content-Type: text/plain
+
+                    //... contents of file1.txt ...
+                    //--AaB03x--                    
+
+                    #endregion
+
+                    var _request = (HttpWebRequest)ar.AsyncState;
+                    Stream reqStream = _request.EndGetRequestStream(ar);
+                    byte[] boundarybytes = charSet.GetBytes("\r\n--" + boundary + "\r\n");
+                    byte[] endbytes = charSet.GetBytes("\r\n--" + boundary + "--\r\n");
+
+                    var tempStream = new MemoryStream();
                     //Serialize parameters in multipart manner
-                    string querystring = "\r\n";
+                    string formdataTemplate = "--" + boundary + "\r\nContent-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}";
+
                     foreach (var property in parameters.GetType().GetProperties())
                     {
-                        querystring += "--" + boundary + "\n";
-                        querystring += "content-disposition: form-data; name=\"" + property.Name + "\"\r\n\r\n";
-                        querystring += property.GetValue(parameters, null).ToString();
-                        querystring += "\r\n";
+                        string formitem = string.Format(formdataTemplate, property.Name, property.GetValue(parameters, null).ToString());
+                        byte[] formitembytes = charSet.GetBytes(formitem);
+                        tempStream.Write(formitembytes, 0, formitembytes.Length);
                     }
 
-                    //Then write querystring to the postStream
-                    byte[] byteArray = Encoding.UTF8.GetBytes(querystring);
-                    tempStream.Write(byteArray, 0, byteArray.Length);
+                    tempStream.Write(boundarybytes, 0, boundarybytes.Length);
 
-                    //write file stream
+                    string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
+                    int count = files.Length;
                     foreach (var file in files)
                     {
-                        Stream outBuffer = new MemoryStream();
-                        string qsAppend = "--" + boundary + "\r\n"
-                                        + "Content-Disposition: form-data; name=\"" + file.Name + "\"; filename=\"" + file.FileName + "\"\r\n"
-                                        + "Content-Type:" + file.ContentType + "\r\n\r\n";
+                        var headerbytes = charSet.GetBytes(string.Format(headerTemplate, file.Name, file.FileName, file.ContentType));
+                        tempStream.Write(headerbytes, 0, headerbytes.Length);
 
-                        tempStream.Write(Encoding.UTF8.GetBytes(qsAppend), 0, qsAppend.Length);
-    
-                        var buffer = new byte[4096];
-                        int bytesRead;
+                        //write filestream
                         file.FileStream.Position = 0;
-
-                        while ((bytesRead = file.FileStream.Read(buffer, 0, buffer.Length)) > 0)
+                        byte[] buffer = new byte[4096];
+                        int bytesRead = 0;
+                        while ((bytesRead = file.FileStream.Read(buffer, 0, buffer.Length)) != 0)
                         {
                             tempStream.Write(buffer, 0, bytesRead);
                         }
 
-                        //write ending
-                        tempStream.Write(ending, 0, ending.Length);
+                        count--;
+                        if (count == 0)
+                        {
+                            tempStream.Write(endbytes, 0, endbytes.Length);
+                        }
+                        else
+                        {
+                            tempStream.Write(boundarybytes, 0, boundarybytes.Length);
+                        }
+                        
+                        file.FileStream.Close();
                     }
-
-                    //write closing
-                    tempStream.Write(closing, 0, closing.Length);
                     tempStream.Flush();
                     tempStream.Position = 0;
-                    tempStream.CopyTo(stream);
+                    tempStream.CopyTo(reqStream);
                     tempStream.Dispose();
-
                     _request.BeginGetResponse(ProcessCallback(successCallback, failCallback), _request);
                 }, request);
             }
