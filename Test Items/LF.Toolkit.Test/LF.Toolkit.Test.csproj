@@ -57,6 +57,10 @@
       <Project>{c7089df5-6adb-49f2-ae5a-2ed579e9e543}</Project>
       <Name>LF.Toolkit.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\LF.Toolkit.Util\LF.Toolkit.Util.csproj">
+      <Project>{04e95393-f87f-4916-9d35-069be15f1671}</Project>
+      <Name>LF.Toolkit.Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

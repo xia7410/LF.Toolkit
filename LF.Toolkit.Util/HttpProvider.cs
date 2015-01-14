@@ -300,7 +300,7 @@ namespace LF.Toolkit.Util
 
                 request.BeginGetRequestStream((ar) =>
                 {
-                    #region  [RFC2045]
+                    #region  multipart/form-data standard formater
 
                     //Content-Type: multipart/form-data; boundary=AaB03x
 
