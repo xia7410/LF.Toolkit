@@ -4,66 +4,81 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{54A2BC60-9852-47EB-B755-D4771722CE24}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LF.Toolkit.Test</RootNamespace>
-    <AssemblyName>LF.Toolkit.Test</AssemblyName>
+    <RootNamespace>LF.Toolkit.Data</RootNamespace>
+    <AssemblyName>LF.Toolkit.Data</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <WarningLevel>2</WarningLevel>
+    <DocumentationFile>bin\Debug\LF.Toolkit.Data.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\LF.Toolkit.Data.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.38\lib\net45\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="..\LF.Toolkit.Data\Map\DapperCommand.cs">
+      <Link>Map\DapperCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Map\DapperMapping.cs">
+      <Link>Map\DapperMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Map\DapperProvider.cs">
+      <Link>Map\DapperProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Map\IDapperCommand.cs">
+      <Link>Map\IDapperCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Map\IDapperMapping.cs">
+      <Link>Map\IDapperMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Map\IDapperProvider.cs">
+      <Link>Map\IDapperProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Map\XmlDapperProvider.cs">
+      <Link>Map\XmlDapperProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\StorageProvider.cs">
+      <Link>StorageProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Storage\IStorage.cs">
+      <Link>Storage\IStorage.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storage\TestStorage.cs" />
+    <Compile Include="Storage\StorageBaseAsync.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="maps\TestStorage.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\LF.Toolkit.Data.NET45\LF.Toolkit.Data.NET45.csproj">
-      <Project>{54a2bc60-9852-47eb-b755-d4771722ce24}</Project>
-      <Name>LF.Toolkit.Data.NET45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\LF.Toolkit.Util\LF.Toolkit.Util.csproj">
-      <Project>{04e95393-f87f-4916-9d35-069be15f1671}</Project>
-      <Name>LF.Toolkit.Util</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

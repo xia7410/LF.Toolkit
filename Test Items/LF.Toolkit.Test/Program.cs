@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LF.Toolkit.Test
 {
@@ -36,7 +37,7 @@ namespace LF.Toolkit.Test
             }
         }
 
-        static void Main(string[] args)
+        static void Upload()
         {
             string filepath = @"C:\Users\sniper\Resource\1.jpg";
             string url = "http://localhost:8080/api/file";
@@ -60,7 +61,17 @@ namespace LF.Toolkit.Test
             var files = new UploadFileStream[] { ufs, ufs1 };
 
             HttpProvider.Upload(url, new object(), files, (s) => Console.WriteLine(s), (e) => Console.WriteLine(e));
+        }
 
+        static async Task GetAsync()
+        {
+            string str = await StorageProvider<TestStorage>.Factory.Get();
+            Console.WriteLine(str);
+        }
+
+        static void Main(string[] args)
+        {
+            GetAsync().Wait();
             Console.ReadKey();
         }
     }

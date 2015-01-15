@@ -1,5 +1,6 @@
 ﻿using LF.Toolkit.Data.Map;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -32,7 +33,10 @@ namespace LF.Toolkit.Data.Map
                 {
                     dict = new Dictionary<string, IDapperMapping>();
 
-                    foreach (var file in files)
+                    //并发字典
+                    var condict = new ConcurrentDictionary<string, IDapperMapping>();
+                    //并发加载
+                    files.AsParallel().ForAll(file =>
                     {
                         var xd = new XmlDocument();
                         var ms = new MemoryStream();
@@ -50,13 +54,16 @@ namespace LF.Toolkit.Data.Map
 
                             if (mapping != null)
                             {
-                                mapping.CommandDictionary = mapping.Commands.ToDictionary(i => i.CommandKey, i => i as IDapperCommand);
-                                dict.Add(mapping.Type, mapping);
+                                var cmds = mapping.Commands.ToDictionary(i => i.CommandKey, i => i as IDapperCommand);
+                                //去除换行符
+                                foreach (var cmd in cmds)
+                                {
+                                    cmd.Value.CommandText = cmd.Value.CommandText.Trim().Trim(new char[] { '\r', '\n' });
+                                }
+
+                                mapping.CommandDictionary = cmds;
+                                condict.AddOrUpdate(mapping.Type, mapping, (k, v) => condict[k] = v);
                             }
-                        }
-                        catch
-                        {
-                            throw;
                         }
                         finally
                         {
@@ -65,7 +72,10 @@ namespace LF.Toolkit.Data.Map
                                 ms.Close();
                             }
                         }
-                    }
+                    });
+
+                    //转化为字典
+                    dict = condict.ToDictionary(i => i.Key, i => i.Value);
                 }
             }
             else

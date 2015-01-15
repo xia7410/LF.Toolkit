@@ -4,14 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LF.Toolkit.Test.Storage
 {
     public class TestStorage : StorageBase<XmlDapperProvider>
     {
-        public int Get()
+        public Task<string> Get()
         {
-            return base.Query<int>("Get").First();
+            return base.ExecuteScalarAsync<string>("Get");
         }
     }
 }
