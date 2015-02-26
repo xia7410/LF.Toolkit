@@ -39,57 +39,30 @@ namespace LF.Toolkit.Util.Crypto
         }
 
         /// <summary>
-        /// 将数据加密并转成Base64字符串
+        /// 将数据加密并用Base64编码
         /// </summary>
-        /// <param name="inputBuffer">要解密的数据</param>
-        /// <param name="keyBuffer">密钥</param>
+        /// <param name="key">密钥</param>
+        /// <param name="plainText">明文</param>
         /// <returns></returns>
-        public static String EncryptToBase64(byte[] keyBuffer, byte[] inputBuffer)
+        public static String EncryptToBase64(string key, string plainText)
         {
-            byte[] buffer = Encrypt(keyBuffer , inputBuffer);
+            byte[] buffer = Encrypt(Encoding.UTF8.GetBytes(key), Encoding.UTF8.GetBytes(plainText));
 
             return Convert.ToBase64String(buffer);
         }
 
         /// <summary>
-        /// 将数据加密并转成Base64字符串
+        /// 从Base64编码的字符串中解密
         /// </summary>
-        /// <param name="inputBuffer">要解密的数据</param>
-        /// <param name="keyBuffer">密钥</param>
+        /// <param name="cryptoString">加密的字符串</param>
+        /// <param name="key">密钥</param>
         /// <returns></returns>
-        public static String EncryptToBase64(string key , string palinText)
+        public static String DecryptFromBase64(string key, string cryptoString)
         {
-            byte[] buffer = Encrypt(Encoding.UTF8.GetBytes(key), Encoding.UTF8.GetBytes(palinText));
-
-            return Convert.ToBase64String(buffer);
-        }
-
-        /// <summary>
-        /// 从Base64字符串中解密
-        /// </summary>
-        /// <param name="crtyptoString">密文的Base64字符串</param>
-        /// <param name="keyBuffer">密钥</param>
-        /// <returns></returns>
-        public static String DecryptFromBase64(byte[] keyBuffer, string crtyptoString)
-        {
-            byte[] buffer = Convert.FromBase64String(crtyptoString);
-            byte[] data = Decrypt(keyBuffer, buffer);
-
-            return UTF8Encoding.UTF8.GetString(data);
-        }
-
-        /// <summary>
-        /// 从Base64字符串中解密
-        /// </summary>
-        /// <param name="crtyptoString">密文的Base64字符串</param>
-        /// <param name="keyBuffer">密钥</param>
-        /// <returns></returns>
-        public static String DecryptFromBase64(string key, string crtyptoString)
-        {
-            byte[] buffer = Convert.FromBase64String(crtyptoString);
+            byte[] buffer = Convert.FromBase64String(cryptoString);
             byte[] data = Decrypt(Encoding.UTF8.GetBytes(key) , buffer);
 
-            return UTF8Encoding.UTF8.GetString(data);
+            return Encoding.UTF8.GetString(data);
         }
 
     }

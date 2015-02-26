@@ -52,12 +52,12 @@
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Map\DapperProvider.cs" />
+    <Compile Include="ISingleton.cs" />
     <Compile Include="Map\IDapperProvider.cs" />
     <Compile Include="Map\IDapperCommand.cs" />
     <Compile Include="Map\IDapperMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StorageProvider.cs" />
+    <Compile Include="SingletonProvider.cs" />
     <Compile Include="Storage\IStorage.cs" />
     <Compile Include="Storage\StorageBase.cs" />
     <Compile Include="Map\XmlDapperProvider.cs" />

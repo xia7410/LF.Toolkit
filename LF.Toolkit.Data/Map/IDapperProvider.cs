@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LF.Toolkit.Data.Map
 {
-    public interface IDapperProvider
+    public interface IDapperProvider : ISingleton
     {
         IDictionary<string, IDapperMapping> DapperMappings { get; }
     }

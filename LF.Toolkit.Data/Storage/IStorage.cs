@@ -3,7 +3,7 @@ using System.Data;
 
 namespace LF.Toolkit.Data.Storage
 {
-    public interface IStorage
+    public interface IStorage : ISingleton
     {
         /// <summary>
         /// 数据库连接配置

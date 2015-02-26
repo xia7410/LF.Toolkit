@@ -80,7 +80,7 @@ namespace LF.Toolkit.Data.Map
             }
             else
             {
-                throw new Exception("未找到映射目录");
+                throw new Exception("未找到XML映射文件目录");
             }
         }
 

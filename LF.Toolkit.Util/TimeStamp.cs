@@ -2,7 +2,7 @@
 
 namespace LF.Toolkit.Util
 {
-    public class TimeStamp
+    public class Timestamp
     {
         /// <summary>
         /// 获取时间戳
