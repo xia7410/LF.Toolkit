@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<dapper-mapping>
-
-  <type>LF.Toolkit.WebTest.Storage.TestStorage</type>
-  <connectionKey>openfire</connectionKey>
-
-  <command key="Get" commandType="Text">select 1;</command>
-    
-</dapper-mapping>
