@@ -45,8 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\LF.Toolkit.Data\ILazySingleton.cs">
-      <Link>ILazySingleton.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\ISingleton.cs">
+      <Link>ISingleton.cs</Link>
     </Compile>
     <Compile Include="..\LF.Toolkit.Data\Map\DapperCommand.cs">
       <Link>Map\DapperCommand.cs</Link>
