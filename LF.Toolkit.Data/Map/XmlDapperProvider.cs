@@ -77,6 +77,10 @@ namespace LF.Toolkit.Data.Map
                     //转化为字典
                     dict = condict.ToDictionary(i => i.Key, i => i.Value);
                 }
+                else
+                {
+                    throw new Exception("未找到XML映射文件");
+                }
             }
             else
             {
