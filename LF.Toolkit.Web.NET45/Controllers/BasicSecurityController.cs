@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace LF.Toolkit.Web.Controllers
 {
-    public abstract class BasicSecurityController : Controller 
+    public abstract class BasicSecurityController : Controller
     {
         /// <summary>
         /// 设置加密密钥
@@ -35,13 +35,15 @@ namespace LF.Toolkit.Web.Controllers
         }
     }
 
-    public abstract class BasicSecurityController<TCache> : BasicSecurityController where TCache : IAuthenticationCache
+    public abstract class BasicSecurityController<TCache, TSession> : BasicSecurityController
+        where TCache : ICache<TSession>
+        where TSession : class , new()
     {
         /// <summary>
-        /// 获取认证信息缓存
+        /// 从HttpContext共享项目中获取认证信息缓存
         /// </summary>
         /// <returns></returns>
-        public TCache GetAuthenticationCache()
+        public virtual TCache GetAuthenticationCache()
         {
             if (HttpContext != null)
             {

@@ -74,7 +74,7 @@
     <Compile Include="Metadata\ExceptionResult.cs" />
     <Compile Include="Metadata\HttpContextItemKeys.cs" />
     <Compile Include="Security\IExceptionHandler.cs" />
-    <Compile Include="Security\IAuthenticationCache.cs" />
+    <Compile Include="Security\ICache.cs" />
     <Compile Include="Security\IResultHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
