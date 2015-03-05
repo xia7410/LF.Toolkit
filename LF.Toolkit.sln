@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Data.NET45", "LF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Web.NET45", "LF.Toolkit.Web.NET45\LF.Toolkit.Web.NET45.csproj", "{6168BDE4-187F-4992-90BB-02F890BB903F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.UF.Preview", "Test Items\LF.Toolkit.UF.Preview\LF.Toolkit.UF.Preview.csproj", "{B1ED9050-430E-4C65-BA2F-22B5E8044864}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,16 +49,11 @@ Global
 		{6168BDE4-187F-4992-90BB-02F890BB903F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6168BDE4-187F-4992-90BB-02F890BB903F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6168BDE4-187F-4992-90BB-02F890BB903F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B1ED9050-430E-4C65-BA2F-22B5E8044864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1ED9050-430E-4C65-BA2F-22B5E8044864}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1ED9050-430E-4C65-BA2F-22B5E8044864}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1ED9050-430E-4C65-BA2F-22B5E8044864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8} = {FA1249C1-9F93-4404-B749-1A76377300F6}
-		{B1ED9050-430E-4C65-BA2F-22B5E8044864} = {FA1249C1-9F93-4404-B749-1A76377300F6}
 	EndGlobalSection
 EndGlobal
