@@ -69,9 +69,7 @@
     <Compile Include="Exceptions\BadRequestException.cs" />
     <Compile Include="Exceptions\HttpStatusCodeException.cs" />
     <Compile Include="Filters\ActionFilter.cs" />
-    <Compile Include="Filters\ExceptionFilter.cs" />
     <Compile Include="Filters\ResultFilter.cs" />
-    <Compile Include="Metadata\ExceptionResult.cs" />
     <Compile Include="Metadata\HttpContextItemKeys.cs" />
     <Compile Include="Security\IExceptionHandler.cs" />
     <Compile Include="Security\ICache.cs" />
