@@ -8,6 +8,6 @@ namespace LF.Toolkit.Web.Security
 {
     public interface IResultHandler
     {
-        void Encrypt(string encryptionKey, JsonResult plainResult);
+        void Encrypt(string encryptionKey, ResultExecutingContext filterContext);
     }
 }

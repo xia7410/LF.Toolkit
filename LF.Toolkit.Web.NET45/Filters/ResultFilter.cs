@@ -10,7 +10,7 @@ namespace LF.Toolkit.Web.Filters
 {
     public class ResultFilter : IResultFilter, IResultHandler
     {
-        public virtual void Encrypt(string encryptionKey, JsonResult plainResult)
+        public virtual void Encrypt(string encryptionKey, ResultExecutingContext filterContext)
         {
 
         }
@@ -40,7 +40,7 @@ namespace LF.Toolkit.Web.Filters
                                 string encryptionKey = (string)httpContext.Items[HttpContextItemKeys.ENCRYPTIONKEY];
                                 if (!string.IsNullOrEmpty(encryptionKey))
                                 {
-                                    Encrypt(encryptionKey, result);
+                                    Encrypt(encryptionKey, filterContext);
                                 }
                             }
                         }
@@ -58,7 +58,7 @@ namespace LF.Toolkit.Web.Filters
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
         {
-           
+
         }
     }
 }
