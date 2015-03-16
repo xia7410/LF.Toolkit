@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -21,9 +22,19 @@ namespace LF.Toolkit.Data.Map
         {
             string path = ConfigurationManager.AppSettings["XmlMapPath"];
             if (string.IsNullOrEmpty(path)) path = "./maps";
-            if (HttpContext.Current != null)
+            //判断是否Web运行环境
+            var ass = Assembly.GetEntryAssembly();
+            if (ass == null)
             {
                 path = HttpContext.Current.Server.MapPath(path);
+            }
+            else
+            {
+                //判断是否Windows服务运行模式
+                if (!Environment.UserInteractive)
+                {
+                    path = AppDomain.CurrentDomain.BaseDirectory + path;
+                }
             }
 
             if (Directory.Exists(path))

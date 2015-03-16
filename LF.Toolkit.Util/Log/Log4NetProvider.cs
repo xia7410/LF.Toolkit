@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -13,6 +14,14 @@ namespace LF.Toolkit.Util.Log
 
         static Log4NetProvider()
         {
+            string logfile = "log4net.config";
+            //判断是否Windows服务
+            if (!Environment.UserInteractive)
+            {
+                logfile = AppDomain.CurrentDomain.BaseDirectory + logfile;
+                log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(logfile));
+            }
+            
             ERRORLOG = LogManager.GetLogger("errorAppender");
             DEBUGLOG = LogManager.GetLogger("debugAppender");
         }
