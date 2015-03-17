@@ -33,7 +33,7 @@ namespace LF.Toolkit.Data.Map
                 //判断是否Windows服务运行模式
                 if (!Environment.UserInteractive)
                 {
-                    path = AppDomain.CurrentDomain.BaseDirectory + path;
+                    path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
                 }
             }
 
