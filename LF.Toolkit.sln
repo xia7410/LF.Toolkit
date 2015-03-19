@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Data.NET45", "LF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Web.NET45", "LF.Toolkit.Web.NET45\LF.Toolkit.Web.NET45.csproj", "{6168BDE4-187F-4992-90BB-02F890BB903F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Tookit.ServicePlugin", "LF.Tookit.ServicePlugin\LF.Tookit.ServicePlugin.csproj", "{9EBA97D4-808F-48A8-8699-CAD7259AA40A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,10 +49,6 @@ Global
 		{6168BDE4-187F-4992-90BB-02F890BB903F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6168BDE4-187F-4992-90BB-02F890BB903F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6168BDE4-187F-4992-90BB-02F890BB903F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9EBA97D4-808F-48A8-8699-CAD7259AA40A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9EBA97D4-808F-48A8-8699-CAD7259AA40A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9EBA97D4-808F-48A8-8699-CAD7259AA40A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9EBA97D4-808F-48A8-8699-CAD7259AA40A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
