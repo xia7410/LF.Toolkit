@@ -16,34 +16,19 @@ namespace LF.Toolkit.Data.Map
 {
     public class XmlDapperProvider : IDapperProvider
     {
-        IDictionary<string, IDapperMapping> dict;
+        public IDictionary<string, IDapperMapping> DapperMappings { get; private set; }
 
-        public XmlDapperProvider()
+        /// <summary>
+        /// 映射配置,必须在使用映射前执行
+        /// </summary>
+        /// <param name="path"></param>
+        public void Configure(string path)
         {
-            string path = ConfigurationManager.AppSettings["XmlMapPath"];
-            if (string.IsNullOrEmpty(path)) path = "./maps";
-            //判断是否Web运行环境
-            var ass = Assembly.GetEntryAssembly();
-            if (ass == null)
-            {
-                path = HttpContext.Current.Server.MapPath(path);
-            }
-            else
-            {
-                //判断是否Windows服务运行模式
-                if (!Environment.UserInteractive)
-                {
-                    path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
-                }
-            }
-
             if (Directory.Exists(path))
             {
                 string[] files = Directory.GetFiles(path, "*.xml");
                 if (files.Length > 0)
                 {
-                    dict = new Dictionary<string, IDapperMapping>();
-
                     //并发字典
                     var condict = new ConcurrentDictionary<string, IDapperMapping>();
                     //并发加载
@@ -86,7 +71,7 @@ namespace LF.Toolkit.Data.Map
                     });
 
                     //转化为字典
-                    dict = condict.ToDictionary(i => i.Key, i => i.Value);
+                    DapperMappings = condict.ToDictionary(i => i.Key, i => i.Value);
                 }
                 else
                 {
@@ -97,11 +82,6 @@ namespace LF.Toolkit.Data.Map
             {
                 throw new Exception("未找到XML映射文件目录");
             }
-        }
-
-        public IDictionary<string, IDapperMapping> DapperMappings
-        {
-            get { return dict; }
         }
     }
 }

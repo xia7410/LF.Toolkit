@@ -637,6 +637,10 @@ namespace LF.Toolkit.Data.Storage
             {
                 string fullname = this.GetType().FullName;
                 var factory = SingletonProvider<TProvider>.SessionFactory;
+                if (factory.DapperMappings == null)
+                {
+                    throw new Exception("未运行映射配置 --> Configure(string path);");
+                }
                 if (factory.DapperMappings.ContainsKey(fullname))
                 {
                     mapper = factory.DapperMappings[fullname];
