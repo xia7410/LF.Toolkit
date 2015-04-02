@@ -1,4 +1,5 @@
 ﻿
+using LF.Toolkit.Singleton;
 using System.Data;
 
 namespace LF.Toolkit.Data.Storage

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LF.Toolkit.Singleton;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;

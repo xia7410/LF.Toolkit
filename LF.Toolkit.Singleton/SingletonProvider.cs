@@ -4,8 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace LF.Toolkit.Data
+namespace LF.Toolkit.Singleton
 {
+    /// <summary>
+    /// 单例工厂实例提供者
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class SingletonProvider<T> where T : class,ISingleton, new()
     {
         private static readonly Lazy<T> lazyInstance = new Lazy<T>(() =>
@@ -16,9 +20,9 @@ namespace LF.Toolkit.Data
         }, true);
 
         /// <summary>
-        /// 获取指定数据库存储类的实例
+        /// 获取单例类的实例会话
         /// </summary>
         /// <returns></returns>
-        public static T SessionFactory { get { return lazyInstance.Value; } }
+        public static T CurrentSession { get { return lazyInstance.Value; } }
     }
 }

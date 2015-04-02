@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using LF.Toolkit.Data.Map;
+using LF.Toolkit.Singleton;
 
 #if NET45
 
@@ -636,7 +637,7 @@ namespace LF.Toolkit.Data.Storage
             try
             {
                 string fullname = this.GetType().FullName;
-                var factory = SingletonProvider<TProvider>.SessionFactory;
+                var factory = SingletonProvider<TProvider>.CurrentSession;
                 if (factory.DapperMappings == null)
                 {
                     throw new Exception("未运行映射配置 --> Configure(string path);");
