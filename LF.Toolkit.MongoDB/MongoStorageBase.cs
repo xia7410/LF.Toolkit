@@ -16,11 +16,13 @@ namespace LF.Toolkit.MongoDB
     public abstract class MongoStorageBase : ISingleton
     {
         /// <summary>
-        /// Mongo存储基类
+        /// MongoDB存储基类
         /// </summary>
-        /// <param name="databaseName">当前数据库名称</param>
-        public MongoStorageBase(string databaseName)
+        /// <param name="databaseName">当前存储类使用的数据库名称</param>
+        /// <param name="collectionName">当前存储类使用的集合名称</param>
+        public MongoStorageBase(string databaseName, string collectionName) 
         {
+            if (string.IsNullOrEmpty(collectionName)) throw new ArgumentNullException("collectionName");
             if (MongoStorageConfig.ServerAddress == null || MongoStorageConfig.Databases == null)
             {
                 throw new Exception("未执行MongoDB数据库存储配置");
@@ -48,6 +50,8 @@ namespace LF.Toolkit.MongoDB
             {
                 throw new Exception("未找到数据库名为 " + databaseName + " 的数据库配置");
             }
+
+            this.CollectionName = collectionName;
         }
 
         /// <summary>
@@ -63,7 +67,7 @@ namespace LF.Toolkit.MongoDB
         /// <summary>
         /// 获取当前集合名称
         /// </summary>
-        public string CollectionName { get; protected set; }
+        public string CollectionName { get; private set; }
 
         /// <summary>
         /// 获取MongoDatabase实例
@@ -73,8 +77,9 @@ namespace LF.Toolkit.MongoDB
         {
             var client = new MongoClient(Settings);
             var server = client.GetServer();
-            //var db = server.GetDatabase(DatabaseName);
-            //if (db == null) throw new Exception("名称为 " + DatabaseName + " 的数据库不存在");
+
+            //当前不是admin库的用户无权限使用listDatabase命令
+            //if (!server.DatabaseExists(databaseName)) throw new Exception("名称为 " + DatabaseName + " 的数据库不存在");
 
             return server.GetDatabase(DatabaseName);
         }
