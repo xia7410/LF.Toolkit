@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,9 @@ namespace LF.Toolkit.MongoDB
     public class BsonObjectId
     {
         /// <summary>
-        /// 获取或设置Bson文档对象Id
+        /// 获取或设置ObjectId
         /// </summary>
-        public ObjectId _id { get; set; } 
+        [BsonId]
+        public ObjectId Id { get; set; } 
     }
 }

@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB", "LF.To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Singleton", "LF.Toolkit.Singleton\LF.Toolkit.Singleton.csproj", "{9419D4D8-1FD7-484B-A9AD-C559865A50FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB.NET45", "LF.Toolkit.MongoDB.NET45\LF.Toolkit.MongoDB.NET45.csproj", "{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
