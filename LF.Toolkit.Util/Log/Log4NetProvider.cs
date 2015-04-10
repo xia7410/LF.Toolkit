@@ -14,13 +14,7 @@ namespace LF.Toolkit.Util.Log
 
         static Log4NetProvider()
         {
-            //判断是否Windows服务
-            if (!Environment.UserInteractive)
-            {
-                string logfile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config");
-                log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(logfile));
-            }
-
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(Path.GetFullPath("log4net.config")));  
             ERRORLOG = LogManager.GetLogger("errorAppender");
             DEBUGLOG = LogManager.GetLogger("debugAppender");
         }
