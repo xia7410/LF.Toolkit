@@ -14,7 +14,11 @@ namespace LF.Toolkit.Util.Log
 
         static Log4NetProvider()
         {
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(Path.GetFullPath("log4net.config")));  
+            if (!Environment.UserInteractive)
+            {
+                string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config");
+                log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(filename));
+            }
             ERRORLOG = LogManager.GetLogger("errorAppender");
             DEBUGLOG = LogManager.GetLogger("debugAppender");
         }
