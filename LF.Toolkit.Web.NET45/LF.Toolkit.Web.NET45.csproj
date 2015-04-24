@@ -64,18 +64,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\SkipEncryptionAttribute.cs" />
     <Compile Include="Controllers\BasicSecurityController.cs" />
     <Compile Include="Exceptions\BadRequestException.cs" />
     <Compile Include="Exceptions\HttpStatusCodeException.cs" />
-    <Compile Include="Filters\ActionFilter.cs" />
-    <Compile Include="Filters\ResultFilter.cs" />
-    <Compile Include="Metadata\HttpContextItemKeys.cs" />
-    <Compile Include="Security\IExceptionHandler.cs" />
-    <Compile Include="Security\ICache.cs" />
-    <Compile Include="Security\IResultHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ActionParameters.cs" />
+    <Compile Include="Util\HttpContextItems.cs" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

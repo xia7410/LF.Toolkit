@@ -1,26 +1,17 @@
-﻿using LF.Toolkit.Web.Attributes;
-using LF.Toolkit.Web.Metadata;
-using LF.Toolkit.Web.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using LF.Toolkit.Web.Exceptions;
 
 namespace LF.Toolkit.Web.Controllers
 {
     public abstract class BasicSecurityController : Controller
     {
-        /// <summary>
-        /// 设置加密密钥
-        /// </summary>
-        /// <param name="encryptionKey"></param>
-        public void SetEncryptionKey(string encryptionKey)
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (HttpContext != null && string.IsNullOrEmpty(encryptionKey))
-            {
-                HttpContext.Items[HttpContextItemKeys.ENCRYPTIONKEY] = encryptionKey;
-            }
+            base.OnActionExecuting(filterContext);
         }
 
         protected override void OnAuthorization(AuthorizationContext filterContext)
@@ -33,28 +24,41 @@ namespace LF.Toolkit.Web.Controllers
 
             base.OnAuthorization(filterContext);
         }
-    }
 
-    public abstract class BasicSecurityController<TCache, TSession> : BasicSecurityController
-        where TCache : ICache<TSession>
-        where TSession : class , new()
-    {
         /// <summary>
-        /// 从HttpContext共享项目中获取认证信息缓存
+        /// 设置上下文共享项
         /// </summary>
-        /// <returns></returns>
-        public virtual TCache GetAuthenticationCache()
+        /// <param name="itemKey"></param>
+        /// <param name="value"></param>
+        public virtual void SetContextItem(string itemKey, object value)
         {
-            if (HttpContext != null)
+            if (!string.IsNullOrEmpty(itemKey) && value != null)
             {
-                if (HttpContext.Items.Contains(HttpContextItemKeys.AUTHENTICATIONCACHE))
+                var items = HttpContext.Items;
+                items[itemKey] = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取指定类型的上下文共享项
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="itemKey"></param>
+        /// <returns></returns>
+        public virtual T GetContextItem<T>(string itemKey)
+        {
+            T obj = default(T);
+
+            if (!string.IsNullOrEmpty(itemKey))
+            {
+                var items = HttpContext.Items;
+                if (items.Contains(itemKey))
                 {
-                    var cache = HttpContext.Items[HttpContextItemKeys.AUTHENTICATIONCACHE];
-                    return (TCache)cache;
+                    obj = (T)items[itemKey];
                 }
             }
 
-            return default(TCache);
+            return obj;
         }
     }
 }
