@@ -640,7 +640,7 @@ namespace LF.Toolkit.Data.Storage
                 var factory = SingletonProvider<TProvider>.CurrentSession;
                 if (factory.DapperMappings == null)
                 {
-                    throw new Exception("未运行映射配置 --> Configure(string path);");
+                    throw new Exception("未运行存储映射配置");
                 }
                 if (factory.DapperMappings.ContainsKey(fullname))
                 {

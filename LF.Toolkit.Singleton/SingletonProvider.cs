@@ -24,5 +24,23 @@ namespace LF.Toolkit.Singleton
         /// </summary>
         /// <returns></returns>
         public static T CurrentSession { get { return lazyInstance.Value; } }
+
+        /// <summary>
+        /// 获取当前会话实例并转化为其基类或接口对象
+        /// </summary>
+        /// <typeparam name="TInter">T的基类或接口</typeparam>
+        /// <returns></returns>
+        public static TInter GetCurrentSessionAs<TInter>()
+            where TInter : class
+        {
+            if (lazyInstance.Value is TInter)
+            {
+                return lazyInstance.Value as TInter;
+            }
+            else
+            {
+                throw new InvalidCastException();
+            }
+        }
     }
 }
