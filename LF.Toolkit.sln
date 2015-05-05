@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Singleton", "LF.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB.NET45", "LF.Toolkit.MongoDB.NET45\LF.Toolkit.MongoDB.NET45.csproj", "{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Mvc", "LF.Toolkit.Mvc\LF.Toolkit.Mvc.csproj", "{56266176-CE31-462F-8ED3-9C7E0D80A8CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Misc", "LF.Toolkit.Misc\LF.Toolkit.Misc.csproj", "{B060C7FF-292D-43C6-881A-CBA4CC32875B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +64,10 @@ Global
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56266176-CE31-462F-8ED3-9C7E0D80A8CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56266176-CE31-462F-8ED3-9C7E0D80A8CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56266176-CE31-462F-8ED3-9C7E0D80A8CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56266176-CE31-462F-8ED3-9C7E0D80A8CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

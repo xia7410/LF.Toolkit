@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace LF.Toolkit.Util
+namespace LF.Toolkit.Misc
 {
     /// <summary>
     /// 上传文件类

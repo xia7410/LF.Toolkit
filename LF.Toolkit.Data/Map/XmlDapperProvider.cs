@@ -58,7 +58,7 @@ namespace LF.Toolkit.Data.Map
                                 }
 
                                 mapping.CommandDictionary = cmds;
-                                condict.AddOrUpdate(mapping.Type, mapping, (k, v) => condict[k] = v);
+                                condict.AddOrUpdate(mapping.Type, mapping, (k, v) => mapping);
                             }
                         }
                         finally
