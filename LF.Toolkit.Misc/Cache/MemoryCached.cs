@@ -179,7 +179,6 @@ namespace LF.Toolkit.Misc.Cache
         /// <param name="key"></param>
         /// <returns></returns>
         public static T GetAs<T>(string key)
-            where T : class
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
 
@@ -187,7 +186,7 @@ namespace LF.Toolkit.Misc.Cache
             var cv = Get(key);
             if (cv != null)
             {
-                result = cv.Value as T;
+                result = (T)cv.Value;
             }
 
             return result;
