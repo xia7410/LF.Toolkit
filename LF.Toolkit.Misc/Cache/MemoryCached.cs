@@ -13,36 +13,47 @@ namespace LF.Toolkit.Misc.Cache
         static readonly ConcurrentDictionary<string, CacheValue> majorCached;
         static readonly ConcurrentDictionary<string, DateTime> timeCached;
         static volatile bool jobDone = true;
+        static volatile bool configured = false;
 
         static MemoryCached()
         {
             majorCached = new ConcurrentDictionary<string, CacheValue>();
             timeCached = new ConcurrentDictionary<string, DateTime>();
+        }
 
-            Timer timer = new Timer(1000);
-            timer.Elapsed += (sender, e) =>
+        /// <summary>
+        /// 确保服务已经配置
+        /// </summary>
+        static void EnsureConfigured()
+        {
+            if (!configured)
             {
-                if (!timeCached.IsEmpty)
+                Timer timer = new Timer(1000);
+                timer.Elapsed += (sender, e) =>
                 {
-                    if (!jobDone) return;
-
-                    var expires = timeCached.Where(i => i.Value <= DateTime.Now);
-                    if (expires.Count() > 0)
+                    if (!timeCached.IsEmpty)
                     {
-                        jobDone = false;
-                        expires.AsParallel().ForAll(kv =>
-                        {
-                            CacheValue cv;
-                            majorCached.TryRemove(kv.Key, out cv);
-                            DateTime dt;
-                            timeCached.TryRemove(kv.Key, out dt);
-                        });
-                        jobDone = true;
-                    }
-                }
-            };
+                        if (!jobDone) return;
 
-            timer.Start();
+                        var expires = timeCached.Where(i => i.Value <= DateTime.Now);
+                        if (expires.Count() > 0)
+                        {
+                            jobDone = false;
+                            expires.AsParallel().ForAll(kv =>
+                            {
+                                CacheValue cv;
+                                majorCached.TryRemove(kv.Key, out cv);
+                                DateTime dt;
+                                timeCached.TryRemove(kv.Key, out dt);
+                            });
+                            jobDone = true;
+                        }
+                    }
+                };
+
+                timer.Start();
+                configured = true;
+            }
         }
 
         /// <summary>
@@ -54,6 +65,8 @@ namespace LF.Toolkit.Misc.Cache
         public static bool KeyExpire(string key, DateTime expiry)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+            
+            EnsureConfigured();
 
             bool success = false;
             if (DateTime.Now < expiry && timeCached.ContainsKey(key))
@@ -74,6 +87,8 @@ namespace LF.Toolkit.Misc.Cache
         public static bool KeyExpire(string key, TimeSpan expiry)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+
+            EnsureConfigured();
 
             bool success = false;
             if (expiry.TotalSeconds > 0 && timeCached.ContainsKey(key))
@@ -96,6 +111,8 @@ namespace LF.Toolkit.Misc.Cache
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
             if (value == null) throw new ArgumentNullException("value");
 
+            EnsureConfigured();
+
             var cv = new CacheValue { Value = value };
             majorCached.AddOrUpdate(key, cv, (k, v) => cv);
 
@@ -113,6 +130,8 @@ namespace LF.Toolkit.Misc.Cache
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
             if (value == null) throw new ArgumentNullException("value");
+
+            EnsureConfigured();
 
             var cv = new CacheValue { Value = value, Expiry = expiry };
             timeCached.AddOrUpdate(key, expiry, (k, v) => expiry);
@@ -133,6 +152,8 @@ namespace LF.Toolkit.Misc.Cache
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
             if (value == null) throw new ArgumentNullException("value");
 
+            EnsureConfigured();
+
             if (expiry <= TimeSpan.Zero)
             {
                 return false;
@@ -150,20 +171,18 @@ namespace LF.Toolkit.Misc.Cache
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
 
-            CacheValue cv = null;
+            EnsureConfigured();
 
-            if (majorCached.ContainsKey(key))
+            CacheValue cv = null;
+            if (majorCached.TryGetValue(key, out cv))
             {
-                if (majorCached.TryGetValue(key, out cv))
+                if (cv.Expiry.HasValue)
                 {
-                    if (cv.Expiry.HasValue)
+                    if (cv.Expiry.Value - DateTime.Now <= TimeSpan.Zero)
                     {
-                        if (cv.Expiry.Value - DateTime.Now <= TimeSpan.Zero)
+                        if (majorCached.TryRemove(key, out cv))
                         {
-                            if (majorCached.TryRemove(key, out cv))
-                            {
-                                cv = null;
-                            }
+                            cv = null;
                         }
                     }
                 }
@@ -181,6 +200,8 @@ namespace LF.Toolkit.Misc.Cache
         public static T GetAs<T>(string key)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+
+            EnsureConfigured();
 
             var result = default(T);
             var cv = Get(key);
@@ -200,6 +221,8 @@ namespace LF.Toolkit.Misc.Cache
         public static bool KeyDelete(string key)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+
+            EnsureConfigured();
 
             bool success = false;
             if (majorCached.ContainsKey(key))
