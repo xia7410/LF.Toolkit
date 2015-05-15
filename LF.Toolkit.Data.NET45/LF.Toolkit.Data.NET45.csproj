@@ -67,6 +67,9 @@
     <Compile Include="..\LF.Toolkit.Data\Storage\IStorage.cs">
       <Link>Storage\IStorage.cs</Link>
     </Compile>
+    <Compile Include="..\LF.Toolkit.Data\Storage\PagedResult.cs">
+      <Link>Storage\PagedResult.cs</Link>
+    </Compile>
     <Compile Include="..\LF.Toolkit.Data\Storage\StorageBase.cs">
       <Link>Storage\StorageBase.cs</Link>
     </Compile>
