@@ -14,7 +14,7 @@ namespace LF.Toolkit.Data.Storage
         /// <summary>
         /// 获取或设置分页结果集合
         /// </summary>
-        IEnumerable<T> Results { get; set; }
+        public IEnumerable<T> Results { get; set; }
 
         /// <summary>
         /// 获取或设置分页查询记录总数
