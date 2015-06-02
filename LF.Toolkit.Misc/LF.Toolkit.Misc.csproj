@@ -49,6 +49,7 @@
     <Compile Include="Cache\RedisCachedProvider.cs" />
     <Compile Include="HttpProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmtpProvider.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
