@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB.NET45", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Misc", "LF.Toolkit.Misc\LF.Toolkit.Misc.csproj", "{B060C7FF-292D-43C6-881A-CBA4CC32875B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Oauth2", "LF.Oauth2\LF.Oauth2.csproj", "{3751E7DC-2F35-4791-8072-9D89DDDC81EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,11 +70,16 @@ Global
 		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3751E7DC-2F35-4791-8072-9D89DDDC81EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3751E7DC-2F35-4791-8072-9D89DDDC81EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3751E7DC-2F35-4791-8072-9D89DDDC81EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3751E7DC-2F35-4791-8072-9D89DDDC81EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8} = {FA1249C1-9F93-4404-B749-1A76377300F6}
+		{3751E7DC-2F35-4791-8072-9D89DDDC81EA} = {FA1249C1-9F93-4404-B749-1A76377300F6}
 	EndGlobalSection
 EndGlobal
