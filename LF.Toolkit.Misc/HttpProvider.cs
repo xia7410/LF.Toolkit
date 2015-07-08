@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -30,6 +31,10 @@ namespace LF.Toolkit.Misc
         public const string HTTPMETHOD_DELETE = "DELETE";
         public const string HTTPMETHOD_PUT = "PUT";
 
+        /// <summary>
+        /// HTTP POST FROM multipart/form-data
+        /// </summary>
+        public const string CONTENTTYPE_JSON = "application/json";
         /// <summary>
         /// HTTP POST FROM x-www-form-urlencoded
         /// </summary>
@@ -120,7 +125,7 @@ namespace LF.Toolkit.Misc
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url));
                 request.ContentType = contentType;
                 request.Method = method;
-
+                
                 //add headers
                 foreach (var property in headers.GetType().GetProperties())
                 {
@@ -136,7 +141,16 @@ namespace LF.Toolkit.Misc
                         {
                             var _request = ar.AsyncState as HttpWebRequest;
                             Stream stream = _request.EndGetRequestStream(ar);
-                            byte[] data = Encoding.UTF8.GetBytes(SerializeQueryString(parameters));
+                            string body = "";
+                            if (contentType == HttpConst.CONTENTTYPE_JSON)
+                            {
+                                body = JObject.FromObject(parameters).ToString();
+                            }
+                            else
+                            {
+                                body = SerializeQueryString(parameters);
+                            }
+                            byte[] data = Encoding.UTF8.GetBytes(body);
                             stream.Write(data, 0, data.Length);
                             stream.Flush();
                             stream.Dispose();
@@ -219,7 +233,7 @@ namespace LF.Toolkit.Misc
         #region POST
 
         /// <summary>
-        /// Post
+        /// Post UrlEncoded Form
         /// </summary>
         /// <param name="url"></param>
         /// <param name="successCallback">成功回发</param>
@@ -230,7 +244,7 @@ namespace LF.Toolkit.Misc
         }
 
         /// <summary>
-        /// Post
+        /// Post UrlEncoded Form
         /// </summary>
         /// <param name="url"></param>
         /// <param name="parameters"></param>
@@ -242,7 +256,7 @@ namespace LF.Toolkit.Misc
         }
 
         /// <summary>
-        /// Post
+        /// Post UrlEncoded Form
         /// </summary>
         /// <param name="url"></param>
         /// <param name="parameters"></param>
@@ -252,6 +266,31 @@ namespace LF.Toolkit.Misc
         public static void Post(string url, object parameters, object headers, Action<string> successCallback, Action<WebException> failCallback)
         {
             BuildRequest(HttpConst.CONTENTTYPE_URLENCODED, HttpConst.HTTPMETHOD_POST, url, parameters, headers, successCallback, failCallback);
+        }
+
+        /// <summary>
+        /// Post JSON Form
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="parameters"></param>
+        /// <param name="successCallback"></param>
+        /// <param name="failCallback"></param>
+        public static void PostAsJson(string url, object parameters, Action<string> successCallback, Action<WebException> failCallback)
+        {
+            BuildRequest(HttpConst.CONTENTTYPE_JSON, HttpConst.HTTPMETHOD_POST, url, parameters, new object(), successCallback, failCallback);
+        }
+
+        /// <summary>
+        /// Post JSON Form
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="parameters"></param>
+        /// <param name="headers"></param>
+        /// <param name="successCallback"></param>
+        /// <param name="failCallback"></param>
+        public static void PostAsJson(string url, object parameters, object headers, Action<string> successCallback, Action<WebException> failCallback)
+        {
+            BuildRequest(HttpConst.CONTENTTYPE_JSON, HttpConst.HTTPMETHOD_POST, url, parameters, headers, successCallback, failCallback);
         }
 
         #endregion
@@ -360,7 +399,7 @@ namespace LF.Toolkit.Misc
                         {
                             tempStream.Write(boundarybytes, 0, boundarybytes.Length);
                         }
-                        
+
                         file.FileStream.Close();
                     }
                     tempStream.Flush();
