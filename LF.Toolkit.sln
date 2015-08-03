@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B7CF04E9-3A35-48E5-B9DD-AC417F3FBD16}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,10 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Data", "LF.Toolk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Util", "LF.Toolkit.Util\LF.Toolkit.Util.csproj", "{04E95393-F87F-4916-9D35-069BE15F1671}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Items", "Test Items", "{FA1249C1-9F93-4404-B749-1A76377300F6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Test", "Test Items\LF.Toolkit.Test\LF.Toolkit.Test.csproj", "{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Data.NET45", "LF.Toolkit.Data.NET45\LF.Toolkit.Data.NET45.csproj", "{54A2BC60-9852-47EB-B755-D4771722CE24}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB", "LF.Toolkit.MongoDB\LF.Toolkit.MongoDB.csproj", "{4B89E37D-AF87-4BB9-9A2C-AF23E1F0DAD2}"
@@ -29,6 +25,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB.NET45", "LF.Toolkit.MongoDB.NET45\LF.Toolkit.MongoDB.NET45.csproj", "{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Misc", "LF.Toolkit.Misc\LF.Toolkit.Misc.csproj", "{B060C7FF-292D-43C6-881A-CBA4CC32875B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.UnitTest", "LF.Toolkit.UnitTest\LF.Toolkit.UnitTest.csproj", "{80D34038-9527-4020-97CF-BD2897E26865}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.UnitTest.NET45", "LF.Toolkit.UnitTest.NET45\LF.Toolkit.UnitTest.NET45.csproj", "{BE44F8EC-2053-4922-8D10-26E896E2CD9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,10 +44,6 @@ Global
 		{04E95393-F87F-4916-9D35-069BE15F1671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04E95393-F87F-4916-9D35-069BE15F1671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04E95393-F87F-4916-9D35-069BE15F1671}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54A2BC60-9852-47EB-B755-D4771722CE24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54A2BC60-9852-47EB-B755-D4771722CE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54A2BC60-9852-47EB-B755-D4771722CE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,11 +64,16 @@ Global
 		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80D34038-9527-4020-97CF-BD2897E26865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80D34038-9527-4020-97CF-BD2897E26865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80D34038-9527-4020-97CF-BD2897E26865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80D34038-9527-4020-97CF-BD2897E26865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE44F8EC-2053-4922-8D10-26E896E2CD9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE44F8EC-2053-4922-8D10-26E896E2CD9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE44F8EC-2053-4922-8D10-26E896E2CD9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE44F8EC-2053-4922-8D10-26E896E2CD9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7ED05F97-2274-49E3-9AC6-B82A0F5F5CF8} = {FA1249C1-9F93-4404-B749-1A76377300F6}
 	EndGlobalSection
 EndGlobal

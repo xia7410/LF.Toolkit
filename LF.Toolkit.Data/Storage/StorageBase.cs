@@ -731,7 +731,6 @@ namespace LF.Toolkit.Data.Storage
         /// 多个结果集务查询，在调用时候需要使用using来释放连接
         /// </summary>
         /// <param name="commandKey"></param>
-        /// <param name="conn"></param>
         /// <param name="param"></param>
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
@@ -839,7 +838,6 @@ namespace LF.Toolkit.Data.Storage
         /// <param name="commandKey"></param>
         /// <param name="param"></param>
         /// <param name="transaction"></param>
-        /// <param name="commandType"></param>
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
         protected T ExecuteScalar<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, int? commandTimeout = null)

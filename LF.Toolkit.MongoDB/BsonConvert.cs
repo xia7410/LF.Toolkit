@@ -206,7 +206,7 @@ namespace LF.Toolkit.MongoDB
             {
                 var t = typeof(T);
                 //搜索需要序列化的字段
-                var props = t.GetProperties().Where(i => !i.IsDefined(typeof(BsonIgnoreAttribute))).ToArray();
+                var props = t.GetProperties().Where(i => !i.IsDefined(typeof(BsonIgnoreAttribute), true)).ToArray();
                 if (props.Length > 0)
                 {
                     var obj = t.Assembly.CreateInstance(t.FullName);
@@ -246,7 +246,7 @@ namespace LF.Toolkit.MongoDB
                                     pValue = deserialize.MakeGenericMethod(p.PropertyType).Invoke(null, new object[] { value });
                                 }
 
-                                p.SetValue(obj, pValue);
+                                p.SetValue(obj, pValue, null);
                             }
                         }
                     }
