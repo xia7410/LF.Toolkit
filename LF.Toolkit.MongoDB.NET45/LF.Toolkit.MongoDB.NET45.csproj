@@ -56,29 +56,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\LF.Toolkit.MongoDB\BsonObjectId.cs">
-      <Link>BsonObjectId.cs</Link>
-    </Compile>
-    <Compile Include="..\LF.Toolkit.MongoDB\Config\MongoDatabaseConfig.cs">
-      <Link>Config\MongoDatabaseConfig.cs</Link>
-    </Compile>
-    <Compile Include="..\LF.Toolkit.MongoDB\Config\MongoStorageConfig.cs">
-      <Link>Config\MongoStorageConfig.cs</Link>
-    </Compile>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="MongoBsonId.cs" />
+    <Compile Include="Config\MongoDatabaseConfig.cs" />
+    <Compile Include="Config\MongoStorageConfig.cs" />
     <Compile Include="MongoStorageBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MongoStroageBootstrap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LF.Toolkit.Singleton\LF.Toolkit.Singleton.csproj">
-      <Project>{9419d4d8-1fd7-484b-a9ad-c559865a50fb}</Project>
-      <Name>LF.Toolkit.Singleton</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

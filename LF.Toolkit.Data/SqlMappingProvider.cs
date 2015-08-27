@@ -1,28 +1,23 @@
-﻿using LF.Toolkit.Data.Map;
+﻿using LF.Toolkit.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace LF.Toolkit.Data.Map
+namespace LF.Toolkit
 {
-    public class XmlDapperProvider : IDapperProvider
+    internal class SqlMappingProvider
     {
-        public IDictionary<string, IDapperMapping> DapperMappings { get; private set; }
+        IDictionary<string, ISqlMapping> DapperMappings { get; set; }
 
         /// <summary>
         /// 映射配置,必须在使用映射前执行
         /// </summary>
         /// <param name="path"></param>
-        public void Configure(string path)
+        public SqlMappingProvider(string path)
         {
             if (Directory.Exists(path))
             {
@@ -30,7 +25,7 @@ namespace LF.Toolkit.Data.Map
                 if (files.Length > 0)
                 {
                     //并发字典
-                    var condict = new ConcurrentDictionary<string, IDapperMapping>();
+                    var condict = new ConcurrentDictionary<string, ISqlMapping>();
                     //并发加载
                     files.AsParallel().ForAll(file =>
                     {
@@ -44,13 +39,13 @@ namespace LF.Toolkit.Data.Map
                             ms.Position = 0;
 
                             //声明一个XML序列化器
-                            XmlSerializer serializer = new XmlSerializer(typeof(DapperMapping));
+                            XmlSerializer serializer = new XmlSerializer(typeof(SqlMapping));
                             //反序列化
-                            var mapping = (DapperMapping)serializer.Deserialize(ms);
+                            var mapping = (SqlMapping)serializer.Deserialize(ms);
 
                             if (mapping != null)
                             {
-                                var cmds = mapping.Commands.ToDictionary(i => i.CommandKey, i => i as IDapperCommand);
+                                var cmds = mapping.Commands.ToDictionary(i => i.CommandKey, i => i as ISqlCommand);
                                 //去除换行符
                                 foreach (var cmd in cmds)
                                 {
@@ -75,13 +70,21 @@ namespace LF.Toolkit.Data.Map
                 }
                 else
                 {
-                    throw new Exception("未找到XML映射文件");
+                    throw new Exception("Could not find Sql Xml mapping files");
                 }
             }
             else
             {
-                throw new Exception("未找到XML映射文件目录");
+                throw new Exception("Could not find Sql Xml mapping folder");
             }
+        }
+
+        public ISqlMapping GetSqlMapping(string fullname)
+        {
+            ISqlMapping mapping = null;
+            if (!DapperMappings.TryGetValue(fullname, out mapping)) throw new Exception(string.Format("Could not find the '{0}' mapping file", fullname));
+
+            return mapping;
         }
     }
 }

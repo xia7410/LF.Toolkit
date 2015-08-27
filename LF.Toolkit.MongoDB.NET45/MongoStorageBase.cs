@@ -1,5 +1,4 @@
 ﻿using LF.Toolkit.MongoDB.Config;
-using LF.Toolkit.Singleton;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -11,33 +10,35 @@ using System.Threading.Tasks;
 
 namespace LF.Toolkit.MongoDB
 {
-    public abstract class MongoStorageBase : ISingleton
+    public abstract class MongoStorageBase
     {
         /// <summary>
         /// MongoDB存储基类
         /// </summary>
         /// <param name="databaseName">当前存储类使用的数据库名称</param>
         /// <param name="collectionName">当前存储类使用的集合名称</param>
-        public MongoStorageBase(string databaseName, string collectionName)
+        public MongoStorageBase(MongoStorageConfig config, string databaseName, string collectionName)
         {
+            if (string.IsNullOrEmpty(databaseName)) throw new ArgumentNullException("databaseName");
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentNullException("collectionName");
-            if (MongoStorageConfig.ServerAddress == null || MongoStorageConfig.Databases == null)
+
+            if (config.ServerAddress == null || config.Databases == null)
             {
-                throw new Exception("未执行MongoDB数据库存储配置");
+                throw new Exception("Mongodb Config not initialized");
             }
 
-            if (MongoStorageConfig.Databases.ContainsKey(databaseName))
+            if (config.Databases.ContainsKey(databaseName))
             {
-                var dbcfg = MongoStorageConfig.Databases[databaseName];
+                var dbcfg = config.Databases[databaseName];
                 //设置客户端配置
                 Settings = new MongoClientSettings();
-                if (MongoStorageConfig.ServerAddress.Count <= 1)
+                if (config.ServerAddress.Count <= 1)
                 {
-                    Settings.Server = MongoStorageConfig.ServerAddress.First();
+                    Settings.Server = config.ServerAddress.First();
                 }
                 else
                 {
-                    Settings.Servers = MongoStorageConfig.ServerAddress;
+                    Settings.Servers = config.ServerAddress;
                 }
                 var credential = MongoCredential.CreateCredential(dbcfg.DatabaseName, dbcfg.Username, dbcfg.Password);
                 Settings.Credentials = new MongoCredential[] { credential };
@@ -46,7 +47,7 @@ namespace LF.Toolkit.MongoDB
             }
             else
             {
-                throw new Exception("未找到数据库名为 " + databaseName + " 的数据库配置");
+                throw new Exception("Could not find the '" + databaseName + "' database config");
             }
 
             this.CollectionName = collectionName;
@@ -82,39 +83,10 @@ namespace LF.Toolkit.MongoDB
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="objectId">文档对象Id</param>
-        /// <param name="collection">当前集合对象</param>
-        /// <param name="projection">投影定义对象</param>
-        /// <returns></returns>
-        protected internal Task<TDocument> FindOneByIdAsync<TDocument>(ObjectId objectId, IMongoCollection<TDocument> collection = null, ProjectionDefinition<TDocument> projection = null) where TDocument : BsonObjectId
-        {
-            Task<TDocument> doc = null;
-
-            if (collection == null)
-            {
-                collection = GetDatabase().GetCollection<TDocument>(CollectionName);
-            }
-
-            var fileter = Builders<TDocument>.Filter.Eq<ObjectId>(i => i.Id, objectId);
-            if (projection == null)
-            {
-                doc = collection.Find<TDocument>(i => i.Id.Equals(objectId)).FirstOrDefaultAsync();
-            }
-            else
-            {
-                doc = collection.Find<TDocument>(fileter).Project<TDocument>(projection).FirstOrDefaultAsync();
-            }
-
-            return doc;
-        }
-
-        /// <summary>
-        /// 根据ObjectId获取一条文档记录
-        /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
-        /// <param name="objectId">文档对象Id</param>
         /// <param name="projection">投影对象linq表达式</param>
         /// <returns></returns>
-        public Task<TDocument> FindOneByIdAsync<TDocument>(ObjectId objectId, Expression<Func<TDocument, TDocument>> projection = null) where TDocument : BsonObjectId
+        public Task<TDocument> FindOneByIdAsync<TDocument>(ObjectId objectId, Expression<Func<TDocument, TDocument>> projection = null)
+            where TDocument : MongoBsonId
         {
             Task<TDocument> doc = null;
 
@@ -136,37 +108,11 @@ namespace LF.Toolkit.MongoDB
         /// 根据指定过滤条件获取一条文档记录
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
-        /// <param name="filter">过滤条件</param>
-        /// <param name="collection">当前集合对象</param>
-        /// <param name="projection">投影对象定义</param>
-        /// <returns></returns>
-        protected internal Task<TDocument> FindOneAsync<TDocument>(FilterDefinition<TDocument> filter, IMongoCollection<TDocument> collection = null, ProjectionDefinition<TDocument> projection = null) where TDocument : new()
-        {
-            Task<TDocument> doc = null;
-            if (collection == null)
-            {
-                collection = GetDatabase().GetCollection<TDocument>(CollectionName);
-            }
-            if (projection == null)
-            {
-                doc = collection.Find<TDocument>(filter).FirstOrDefaultAsync();
-            }
-            else
-            {
-                doc = collection.Find<TDocument>(filter).Project<TDocument>(projection).FirstOrDefaultAsync();
-            }
-
-            return doc;
-        }
-
-        /// <summary>
-        /// 根据指定过滤条件获取一条文档记录
-        /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
         /// <param name="filter">过滤条件linq表达式</param>
         /// <param name="projection">投影对象定义linq表达式</param>
         /// <returns></returns>
-        public Task<TDocument> FindOneAsync<TDocument>(Expression<Func<TDocument, bool>> filter, Expression<Func<TDocument, TDocument>> projection = null) where TDocument : new()
+        public Task<TDocument> FindOneAsync<TDocument>(Expression<Func<TDocument, bool>> filter, Expression<Func<TDocument, TDocument>> projection = null)
+            where TDocument : new()
         {
             Task<TDocument> doc = null;
             var collection = GetDatabase().GetCollection<TDocument>(CollectionName);
@@ -183,25 +129,7 @@ namespace LF.Toolkit.MongoDB
         }
 
         /// <summary>
-        /// 计算当前集合指定查询条件的文档格式
-        /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
-        /// <param name="filter">过滤条件</param>
-        /// <param name="collection">当前集合对象</param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        protected internal Task<long> CountAsync<TDocument>(FilterDefinition<TDocument> filter, IMongoCollection<TDocument> collection = null, CountOptions options = null)
-        {
-            if (collection == null)
-            {
-                collection = GetDatabase().GetCollection<TDocument>(CollectionName);
-            }
-
-            return collection.CountAsync(filter, options);
-        }
-
-        /// <summary>
-        /// 计算当前集合指定查询条件的文档格式
+        /// 计算当前集合指定查询条件的文档个数
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="filter">过滤条件</param>

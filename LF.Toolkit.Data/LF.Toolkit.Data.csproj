@@ -52,21 +52,13 @@
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Map\IDapperProvider.cs" />
-    <Compile Include="Map\IDapperCommand.cs" />
-    <Compile Include="Map\IDapperMapping.cs" />
+    <Compile Include="SqlCommand.cs" />
+    <Compile Include="SqlMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storage\IStorage.cs" />
-    <Compile Include="Storage\StorageBase.cs" />
-    <Compile Include="Map\XmlDapperProvider.cs" />
-    <Compile Include="Map\DapperCommand.cs" />
-    <Compile Include="Map\DapperMapping.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LF.Toolkit.Singleton\LF.Toolkit.Singleton.csproj">
-      <Project>{9419d4d8-1fd7-484b-a9ad-c559865a50fb}</Project>
-      <Name>LF.Toolkit.Singleton</Name>
-    </ProjectReference>
+    <Compile Include="SqlMappingStorageBase.cs" />
+    <Compile Include="SqlStorageBase.cs" />
+    <Compile Include="SqlMappingProvider.cs" />
+    <Compile Include="SqlStorageBootstrap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

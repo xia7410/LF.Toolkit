@@ -5,10 +5,10 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B7CF04E9-3A35-48E5-B9DD-AC417F3FBD16}"
 	ProjectSection(SolutionItems) = preProject
-		Solution Items\Dapper-Mapping.xml = Solution Items\Dapper-Mapping.xml
 		Solution Items\GlobalAssemblyInfo.cs = Solution Items\GlobalAssemblyInfo.cs
 		Solution Items\log4net.config = Solution Items\log4net.config
 		Solution Items\mongocfg.json = Solution Items\mongocfg.json
+		Solution Items\Sql-Mapping.xml = Solution Items\Sql-Mapping.xml
 		Solution Items\Web.config = Solution Items\Web.config
 	EndProjectSection
 EndProject
@@ -18,13 +18,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Util", "LF.Toolk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Data.NET45", "LF.Toolkit.Data.NET45\LF.Toolkit.Data.NET45.csproj", "{54A2BC60-9852-47EB-B755-D4771722CE24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB", "LF.Toolkit.MongoDB\LF.Toolkit.MongoDB.csproj", "{4B89E37D-AF87-4BB9-9A2C-AF23E1F0DAD2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Singleton", "LF.Toolkit.Singleton\LF.Toolkit.Singleton.csproj", "{9419D4D8-1FD7-484B-A9AD-C559865A50FB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.MongoDB.NET45", "LF.Toolkit.MongoDB.NET45\LF.Toolkit.MongoDB.NET45.csproj", "{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.Misc", "LF.Toolkit.Misc\LF.Toolkit.Misc.csproj", "{B060C7FF-292D-43C6-881A-CBA4CC32875B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.UnitTests", "LF.Toolkit.UnitTests\LF.Toolkit.UnitTests.csproj", "{42A4871B-4C90-4B07-BE51-CA5C648F4BAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF.Toolkit.UnitTests.NET45", "LF.Toolkit.UnitTests.NET45\LF.Toolkit.UnitTests.NET45.csproj", "{E2C882C8-F880-4853-BD98-B880A91214B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,22 +42,18 @@ Global
 		{54A2BC60-9852-47EB-B755-D4771722CE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54A2BC60-9852-47EB-B755-D4771722CE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54A2BC60-9852-47EB-B755-D4771722CE24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B89E37D-AF87-4BB9-9A2C-AF23E1F0DAD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B89E37D-AF87-4BB9-9A2C-AF23E1F0DAD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B89E37D-AF87-4BB9-9A2C-AF23E1F0DAD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B89E37D-AF87-4BB9-9A2C-AF23E1F0DAD2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9419D4D8-1FD7-484B-A9AD-C559865A50FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B060C7FF-292D-43C6-881A-CBA4CC32875B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42A4871B-4C90-4B07-BE51-CA5C648F4BAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42A4871B-4C90-4B07-BE51-CA5C648F4BAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42A4871B-4C90-4B07-BE51-CA5C648F4BAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42A4871B-4C90-4B07-BE51-CA5C648F4BAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2C882C8-F880-4853-BD98-B880A91214B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2C882C8-F880-4853-BD98-B880A91214B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2C882C8-F880-4853-BD98-B880A91214B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2C882C8-F880-4853-BD98-B880A91214B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

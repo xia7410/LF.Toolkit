@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<dapper-mapping>
+<sql-mapping>
 
   <type></type>
   <connectionKey></connectionKey>
@@ -7,4 +7,4 @@
   <command key="" commandType="Text"></command>
   <command key="" commandType="StoredProcedure"></command>
     
-</dapper-mapping>
+</sql-mapping>

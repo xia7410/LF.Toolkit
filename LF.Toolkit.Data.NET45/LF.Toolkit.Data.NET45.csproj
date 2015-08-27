@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>2</WarningLevel>
     <DocumentationFile>bin\Debug\LF.Toolkit.Data.XML</DocumentationFile>
@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NET45</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\LF.Toolkit.Data.XML</DocumentationFile>
@@ -46,43 +46,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\LF.Toolkit.Data\Map\DapperCommand.cs">
-      <Link>Map\DapperCommand.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\Properties\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Map\DapperMapping.cs">
-      <Link>Map\DapperMapping.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlCommand.cs">
+      <Link>SqlCommand.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Map\IDapperCommand.cs">
-      <Link>Map\IDapperCommand.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlMapping.cs">
+      <Link>SqlMapping.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Map\IDapperMapping.cs">
-      <Link>Map\IDapperMapping.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlMappingProvider.cs">
+      <Link>SqlMappingProvider.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Map\IDapperProvider.cs">
-      <Link>Map\IDapperProvider.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlMappingStorageBase.cs">
+      <Link>SqlMappingStorageBase.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Map\XmlDapperProvider.cs">
-      <Link>Map\XmlDapperProvider.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlStorageBase.cs">
+      <Link>SqlStorageBase.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Storage\IStorage.cs">
-      <Link>Storage\IStorage.cs</Link>
-    </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Storage\StorageBase.cs">
-      <Link>Storage\StorageBase.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlStorageBootstrap.cs">
+      <Link>SqlStorageBootstrap.cs</Link>
     </Compile>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LF.Toolkit.Singleton\LF.Toolkit.Singleton.csproj">
-      <Project>{9419d4d8-1fd7-484b-a9ad-c559865a50fb}</Project>
-      <Name>LF.Toolkit.Singleton</Name>
-    </ProjectReference>
+    <Compile Include="SqlMappingStorageBaseNET45.cs" />
+    <Compile Include="SqlStorageBaseNET45.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

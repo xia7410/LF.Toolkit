@@ -1,0 +1,17 @@
+{
+  "serverAddress": [
+    "127.0.0.1:27017",
+  ],
+  "databases": [
+    {
+      "databaseName": "im",
+      "username": "im",
+      "password": "123456"
+    },
+    {
+      "databaseName": "admin",
+      "username": "root",
+      "password": "admin"
+    }
+  ]
+}

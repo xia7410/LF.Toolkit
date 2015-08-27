@@ -13,3 +13,5 @@ using System.Runtime.InteropServices;
 // 对 COM 组件不可见。  如果需要从 COM 访问此程序集中的类型，
 // 则将该类型上的 ComVisible 特性设置为 true。
 [assembly: ComVisible(false)]
+
+[assembly: AssemblyVersion("1.1.*")]
