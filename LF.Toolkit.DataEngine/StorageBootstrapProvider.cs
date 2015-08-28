@@ -8,6 +8,13 @@ namespace LF.Toolkit.DataEngine
 {
     public class StorageBootstrapProvider
     {
+        /// <summary>
+        /// 创建默认构造存储启动器
+        /// </summary>
+        /// <typeparam name="TStorageBase"></typeparam>
+        /// <typeparam name="TStorageBootstrap"></typeparam>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
         public static IStorageBootstrap CreateBootstrap<TStorageBase, TStorageBootstrap>(Assembly assembly)
             where TStorageBase : class, IStorageBase
             where TStorageBootstrap : class, IStorageBootstrap, new()
@@ -18,6 +25,15 @@ namespace LF.Toolkit.DataEngine
             return bootstrap;
         }
 
+        /// <summary>
+        /// 创建泛型构造存储启动器
+        /// </summary>
+        /// <typeparam name="TStorageBase"></typeparam>
+        /// <typeparam name="TStorageBootstrap"></typeparam>
+        /// <typeparam name="TBootstrapParam"></typeparam>
+        /// <param name="param"></param>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
         public static IStorageBootstrap CreateBootstrap<TStorageBase, TStorageBootstrap ,TBootstrapParam>(TBootstrapParam param, Assembly assembly)
             where TStorageBase : class, IStorageBase
             where TBootstrapParam : class
