@@ -1,4 +1,5 @@
-﻿using LF.Toolkit.MongoDB.Config;
+﻿using LF.Toolkit.DataEngine;
+using LF.Toolkit.MongoDB.Config;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LF.Toolkit.MongoDB
 {
-    public abstract class MongoStorageBase
+    public abstract class MongoStorageBase : IStorageBase
     {
         /// <summary>
         /// MongoDB存储基类
@@ -67,6 +68,17 @@ namespace LF.Toolkit.MongoDB
         /// 获取当前集合名称
         /// </summary>
         public string CollectionName { get; private set; }
+
+        /// <summary>
+        /// 获取当前存储类型
+        /// </summary>
+        public Type StorageType
+        {
+            get
+            {
+                return this.GetType();
+            }
+        }
 
         /// <summary>
         /// 获取当前数据库实例

@@ -55,22 +55,15 @@
     <Compile Include="..\LF.Toolkit.Data\SqlMapping.cs">
       <Link>SqlMapping.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\SqlMappingProvider.cs">
-      <Link>SqlMappingProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\LF.Toolkit.Data\SqlMappingStorageBase.cs">
-      <Link>SqlMappingStorageBase.cs</Link>
+    <Compile Include="..\LF.Toolkit.Data\SqlMappingCollection.cs">
+      <Link>SqlMappingCollection.cs</Link>
     </Compile>
     <Compile Include="..\LF.Toolkit.Data\SqlStorageBase.cs">
       <Link>SqlStorageBase.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\SqlStorageBootstrap.cs">
-      <Link>SqlStorageBootstrap.cs</Link>
-    </Compile>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="SqlMappingStorageBaseNET45.cs" />
     <Compile Include="SqlStorageBaseNET45.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +71,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LF.Toolkit.DataEngine\LF.Toolkit.DataEngine.csproj">
+      <Project>{a46f5418-69a2-451e-9a03-5fe4f924c145}</Project>
+      <Name>LF.Toolkit.DataEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

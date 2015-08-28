@@ -4,16 +4,28 @@ using Dapper;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using LF.Toolkit.DataEngine;
 
 namespace LF.Toolkit.Data
 {
     /// <summary>
-    /// 数据库存储基类
+    /// 表示Sql数据库存储基类
     /// </summary>
-    public abstract partial class SqlStorageBase
+    public abstract partial class SqlStorageBase : IStorageBase
     {
         private ConnectionStringSettings connectionStringSettings;
         private DbProviderFactory dbProviderFactory;
+
+        /// <summary>
+        /// 获取当前存储类型
+        /// </summary>
+        public Type StorageType
+        {
+            get
+            {
+                return this.GetType();
+            }
+        }
 
         internal SqlStorageBase()
         {
@@ -22,17 +34,14 @@ namespace LF.Toolkit.Data
 
         #region Connection & Config
 
-        /// <summary>
-        /// 带有数据库连接配置项的构造器（适用于无存储映射子类使用）
-        /// </summary>
-        /// <param name="connectionKey"></param>
+
         public SqlStorageBase(string connectionKey)
         {
             DbProviderConfig(connectionKey);
         }
 
         /// <summary>
-        /// 关闭（非事务查询）的数据库连接
+        /// 关闭（非事务查询）数据库连接
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction"></param>
@@ -107,7 +116,7 @@ namespace LF.Toolkit.Data
         }
 
         /// <summary>
-        /// 关闭（非事务查询）的数据库连接
+        /// 关闭（非事务查询）数据库连接
         /// </summary>
         /// <param name="connection"></param>
         protected virtual void CloseDbConnection(IDbConnection connection)
@@ -350,6 +359,208 @@ namespace LF.Toolkit.Data
             finally
             {
                 CloseDbConnection(conn, transaction);
+            }
+
+            return result;
+        }
+    }
+
+    /// <summary>
+    /// 表示带有Sql映射的泛型存储基类
+    /// </summary>
+    public abstract partial class SqlStorageBase<TSqlMapping> : SqlStorageBase
+        where TSqlMapping : class, ISqlMapping
+    {
+        TSqlMapping SqlMapping { get; set; }
+
+        public SqlStorageBase(TSqlMapping sqlMapping)
+        {
+            if (sqlMapping == null) throw new ArgumentNullException("sqlMapping");
+
+            SqlMapping = sqlMapping;
+            base.DbProviderConfig(sqlMapping.ConnectionKey);
+        }
+
+        /// <summary>
+        /// 指定类型结果集查询，非事务查询会自动关闭连接，事务查询则需手动调用 CloseDbTransaction 关闭连接 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="commandKey"></param>
+        /// <param name="param"></param>
+        /// <param name="transaction"></param>
+        /// <param name="buffered"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected IEnumerable<T> Query<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null)
+        {
+            IEnumerable<T> result = null;
+
+            try
+            {
+                var cmd = SqlMapping[commandKey];
+                result = base.Query<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 动态类型结果集查询，非事务查询会自动关闭连接，事务查询则需手动调用 CloseDbTransaction 关闭连接 
+        /// </summary>
+        /// <param name="commandKey"></param>
+        /// <param name="param"></param>
+        /// <param name="transaction"></param>
+        /// <param name="buffered"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected IEnumerable<dynamic> Query(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null)
+        {
+            IEnumerable<dynamic> result = null;
+
+            try
+            {
+                var cmd = SqlMapping[commandKey];
+                result = base.Query<dynamic>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 多个结果集务查询，在调用时候需要使用using来释放连接
+        /// </summary>
+        /// <param name="commandKey"></param>
+        /// <param name="param"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected SqlMapper.GridReader QueryMultiple(string commandKey, dynamic param = null, int? commandTimeout = null)
+        {
+            SqlMapper.GridReader result = null;
+
+            try
+            {
+                var cmd = SqlMapping[commandKey];
+                var conn = base.GetDbConnection();
+
+                result = base.QueryMultiple(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 多个结果集务查询，需要手动调用 CloseDbConnection 关闭查询连接 
+        /// </summary>
+        /// <param name="commandKey"></param>
+        /// <param name="conn"></param>
+        /// <param name="param"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbConnection conn, dynamic param = null, int? commandTimeout = null)
+        {
+            SqlMapper.GridReader result = null;
+
+            try
+            {
+                if (conn == null) throw new ArgumentNullException("conn");
+                var cmd = SqlMapping[commandKey];
+                result = base.QueryMultiple(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 多个结果集带事务查询，需要手动调用 CloseDbTransaction 关闭事务查询连接 
+        /// </summary>
+        /// <param name="commandKey"></param>
+        /// <param name="transaction"></param>
+        /// <param name="param"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbTransaction transaction, dynamic param = null, int? commandTimeout = null)
+        {
+            SqlMapper.GridReader result = null;
+
+            try
+            {
+                if (transaction == null) throw new ArgumentNullException("transaction");
+                var cmd = SqlMapping[commandKey];
+                result = base.QueryMultiple(cmd.CommandText, transaction, param as object, cmd.CommandType, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 执行SQL查询，非事务查询会自动关闭连接，事务查询则需手动调用 CloseDbTransaction 关闭连接 
+        /// </summary>
+        /// <param name="commandKey"></param>
+        /// <param name="param"></param>
+        /// <param name="transaction"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected int Execute(string commandKey, dynamic param = null, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            int result = 0;
+
+            try
+            {
+                var cmd = SqlMapping[commandKey];
+
+                result = base.Execute(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 执行SQL查询并返回第一行第一列，非事务查询会自动关闭连接，事务查询则需手动调用 CloseDbTransaction 关闭连接 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="commandKey"></param>
+        /// <param name="param"></param>
+        /// <param name="transaction"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        protected T ExecuteScalar<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            T result = default(T);
+
+            try
+            {
+                if (string.IsNullOrEmpty(commandKey)) throw new ArgumentNullException("commandText");
+
+                var cmd = SqlMapping[commandKey];
+                result = base.ExecuteScalar<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
 
             return result;

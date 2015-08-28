@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LF.Toolkit.DataEngine;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -7,15 +8,6 @@ using System.Xml.Serialization;
 
 namespace LF.Toolkit.Data
 {
-    public interface ISqlCommand
-    {
-        string CommandKey { get; set; }
-
-        CommandType CommandType { get; set; }
-
-        string CommandText { get; set; }
-    }
-
     [Serializable]
     public class SqlCommand : ISqlCommand
     {

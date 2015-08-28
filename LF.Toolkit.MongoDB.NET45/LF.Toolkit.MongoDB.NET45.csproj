@@ -69,6 +69,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LF.Toolkit.DataEngine\LF.Toolkit.DataEngine.csproj">
+      <Project>{a46f5418-69a2-451e-9a03-5fe4f924c145}</Project>
+      <Name>LF.Toolkit.DataEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

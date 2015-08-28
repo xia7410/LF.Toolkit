@@ -1,4 +1,5 @@
 ﻿using LF.Toolkit.Data;
+using LF.Toolkit.DataEngine;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace LF.Toolkit.UnitTests
 {
     #region Storage
 
-    public interface IRoleStorage : ISqlStorageBootstrap { }
+    public interface IRoleStorage : IBootstrap { }
 
-    public interface IUserStorage : ISqlStorageBootstrap
+    public interface IUserStorage : IBootstrap
     {
         int GetOne();
     }
@@ -33,7 +34,7 @@ namespace LF.Toolkit.UnitTests
         }
     }
 
-    public class UserMappingStorage : SqlMappingStorageBase, IUserStorage
+    public class UserMappingStorage : SqlStorageBase<ISqlMapping>, IUserStorage
     {
         public UserMappingStorage(ISqlMapping mapping)
             : base(mapping)
@@ -54,19 +55,21 @@ namespace LF.Toolkit.UnitTests
     public class StorageBaseTests
     {
         [TestMethod]
-        public void TestCreateBootstrap()
+        public void TestCreateInstanceRef()
         {
-            SqlStorageBootstrap.CreateBootstrap(GetType().Assembly);
-            var storage = SqlStorageBootstrap.CreateInstance<IUserStorage>();
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<SqlStorageBase, StorageBootstrap>(GetType().Assembly);
+            var storage = bootstrap.CreateInstanceRef<IUserStorage>();
             Assert.IsInstanceOfType(storage, typeof(IUserStorage));
             Assert.AreEqual(storage.GetOne(), 100);
         }
 
         [TestMethod]
-        public void TestCreateMappingBootstrap()
+        public void TestGenericCreateInstanceRef()
         {
-            SqlStorageBootstrap.CreateBootstrap("maps", GetType().Assembly);
-            var storage = SqlStorageBootstrap.CreateInstance<IUserStorage>();
+            ISqlMappingCollection collection = new SqlMappingCollection();
+            collection.LoadFrom("maps");
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<SqlStorageBase, SqlStorageBootstrap, ISqlMappingCollection>(collection, GetType().Assembly);
+            var storage = bootstrap.CreateInstanceRef<IUserStorage>();
             Assert.IsInstanceOfType(storage, typeof(IUserStorage));
             Assert.AreEqual(storage.GetOne(), 100);
         }

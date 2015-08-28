@@ -6,6 +6,7 @@
 
   <command key="GetOne" commandType="Text">
     select 100
+    
   </command>
 
 </sql-mapping>

@@ -41,7 +41,7 @@ namespace LF.Toolkit.MongoDB.Config
         [JsonIgnore]
         public IDictionary<string, MongoDatabaseConfig> Databases { get; private set; }
 
-        public void Configure(string path)
+        public void LoadFrom(string path)
         {
             if (File.Exists(path))
             {

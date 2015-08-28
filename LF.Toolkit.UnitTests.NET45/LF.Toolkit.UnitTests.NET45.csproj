@@ -66,6 +66,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LF.Toolkit.DataEngine\LF.Toolkit.DataEngine.csproj">
+      <Project>{a46f5418-69a2-451e-9a03-5fe4f924c145}</Project>
+      <Name>LF.Toolkit.DataEngine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LF.Toolkit.MongoDB.NET45\LF.Toolkit.MongoDB.NET45.csproj">
       <Project>{8b9e6453-9e67-49c8-89f3-6a4211e1e83e}</Project>
       <Name>LF.Toolkit.MongoDB.NET45</Name>

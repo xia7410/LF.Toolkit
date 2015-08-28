@@ -57,6 +57,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LF.Toolkit.DataEngine\LF.Toolkit.DataEngine.csproj">
+      <Project>{a46f5418-69a2-451e-9a03-5fe4f924c145}</Project>
+      <Name>LF.Toolkit.DataEngine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LF.Toolkit.Data\LF.Toolkit.Data.csproj">
       <Project>{c7089df5-6adb-49f2-ae5a-2ed579e9e543}</Project>
       <Name>LF.Toolkit.Data</Name>

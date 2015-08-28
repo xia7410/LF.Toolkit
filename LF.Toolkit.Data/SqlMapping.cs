@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LF.Toolkit.DataEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +7,6 @@ using System.Xml.Serialization;
 
 namespace LF.Toolkit.Data
 {
-    public interface ISqlMapping
-    {
-        string Type { get; set; }
-
-        string ConnectionKey { get; set; }
-
-        IDictionary<string, ISqlCommand> CommandDictionary { get; set; }
-    }
-
     [XmlRoot("sql-mapping")]
     [Serializable]
     public class SqlMapping : ISqlMapping
@@ -28,7 +20,18 @@ namespace LF.Toolkit.Data
         [XmlElement("command")]
         public List<SqlCommand> Commands { get; set; }
 
+        public ISqlCommand this[string key]
+        {
+            get
+            {
+                ISqlCommand cmd = null;
+                if (!CommandDictionary.TryGetValue(key, out cmd)) throw new Exception(string.Format("Could not find the '{0}' SqlCommand", key));
+
+                return cmd;
+            }
+        }
+
         [XmlIgnore]
-        public IDictionary<string, ISqlCommand> CommandDictionary { get; set; }
+        internal IDictionary<string, ISqlCommand> CommandDictionary { get; set; }
     }
 }

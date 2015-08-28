@@ -6,6 +6,7 @@ using LF.Toolkit.MongoDB.Config;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using LF.Toolkit.DataEngine;
 
 namespace LF.Toolkit.UnitTests.NET45
 {
@@ -83,12 +84,12 @@ namespace LF.Toolkit.UnitTests.NET45
         public DateTime CreationDate { get; set; }
     }
 
-    public interface IChatFileStorage : IMongoStroageBootstrap
+    public interface IChatFileStorage : IBootstrap
     {
         Task<ChatFileEntity> FindOneAsync(string objectId);
     }
 
-    public interface IRoleStorage : IMongoStroageBootstrap
+    public interface IRoleStorage : IBootstrap
     {
 
     }
@@ -116,15 +117,15 @@ namespace LF.Toolkit.UnitTests.NET45
         [TestMethod]
         public async Task TestCreateBootstrap()
         {
-            MongoStroageBootstrap.CreateBootstrap("mongocfg.json", GetType().Assembly);
-            var storage = MongoStroageBootstrap.CreateInstance<IChatFileStorage>();
+            var config = new MongoStorageConfig();
+            config.LoadFrom("mongocfg.json");
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<MongoStorageBase, MongoStroageBootstrap, MongoStorageConfig>(config, GetType().Assembly);
+            var storage = bootstrap.CreateInstanceRef<IChatFileStorage>();
 
             Assert.IsInstanceOfType(storage, typeof(IChatFileStorage));
             var entity = await storage.FindOneAsync("552b3d904a4a961d4c0d5001");
 
             Assert.IsNotNull(entity);
-
-            MongoStroageBootstrap.CreateInstance<IChatFileStorage>();
         }
     }
 }
