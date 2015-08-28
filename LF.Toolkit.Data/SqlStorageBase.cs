@@ -16,17 +16,6 @@ namespace LF.Toolkit.Data
         private ConnectionStringSettings connectionStringSettings;
         private DbProviderFactory dbProviderFactory;
 
-        /// <summary>
-        /// 获取当前存储类型
-        /// </summary>
-        public Type StorageType
-        {
-            get
-            {
-                return this.GetType();
-            }
-        }
-
         internal SqlStorageBase()
         {
 

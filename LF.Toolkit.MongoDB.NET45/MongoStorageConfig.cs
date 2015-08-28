@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LF.Toolkit.MongoDB.Config
+namespace LF.Toolkit.MongoDB
 {
-    public class MongoStorageConfig
+    public class MongoStorageConfig : IMongoStorageConfig
     {
         /// <summary>
         /// 获取或设置服务器地址列表
@@ -41,6 +41,10 @@ namespace LF.Toolkit.MongoDB.Config
         [JsonIgnore]
         public IDictionary<string, MongoDatabaseConfig> Databases { get; private set; }
 
+        /// <summary>
+        /// 从配置文件载入配置
+        /// </summary>
+        /// <param name="path"></param>
         public void LoadFrom(string path)
         {
             if (File.Exists(path))

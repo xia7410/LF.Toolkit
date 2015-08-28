@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace LF.Toolkit.DataEngine
+namespace LF.Toolkit.Data
 {
     /// <summary>
     /// 表示Sql命令映射接口

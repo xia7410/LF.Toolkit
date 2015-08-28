@@ -17,7 +17,7 @@ namespace LF.Toolkit.DataEngine
         /// </summary>
         /// <typeparam name="T">派生自IStorageBase的类型</typeparam>
         /// <returns></returns>
-        public override object CreateInstance<T>()
+        protected override object CreateInstance<T>()
         {
             var type = typeof(T);
             if (type.IsAbstract) throw new Exception("Colud not create abstract class instance");
@@ -42,6 +42,7 @@ namespace LF.Toolkit.DataEngine
     public abstract class StorageBootstrap<TBootstrapParam> : StorageBootstrapBase
         where TBootstrapParam : class
     {
+
     }
 
 }

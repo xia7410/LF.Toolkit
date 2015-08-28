@@ -46,6 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\LF.Toolkit.Data\ISqlCommand.cs">
+      <Link>ISqlCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\ISqlMapping.cs">
+      <Link>ISqlMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\ISqlMappingCollection.cs">
+      <Link>ISqlMappingCollection.cs</Link>
+    </Compile>
     <Compile Include="..\LF.Toolkit.Data\Properties\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
@@ -60,6 +69,9 @@
     </Compile>
     <Compile Include="..\LF.Toolkit.Data\SqlStorageBase.cs">
       <Link>SqlStorageBase.cs</Link>
+    </Compile>
+    <Compile Include="..\LF.Toolkit.Data\SqlStorageBootstrap.cs">
+      <Link>SqlStorageBootstrap.cs</Link>
     </Compile>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>

@@ -1,5 +1,4 @@
 ﻿using LF.Toolkit.DataEngine;
-using LF.Toolkit.MongoDB.Config;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,11 +11,11 @@ namespace LF.Toolkit.MongoDB
     /// <summary>
     /// 表示MongoDB存储启动类
     /// </summary>
-    public class MongoStroageBootstrap : StorageBootstrap<MongoStorageConfig>
+    public class MongoStroageBootstrap : StorageBootstrap<IMongoStorageConfig>
     {
-        MongoStorageConfig Config { get; set; }
+        IMongoStorageConfig Config { get; set; }
 
-        public MongoStroageBootstrap(MongoStorageConfig config)
+        public MongoStroageBootstrap(IMongoStorageConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
 
@@ -28,18 +27,18 @@ namespace LF.Toolkit.MongoDB
         /// </summary>
         /// <typeparam name="T">派生自IStorageBase的类型</typeparam>
         /// <returns></returns>
-        public override object CreateInstance<T>()
+        protected override object CreateInstance<T>()
         {
             var type = typeof(T);
             if (type.IsSubclassOf(typeof(MongoStorageBase)))
             {
-                //查找当前类型是否含有ISqlMapping参数构造
+                //查找当前类型是否含有MongoStorageConfig参数构造器
                 var constructor = type.GetConstructors().Where(i =>
                 {
                     var parameters = i.GetParameters();
-                    return parameters.Length == 1 && parameters[0].ParameterType == typeof(MongoStorageConfig);
+                    return parameters.Length == 1 && typeof(IMongoStorageConfig).IsAssignableFrom(parameters[0].ParameterType);
                 }).FirstOrDefault();
-                //初始化含有ISqlMapping参数构造对象的实例
+
                 if (constructor != null)
                 {
                     return type.Assembly.CreateInstance(type.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance

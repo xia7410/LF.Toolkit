@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LF.Toolkit.DataEngine
+namespace LF.Toolkit.Data
 {
     /// <summary>
     /// 表示Sql映射集合接口

@@ -20,7 +20,10 @@ namespace LF.Toolkit.Data
         [XmlElement("command")]
         public List<SqlCommand> Commands { get; set; }
 
-        public ISqlCommand this[string key]
+        [XmlIgnore]
+        internal IDictionary<string, ISqlCommand> CommandDictionary { get; set; }
+
+        ISqlCommand ISqlMapping.this[string key]
         {
             get
             {
@@ -31,7 +34,5 @@ namespace LF.Toolkit.Data
             }
         }
 
-        [XmlIgnore]
-        internal IDictionary<string, ISqlCommand> CommandDictionary { get; set; }
     }
 }

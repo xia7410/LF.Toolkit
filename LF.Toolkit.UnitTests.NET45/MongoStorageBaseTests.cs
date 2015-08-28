@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LF.Toolkit.MongoDB;
 using System.Reflection;
-using LF.Toolkit.MongoDB.Config;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -96,7 +95,7 @@ namespace LF.Toolkit.UnitTests.NET45
 
     public class ChatFileStorage : MongoStorageBase, IChatFileStorage
     {
-        public ChatFileStorage(MongoStorageConfig config)
+        public ChatFileStorage(IMongoStorageConfig config)
             : base(config, "im", "chatfile")
         {
 
@@ -119,7 +118,7 @@ namespace LF.Toolkit.UnitTests.NET45
         {
             var config = new MongoStorageConfig();
             config.LoadFrom("mongocfg.json");
-            var bootstrap = StorageBootstrapProvider.CreateBootstrap<MongoStorageBase, MongoStroageBootstrap, MongoStorageConfig>(config, GetType().Assembly);
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<MongoStorageBase, MongoStroageBootstrap, IMongoStorageConfig>(config, GetType().Assembly);
             var storage = bootstrap.CreateInstanceRef<IChatFileStorage>();
 
             Assert.IsInstanceOfType(storage, typeof(IChatFileStorage));

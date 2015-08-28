@@ -1,5 +1,4 @@
 ﻿using LF.Toolkit.DataEngine;
-using LF.Toolkit.MongoDB.Config;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -16,21 +15,18 @@ namespace LF.Toolkit.MongoDB
         /// <summary>
         /// MongoDB存储基类
         /// </summary>
+        /// <param name="config">存储配置</param>
         /// <param name="databaseName">当前存储类使用的数据库名称</param>
         /// <param name="collectionName">当前存储类使用的集合名称</param>
-        public MongoStorageBase(MongoStorageConfig config, string databaseName, string collectionName)
+        public MongoStorageBase(IMongoStorageConfig config, string databaseName, string collectionName)
         {
+            if(config == null) throw new ArgumentNullException("config");
             if (string.IsNullOrEmpty(databaseName)) throw new ArgumentNullException("databaseName");
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentNullException("collectionName");
 
-            if (config.ServerAddress == null || config.Databases == null)
-            {
-                throw new Exception("Mongodb Config not initialized");
-            }
-
             if (config.Databases.ContainsKey(databaseName))
             {
-                var dbcfg = config.Databases[databaseName];
+                var dbconfig = config.Databases[databaseName];
                 //设置客户端配置
                 Settings = new MongoClientSettings();
                 if (config.ServerAddress.Count <= 1)
@@ -41,7 +37,7 @@ namespace LF.Toolkit.MongoDB
                 {
                     Settings.Servers = config.ServerAddress;
                 }
-                var credential = MongoCredential.CreateCredential(dbcfg.DatabaseName, dbcfg.Username, dbcfg.Password);
+                var credential = MongoCredential.CreateCredential(dbconfig.DatabaseName, dbconfig.Username, dbconfig.Password);
                 Settings.Credentials = new MongoCredential[] { credential };
                 //设置数据库名称
                 this.DatabaseName = databaseName;
@@ -68,17 +64,6 @@ namespace LF.Toolkit.MongoDB
         /// 获取当前集合名称
         /// </summary>
         public string CollectionName { get; private set; }
-
-        /// <summary>
-        /// 获取当前存储类型
-        /// </summary>
-        public Type StorageType
-        {
-            get
-            {
-                return this.GetType();
-            }
-        }
 
         /// <summary>
         /// 获取当前数据库实例

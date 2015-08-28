@@ -10,9 +10,5 @@ namespace LF.Toolkit.DataEngine
     /// </summary>
     public interface IStorageBase
     {
-        /// <summary>
-        /// 获取当前存储类型
-        /// </summary>
-        Type StorageType { get; }
     }
 }

@@ -12,18 +12,6 @@ namespace LF.Toolkit.DataEngine
     public interface IStorageBootstrap
     {
         /// <summary>
-        /// 获取当前存储启动项的类型
-        /// </summary>
-        Type BootstrapType { get; }
-
-        /// <summary>
-        /// 创建指定存储类型的实例
-        /// </summary>
-        /// <typeparam name="T">派生自IStorageBase的类型</typeparam>
-        /// <returns></returns>
-        object CreateInstance<T>() where T : class, IStorageBase;
-
-        /// <summary>
         /// 从指定程序集载入指定存储基类的所有子类实例
         /// </summary>
         /// <typeparam name="TStorageBase">派生自IStorageBase的类型</typeparam>

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using LF.Toolkit.DataEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace LF.Toolkit.DataEngine
+namespace LF.Toolkit.Data
 {
     /// <summary>
     /// 表示带有Sql存储映射的启动实现类
@@ -25,16 +26,16 @@ namespace LF.Toolkit.DataEngine
         /// </summary>
         /// <typeparam name="T">派生自IStorageBase的类型</typeparam>
         /// <returns></returns>
-        public override object CreateInstance<T>()
+        protected override object CreateInstance<T>()
         {
             var type = typeof(T);
-            //查找当前类型是否含有ISqlMapping参数构造
+            //查找当前类型是否含有ISqlMapping参数构造器
             var constructor = type.GetConstructors().Where(i =>
             {
                 var parameters = i.GetParameters();
                 return parameters.Length == 1 && typeof(ISqlMapping).IsAssignableFrom(parameters[0].ParameterType);
-            }).FirstOrDefault(); ;
-            //初始化含有ISqlMapping参数构造对象的实例
+            }).FirstOrDefault(); 
+
             if (constructor != null)
             {
                 return type.Assembly.CreateInstance(type.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance

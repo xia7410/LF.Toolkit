@@ -59,9 +59,10 @@
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IMongoStorageConfig.cs" />
     <Compile Include="MongoBsonId.cs" />
-    <Compile Include="Config\MongoDatabaseConfig.cs" />
-    <Compile Include="Config\MongoStorageConfig.cs" />
+    <Compile Include="MongoDatabaseConfig.cs" />
+    <Compile Include="MongoStorageConfig.cs" />
     <Compile Include="MongoStorageBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MongoStroageBootstrap.cs" />
