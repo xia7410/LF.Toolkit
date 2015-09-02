@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace LF.Toolkit.Util
+namespace LF.Toolkit.Common
 {
-    public class StringProvider
+    /// <summary>
+    /// 表示随机字符串生成类
+    /// </summary>
+    public static class RandomStringGenerator
     {
         const string LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const string NUMERIC = "0123456789";
