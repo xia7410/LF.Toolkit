@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<sql-mapping>
-
+<sql-mapping xmlns="https://github.com/bigsupersniper"
+         xmlns:xsi="https://github.com/bigsupersniper"
+         xsi:schemaLocation="https://raw.githubusercontent.com/bigsupersniper/LF.Toolkit/master/xsd/sql-mapping.xsd" >
+  
   <type></type>
   <connectionKey></connectionKey>
 

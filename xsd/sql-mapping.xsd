@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema targetNamespace="http://lamfung.org/sql-mapping.xsd"
+<xs:schema targetNamespace="https://github.com/bigsupersniper"
     elementFormDefault="qualified"
-    xmlns="http://lamfung.org/sql-mapping.xsd"
+    xmlns="https://github.com/bigsupersniper"
     xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="sql-mapping">
     <xs:complexType>

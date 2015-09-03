@@ -17,7 +17,7 @@ FOR /F "tokens=*" %%G IN ('DIR /B /AD /S obj') DO RMDIR /S /Q "%%G"
 %msbuild% LF.Toolkit.MongoDB.NET45\LF.Toolkit.MongoDB.NET45.csproj /p:Configuration=Release /t:Clean;Rebuild /p:OutputPath=..\build\LF.Toolkit.MongoDB.NET45
 FOR /F "tokens=*" %%G IN ('DIR /B /AD /S obj') DO RMDIR /S /Q "%%G"
 
-%msbuild% LF.Toolkit.Util\LF.Toolkit.Util.csproj /p:Configuration=Release /t:Clean;Rebuild /p:OutputPath=..\build\LF.Toolkit.Util
+%msbuild% LF.Toolkit.Common\LF.Toolkit.Common.csproj /p:Configuration=Release /t:Clean;Rebuild /p:OutputPath=..\build\LF.Toolkit.Common
 FOR /F "tokens=*" %%G IN ('DIR /B /AD /S obj') DO RMDIR /S /Q "%%G"
 
 pause
