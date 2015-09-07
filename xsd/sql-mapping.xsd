@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema targetNamespace="https://github.com/bigsupersniper"
-    elementFormDefault="qualified"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns="https://github.com/bigsupersniper"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    targetNamespace="https://github.com/bigsupersniper"
+    xmlns:tns="https://github.com/bigsupersniper" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:element name="sql-mapping">
     <xs:complexType>
       <xs:sequence>
@@ -22,7 +22,7 @@
                   </xs:simpleType>
                 </xs:attribute>
               </xs:extension>
-            </xs:simpleContent>    
+            </xs:simpleContent>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
