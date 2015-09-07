@@ -4,9 +4,9 @@
              xsi:schemaLocation="https://github.com/bigsupersniper https://raw.githubusercontent.com/bigsupersniper/LF.Toolkit/master/xsd/sql-mapping.xsd">
 
   <type>LF.Toolkit.UnitTests.UserMappingStorage</type>
-  <connectionKey>SF_AuthentDB</connectionKey>
+  <connectionKey>LocalDB</connectionKey>
 
-  <command key="GetOne" commandType="Text">
+  <command key="GetInt" commandType="Text">
     select 100
   </command>
 

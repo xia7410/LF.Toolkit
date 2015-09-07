@@ -3,6 +3,7 @@ using LF.Toolkit.DataEngine;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,22 +13,20 @@ namespace LF.Toolkit.UnitTests
 {
     #region Storage
 
-    public interface IRoleStorage : IBootstrap { }
-
     public interface IUserStorage : IBootstrap
     {
-        int GetOne();
+        int GetInt();
     }
 
     public class UserStorage : SqlStorageBase, IUserStorage
     {
         public UserStorage()
-            : base("SF_AuthentDB")
+            : base("LocalDB")
         {
 
         }
 
-        public int GetOne()
+        public int GetInt()
         {
             Console.WriteLine(this.GetType().FullName + "." + MethodBase.GetCurrentMethod().Name + " Running");
             return base.ExecuteScalar<int>("select 100");
@@ -42,10 +41,10 @@ namespace LF.Toolkit.UnitTests
 
         }
 
-        int IUserStorage.GetOne()
+        int IUserStorage.GetInt()
         {
             Console.WriteLine(this.GetType().FullName + "." + MethodBase.GetCurrentMethod().Name + " Running");
-            return base.ExecuteScalar<int>("GetOne");
+            return base.ExecuteScalar<int>("GetInt");
         }
     }
 
@@ -60,7 +59,7 @@ namespace LF.Toolkit.UnitTests
             var bootstrap = StorageBootstrapProvider.CreateBootstrap<SqlStorageBase, StorageBootstrap>(GetType().Assembly);
             var storage = bootstrap.CreateInstanceRef<IUserStorage>();
             Assert.IsInstanceOfType(storage, typeof(IUserStorage));
-            Assert.AreEqual(storage.GetOne(), 100);
+            Assert.AreEqual(storage.GetInt(), 100);
         }
 
         [TestMethod]
@@ -71,7 +70,7 @@ namespace LF.Toolkit.UnitTests
             var bootstrap = StorageBootstrapProvider.CreateBootstrap<SqlStorageBase, SqlStorageBootstrap, ISqlMappingCollection>(collection, GetType().Assembly);
             var storage = bootstrap.CreateInstanceRef<IUserStorage>();
             Assert.IsInstanceOfType(storage, typeof(IUserStorage));
-            Assert.AreEqual(storage.GetOne(), 100);
+            Assert.AreEqual(storage.GetInt(), 100);
         }
     }
 }
