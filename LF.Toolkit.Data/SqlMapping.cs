@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace LF.Toolkit.Data
 {
-    [XmlRoot("sql-mapping")]
+    [XmlRoot("sql-mapping", Namespace = "https://github.com/bigsupersniper")]
     [Serializable]
     public class SqlMapping : ISqlMapping
     {

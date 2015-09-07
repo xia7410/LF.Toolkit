@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <sql-mapping xmlns="https://github.com/bigsupersniper"
-         xmlns:xsi="https://github.com/bigsupersniper"
-         xsi:schemaLocation="https://raw.githubusercontent.com/bigsupersniper/LF.Toolkit/master/xsd/sql-mapping.xsd" >
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://github.com/bigsupersniper https://raw.githubusercontent.com/bigsupersniper/LF.Toolkit/master/xsd/sql-mapping.xsd">
 
   <type>LF.Toolkit.UnitTests.UserMappingStorage</type>
   <connectionKey>SF_AuthentDB</connectionKey>
@@ -9,6 +9,6 @@
   <command key="GetOne" commandType="Text">
     select 100
   </command>
-  
-  
+
+
 </sql-mapping>

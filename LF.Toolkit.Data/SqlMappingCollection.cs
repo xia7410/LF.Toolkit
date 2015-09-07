@@ -50,8 +50,9 @@ namespace LF.Toolkit.Data
                 string[] files = Directory.GetFiles(path, "*.xml");
                 if (files.Length > 0)
                 {
-                    //并发字典
-                    var condict = new ConcurrentDictionary<string, ISqlMapping>();
+                    //获取默认的命名空间
+                    string defaultNamespace = (typeof(SqlMapping).GetCustomAttributes(typeof(XmlRootAttribute), false)
+                        [0] as XmlRootAttribute).Namespace;
                     //并发加载
                     files.AsParallel().ForAll(file =>
                     {
@@ -61,12 +62,16 @@ namespace LF.Toolkit.Data
                         try
                         {
                             xd.Load(file);
+                            //若序列化的xml不带命名空间则补上默认的命名空间
+                            if (xd.DocumentElement != null && xd.DocumentElement.NamespaceURI == "")
+                            {
+                                xd.DocumentElement.SetAttribute("xmlns", defaultNamespace);
+                            }
                             xd.Save(ms);
                             ms.Position = 0;
 
-                            //声明一个XML序列化器
+                            //声明一个制定类型的序列化实例
                             XmlSerializer serializer = new XmlSerializer(typeof(SqlMapping));
-                            //反序列化
                             var mapping = (SqlMapping)serializer.Deserialize(ms);
                             if (mapping != null)
                             {
