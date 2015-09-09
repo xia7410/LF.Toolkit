@@ -12,14 +12,14 @@ namespace LF.Toolkit.DataEngine
     /// </summary>
     public abstract class StorageBootstrapBase : IStorageBootstrap
     {
-        ConcurrentDictionary<Type, object> InstanceTable { get; set; }
+        ConcurrentDictionary<Type, object> storageInstancePool;
 
-        ConcurrentDictionary<Type, object> QuueryTable { get; set; }
+        ConcurrentDictionary<Type, object> quueryCachePool;
 
         public StorageBootstrapBase()
         {
-            InstanceTable = new ConcurrentDictionary<Type, object>();
-            QuueryTable = new ConcurrentDictionary<Type, object>();
+            storageInstancePool = new ConcurrentDictionary<Type, object>();
+            quueryCachePool = new ConcurrentDictionary<Type, object>();
         }
 
         /// <summary>
@@ -39,24 +39,24 @@ namespace LF.Toolkit.DataEngine
             if (assembly == null) throw new ArgumentNullException("assembly");
 
             var baseType = typeof(TStorageBase);
-            if (!baseType.IsAbstract) throw new Exception(baseType.FullName + " is not abstract StorageBase class");
             var implTypes = assembly.GetTypes().Where(i => i.IsSubclassOf(baseType) && !i.IsAbstract);
             if (implTypes.Count() > 0)
             {
                 var createInstance = this.GetType().GetMethod("CreateInstance", BindingFlags.NonPublic 
                     | BindingFlags.Instance);
-                foreach (var type in implTypes)
+                //并发创建实例
+                implTypes.AsParallel().ForAll(t =>
                 {
-                    var instance = createInstance.MakeGenericMethod(type).Invoke(this, null);
-                    if (instance != null)
+                    var value = createInstance.MakeGenericMethod(t).Invoke(this, null);
+                    if (value != null)
                     {
-                        InstanceTable.AddOrUpdate(type, instance, (k, v) => instance);
+                        storageInstancePool.AddOrUpdate(t, value, (k, v) => value);
                     }
-                }
+                });
             }
             else
             {
-                throw new Exception("Could not find the '" + baseType.FullName + "' implementation classes in assembly");
+                throw new Exception("Could not find the '" + baseType.FullName + "' Subclasses in assembly");
             }
         }
 
@@ -68,17 +68,17 @@ namespace LF.Toolkit.DataEngine
         TInterface IStorageBootstrap.CreateInstanceRef<TInterface>()
         {
             var interType = typeof(TInterface);
-            if (!interType.IsInterface) throw new Exception(interType.FullName + " is not interface type");
+            if (!interType.IsInterface) throw new Exception(interType.FullName + " is not interface");
 
             object value = null;
-            //先从查询表中查找实例，若不存在则从实例表中查找
-            if (!QuueryTable.TryGetValue(interType, out value))
+            //先从查询缓存池中查找实例，若不存在则从实例池中查找
+            if (!quueryCachePool.TryGetValue(interType, out value))
             {
-                var kv = InstanceTable.FirstOrDefault(i => interType.IsAssignableFrom(i.Key));
+                var kv = storageInstancePool.FirstOrDefault(i => interType.IsAssignableFrom(i.Key));
                 if (kv.Key != null)
                 {
                     value = kv.Value;
-                    QuueryTable.AddOrUpdate(interType, value, (k, v) => value);
+                    quueryCachePool.AddOrUpdate(interType, value, (k, v) => value);
                 }
             }
 

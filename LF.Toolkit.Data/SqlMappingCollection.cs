@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -50,9 +51,12 @@ namespace LF.Toolkit.Data
                 string[] files = Directory.GetFiles(path, "*.xml");
                 if (files.Length > 0)
                 {
+                    var attr = (typeof(SqlMapping).GetCustomAttributes(typeof(XmlRootAttribute), false)
+                        [0] as XmlRootAttribute);
                     //获取默认的命名空间
-                    string defaultNamespace = (typeof(SqlMapping).GetCustomAttributes(typeof(XmlRootAttribute), false)
-                        [0] as XmlRootAttribute).Namespace;
+                    string defaultElementName = attr.ElementName;
+                    //获取默认的命名空间
+                    string defaultNamespace = attr.Namespace;
                     //并发加载
                     files.AsParallel().ForAll(file =>
                     {
@@ -62,27 +66,35 @@ namespace LF.Toolkit.Data
                         try
                         {
                             xd.Load(file);
-                            //若序列化的xml不带命名空间则补上默认的命名空间
-                            if (xd.DocumentElement != null && xd.DocumentElement.NamespaceURI == "")
+                            if(xd.DocumentElement != null)
                             {
-                                xd.DocumentElement.SetAttribute("xmlns", defaultNamespace);
-                            }
-                            xd.Save(ms);
-                            ms.Position = 0;
-
-                            //声明一个制定类型的序列化实例
-                            XmlSerializer serializer = new XmlSerializer(typeof(SqlMapping));
-                            var mapping = (SqlMapping)serializer.Deserialize(ms);
-                            if (mapping != null)
-                            {
-                                mapping.CommandDictionary = mapping.Commands.ToDictionary(i => i.CommandKey, i =>
+                                //排除非sql-mapping架构xml文件
+                                if(xd.DocumentElement.Name != defaultElementName)
                                 {
-                                    //去除空格与换行符
-                                    i.CommandText = i.CommandText.Trim().Trim(new char[] { '\r', '\n' });
-                                    return i as ISqlCommand;
-                                });
-                                //添加到映射集合中
-                                SqlMappings.AddOrUpdate(mapping.Type, mapping, (k, v) => mapping);
+                                    return;
+                                }
+                                //若序列化的xml不带命名空间则补上默认的命名空间
+                                if (xd.DocumentElement.NamespaceURI == "")
+                                {
+                                    xd.DocumentElement.SetAttribute("xmlns", defaultNamespace);
+                                }
+                                xd.Save(ms);
+                                ms.Position = 0;
+
+                                //声明一个制定类型的序列化实例
+                                XmlSerializer serializer = new XmlSerializer(typeof(SqlMapping));
+                                var mapping = (SqlMapping)serializer.Deserialize(ms);
+                                if (mapping != null)
+                                {
+                                    mapping.CommandDictionary = mapping.Commands.ToDictionary(i => i.CommandKey, i =>
+                                    {
+                                        //去除空格与换行符
+                                        i.CommandText = i.CommandText.Trim().Trim(new char[] { '\r', '\n' });
+                                        return i as ISqlCommand;
+                                    });
+                                    //添加到映射集合中
+                                    SqlMappings.AddOrUpdate(mapping.Type, mapping, (k, v) => mapping);
+                                }
                             }
                         }
                         finally

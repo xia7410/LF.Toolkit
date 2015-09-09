@@ -30,20 +30,14 @@ namespace LF.Toolkit.MongoDB
         protected override object CreateInstance<T>()
         {
             var type = typeof(T);
-            if (type.IsSubclassOf(typeof(MongoStorageBase)))
-            {
-                //查找当前类型是否含有MongoStorageConfig参数构造器
-                var constructor = type.GetConstructors().Where(i =>
-                {
-                    var parameters = i.GetParameters();
-                    return parameters.Length == 1 && typeof(IMongoStorageConfig).IsAssignableFrom(parameters[0].ParameterType);
-                }).FirstOrDefault();
+            //查找当前类型是否含有MongoStorageConfig参数构造器
+            var constructor = type.GetConstructors().Where(i => i.GetParameters().Length == 1
+                && typeof(IMongoStorageConfig).IsAssignableFrom(i.GetParameters()[0].ParameterType)).FirstOrDefault();
 
-                if (constructor != null)
-                {
-                    return type.Assembly.CreateInstance(type.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance
-                            | BindingFlags.Instance | BindingFlags.Public, null, new object[] { Config }, null, null);
-                }
+            if (constructor != null)
+            {
+                return type.Assembly.CreateInstance(type.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance
+                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { Config }, null, null);
             }
 
             return null;

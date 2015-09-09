@@ -30,11 +30,8 @@ namespace LF.Toolkit.Data
         {
             var type = typeof(T);
             //查找当前类型是否含有ISqlMapping参数构造器
-            var constructor = type.GetConstructors().Where(i =>
-            {
-                var parameters = i.GetParameters();
-                return parameters.Length == 1 && typeof(ISqlMapping).IsAssignableFrom(parameters[0].ParameterType);
-            }).FirstOrDefault(); 
+            var constructor = type.GetConstructors().Where(i => i.GetParameters().Length == 1
+                && typeof(ISqlMapping).IsAssignableFrom(i.GetParameters()[0].ParameterType)).FirstOrDefault();
 
             if (constructor != null)
             {

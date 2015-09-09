@@ -67,7 +67,7 @@ namespace LF.Toolkit.UnitTests
         {
             ISqlMappingCollection collection = new SqlMappingCollection();
             collection.LoadFrom("maps");
-            var bootstrap = StorageBootstrapProvider.CreateBootstrap<SqlStorageBase, SqlStorageBootstrap, ISqlMappingCollection>(collection, GetType().Assembly);
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<SqlStorageBase<ISqlMapping>, SqlStorageBootstrap, ISqlMappingCollection>(collection, GetType().Assembly);
             var storage = bootstrap.CreateInstanceRef<IUserStorage>();
             Assert.IsInstanceOfType(storage, typeof(IUserStorage));
             Assert.AreEqual(storage.GetInt(), 100);

@@ -9,11 +9,11 @@ namespace LF.Toolkit.DataEngine
     public class StorageBootstrapProvider
     {
         /// <summary>
-        /// 创建默认构造存储启动器
+        /// 创建无参构造存储启动器
         /// </summary>
-        /// <typeparam name="TStorageBase"></typeparam>
-        /// <typeparam name="TStorageBootstrap"></typeparam>
-        /// <param name="assembly"></param>
+        /// <typeparam name="TStorageBase">存储基类</typeparam>
+        /// <typeparam name="TStorageBootstrap">存储启动实现类</typeparam>
+        /// <param name="assembly">存储实现程序集</param>
         /// <returns></returns>
         public static IStorageBootstrap CreateBootstrap<TStorageBase, TStorageBootstrap>(Assembly assembly)
             where TStorageBase : class, IStorageBase
@@ -26,22 +26,21 @@ namespace LF.Toolkit.DataEngine
         }
 
         /// <summary>
-        /// 创建泛型构造存储启动器
+        /// 创建带有一个参数构造存储启动器
         /// </summary>
-        /// <typeparam name="TStorageBase"></typeparam>
-        /// <typeparam name="TStorageBootstrap"></typeparam>
-        /// <typeparam name="TBootstrapParam"></typeparam>
-        /// <param name="param"></param>
-        /// <param name="assembly"></param>
+        /// <typeparam name="TStorageBase">存储基类</typeparam>
+        /// <typeparam name="TStorageBootstrap">存储启动实现类</typeparam>
+        /// <typeparam name="TBootstrapArgument">存储启动类构造参数类型</typeparam>
+        /// <param name="arg">存储启动类构造参数值</param>
+        /// <param name="assembly">存储实现程序集</param>
         /// <returns></returns>
-        public static IStorageBootstrap CreateBootstrap<TStorageBase, TStorageBootstrap ,TBootstrapParam>(TBootstrapParam param, Assembly assembly)
+        public static IStorageBootstrap CreateBootstrap<TStorageBase, TStorageBootstrap ,TBootstrapArgument>(TBootstrapArgument arg, Assembly assembly)
             where TStorageBase : class, IStorageBase
-            where TBootstrapParam : class
-            where TStorageBootstrap : StorageBootstrap<TBootstrapParam>
+            where TStorageBootstrap : StorageBootstrap<TBootstrapArgument>
         {
             var bootType = typeof(TStorageBootstrap);
             var value = bootType.Assembly.CreateInstance(bootType.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance
-                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { param }, null, null);
+                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { arg }, null, null);
             var bootstrap = value as IStorageBootstrap;
             bootstrap.CreateInstanceFrom<TStorageBase>(assembly);
 
