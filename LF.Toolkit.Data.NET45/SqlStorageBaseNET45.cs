@@ -91,33 +91,6 @@ namespace LF.Toolkit.Data
         }
 
         /// <summary>
-        /// 【异步】多个结果集务查询，在调用时候需要使用using来释放连接
-        /// </summary>
-        /// <param name="commandText"></param>
-        /// <param name="param"></param>
-        /// <param name="commandType"></param>
-        /// <param name="commandTimeout"></param>
-        /// <returns></returns>
-        protected async Task<SqlMapper.GridReader> QueryMultipleAsync(string commandText, dynamic param = null, CommandType? commandType = null, int? commandTimeout = null)
-        {
-            SqlMapper.GridReader result = null;
-
-            try
-            {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
-                var conn = GetDbConnection();
-                result = await conn.QueryMultipleAsync(commandText, param as object, null, commandTimeout, commandType);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// 【异步】多个结果集务查询，需要手动调用 CloseDbConnection 关闭查询连接 
         /// </summary>
         /// <param name="commandText"></param>
@@ -295,32 +268,6 @@ namespace LF.Toolkit.Data
             {
                 var cmd = SqlMapping[commandKey];
                 task = base.QueryAsync<dynamic>(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout, flags, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-            return task;
-        }
-
-        /// <summary>
-        /// 【异步】多个结果集务查询，在调用时候需要使用using来释放连接
-        /// </summary>
-        /// <param name="commandKey"></param>
-        /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
-        /// <returns></returns>
-        protected Task<SqlMapper.GridReader> QueryMultipleAsync(string commandKey, dynamic param = null, int? commandTimeout = null)
-        {
-            Task<SqlMapper.GridReader> task = null;
-
-            try
-            {
-                var cmd = SqlMapping[commandKey];
-                var conn = base.GetDbConnection();
-
-                task = base.QueryMultipleAsync(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
             }
             catch (Exception e)
             {

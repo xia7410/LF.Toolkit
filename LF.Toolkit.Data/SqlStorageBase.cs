@@ -205,33 +205,6 @@ namespace LF.Toolkit.Data
         }
 
         /// <summary>
-        /// 多个结果集务查询，在调用时候需要使用using来释放连接
-        /// </summary>
-        /// <param name="commandText">查询语句</param>
-        /// <param name="param"></param>
-        /// <param name="commandType"></param>
-        /// <param name="commandTimeout"></param>
-        /// <returns></returns>
-        protected SqlMapper.GridReader QueryMultiple(string commandText, dynamic param = null, CommandType? commandType = null, int? commandTimeout = null)
-        {
-            SqlMapper.GridReader result = null;
-
-            try
-            {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
-                var conn = GetDbConnection();
-                result = conn.QueryMultiple(commandText, param as object, null, commandTimeout, commandType);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// 多个结果集务查询，需要手动调用 CloseDbConnection 关闭查询连接 
         /// </summary>
         /// <param name="commandText">查询语句</param>
@@ -414,32 +387,6 @@ namespace LF.Toolkit.Data
             {
                 var cmd = SqlMapping[commandKey];
                 result = base.Query<dynamic>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 多个结果集务查询，在调用时候需要使用using来释放连接
-        /// </summary>
-        /// <param name="commandKey"></param>
-        /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
-        /// <returns></returns>
-        protected SqlMapper.GridReader QueryMultiple(string commandKey, dynamic param = null, int? commandTimeout = null)
-        {
-            SqlMapper.GridReader result = null;
-
-            try
-            {
-                var cmd = SqlMapping[commandKey];
-                var conn = base.GetDbConnection();
-
-                result = base.QueryMultiple(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
             }
             catch (Exception e)
             {
