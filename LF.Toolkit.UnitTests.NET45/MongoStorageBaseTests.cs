@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using LF.Toolkit.DataEngine;
+using System.IO;
+using MongoDB.Driver.GridFS;
+using System.Text;
+using System.Linq;
+using MongoDB.Driver;
 
 namespace LF.Toolkit.UnitTests.NET45
 {
@@ -108,6 +113,43 @@ namespace LF.Toolkit.UnitTests.NET45
         }
     }
 
+    public interface IBigDataGridFS : IBootstrap
+    {
+        Task<ObjectId> Upload(FileStream fs);
+
+        Task<byte[]> Open(ObjectId id);
+
+        Task<GridFSFileInfo> FindOne(string md5);
+    }
+
+    public class BigDataGridFS : MongoGridFSBase, IBigDataGridFS
+    {
+        public BigDataGridFS(IMongoStorageConfig config)
+            : base(config, "im", "bigdata")
+        {
+
+        }
+
+        Task<ObjectId> IBigDataGridFS.Upload(FileStream fs)
+        {
+            return base.UploadFromStreamAsync(Path.GetFileName(fs.Name), fs);
+        }
+
+        Task<byte[]> IBigDataGridFS.Open(ObjectId id)
+        {
+            return base.DownloadAsBytesAsync(id);
+        }
+
+        async Task<GridFSFileInfo> IBigDataGridFS.FindOne(string filename)
+        {
+            var builder = Builders<GridFSFileInfo>.Filter.Eq<string>(i => i.Filename, filename);
+            var cursor = await base.FindAsync(builder, new GridFSFindOptions { Limit = 1 });
+            var list = await cursor.ToListAsync();
+
+            return list.FirstOrDefault();
+        }
+    }
+
     #endregion
 
     [TestClass]
@@ -125,6 +167,36 @@ namespace LF.Toolkit.UnitTests.NET45
             var entity = await storage.FindOneAsync("552b3d904a4a961d4c0d5001");
 
             Assert.IsNotNull(entity);
+        }
+
+        [TestMethod]
+        public async Task TestTransferGridFS()
+        {
+            var config = new MongoStorageConfig();
+            config.LoadFrom("mongocfg.json");
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<MongoStorageBase, MongoStroageBootstrap, IMongoStorageConfig>(config, GetType().Assembly);
+            var gridfs = bootstrap.CreateInstanceRef<IBigDataGridFS>();
+
+            Assert.IsInstanceOfType(gridfs, typeof(IBigDataGridFS));
+            //upload
+            var objectId = await gridfs.Upload(File.OpenRead("mongocfg.json"));
+            //download
+            var buffers = await gridfs.Open(objectId);
+            Assert.IsNotNull(buffers);
+        }
+
+        [TestMethod]
+        public async Task TestFindGridFS()
+        {
+            var config = new MongoStorageConfig();
+            config.LoadFrom("mongocfg.json");
+            var bootstrap = StorageBootstrapProvider.CreateBootstrap<MongoStorageBase, MongoStroageBootstrap, IMongoStorageConfig>(config, GetType().Assembly);
+            var gridfs = bootstrap.CreateInstanceRef<IBigDataGridFS>();
+
+            Assert.IsInstanceOfType(gridfs, typeof(IBigDataGridFS));
+            var gfs = await gridfs.FindOne("mongocfg.json");
+
+            Assert.IsNotNull(gridfs);
         }
     }
 }
