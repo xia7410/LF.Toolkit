@@ -46,16 +46,10 @@ namespace LF.Toolkit.UnitTests
             var key = RandomStringGenerator.CreateRandomAlphanumeric(24);
             var input = "123456";
 
-            foreach (var t in Enum.GetValues(typeof(SymmetricAlgorithmType)))
-            {
-                Console.WriteLine(t + " --> " + SymmetricAlgorithmProvider.EncryptToBase64((SymmetricAlgorithmType)t, input, key,
-                    CipherMode.CBC, PaddingMode.ISO10126));
-            }
+            Console.WriteLine(AesAlgorithmProvider.EncryptToBase64(input, key, CipherMode.CBC, PaddingMode.ISO10126));
 
-            var aes = SymmetricAlgorithmProvider.EncryptToBase64(SymmetricAlgorithmType.Aes, input, key,
-                 CipherMode.ECB, PaddingMode.PKCS7);
-            var daes = SymmetricAlgorithmProvider.DecryptFromBase64(SymmetricAlgorithmType.Aes, Encoding.UTF8, aes, key
-                , CipherMode.ECB, PaddingMode.PKCS7);
+            var aes = AesAlgorithmProvider.EncryptToBase64(input, key, CipherMode.ECB, PaddingMode.PKCS7);
+            var daes = AesAlgorithmProvider.DecryptFromBase64(Encoding.UTF8, aes, key, CipherMode.ECB, PaddingMode.PKCS7);
 
             Assert.IsTrue(daes.Equals("123456"));
         }
