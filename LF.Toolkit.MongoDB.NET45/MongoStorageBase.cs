@@ -37,8 +37,13 @@ namespace LF.Toolkit.MongoDB
                 {
                     Settings.Servers = config.ServerAddress;
                 }
-                var credential = MongoCredential.CreateCredential(dbconfig.DatabaseName, dbconfig.Username, dbconfig.Password);
-                Settings.Credentials = new MongoCredential[] { credential };
+
+                if(!string.IsNullOrEmpty(dbconfig.Username) && !string.IsNullOrEmpty(dbconfig.Password))
+                {
+                    var credential = MongoCredential.CreateCredential(dbconfig.DatabaseName, dbconfig.Username, dbconfig.Password);
+                    Settings.Credentials = new MongoCredential[] { credential };
+                }
+
                 //设置数据库名称
                 this.DatabaseName = databaseName;
             }
