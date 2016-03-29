@@ -366,7 +366,6 @@ namespace LF.Toolkit.Data
         protected Task<T> ExecuteScalarAsync<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             Task<T> task = null;
-            IDbConnection conn = null;
 
             try
             {

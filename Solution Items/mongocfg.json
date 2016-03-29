@@ -2,6 +2,7 @@
     "serverAddress": [
         "127.0.0.1:27017"
     ],
+	"maxConnectionPoolSize" : 100, //д╛хо100
     "databases": [
         {
             "databaseName": "file",

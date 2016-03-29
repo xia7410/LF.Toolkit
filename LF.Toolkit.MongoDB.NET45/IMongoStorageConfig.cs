@@ -10,7 +10,7 @@ namespace LF.Toolkit.MongoDB
     public interface IMongoStorageConfig
     {
         /// <summary>
-        /// 当个BsonDocument容量最大字节值（16M）
+        /// 单个BsonDocument容量最大字节值（16M）
         /// </summary>
         long MaxBsonDocumentSize { get; }
 
@@ -18,6 +18,11 @@ namespace LF.Toolkit.MongoDB
         /// MongoDB服务器地址集合
         /// </summary>
         IList<MongoServerAddress> ServerAddress { get;  }
+
+        /// <summary>
+        /// 连接池连接最大个数
+        /// </summary>
+        int MaxConnectionPoolSize { get; }
 
         /// <summary>
         /// MongoDB数据库配置集合

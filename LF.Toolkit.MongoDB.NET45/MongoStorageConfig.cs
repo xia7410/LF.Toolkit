@@ -24,6 +24,12 @@ namespace LF.Toolkit.MongoDB
         public List<MongoDatabaseConfig> DatabaseList { get; set; }
 
         /// <summary>
+        /// 获取或设置连接池连接最大个数
+        /// </summary>
+        [JsonProperty("maxConnectionPoolSize")]
+        public int MaxConnectionPoolSize { get; set; }
+
+        /// <summary>
         /// 当个BsonDocument容量最大字节值（16M）
         /// </summary>
         [JsonIgnore]
@@ -59,6 +65,7 @@ namespace LF.Toolkit.MongoDB
 
                         ServerAddress = cfg.AddressList.Select(i => MongoServerAddress.Parse(i)).ToList();
                         Databases = cfg.DatabaseList.ToDictionary(i => i.DatabaseName, i => i);
+                        MaxConnectionPoolSize = cfg.MaxConnectionPoolSize;
                     }
                     else
                     {

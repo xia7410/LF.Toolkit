@@ -37,7 +37,12 @@ namespace LF.Toolkit.MongoDB
                 {
                     Settings.Servers = config.ServerAddress;
                 }
-
+                //设置连接池最大连接个数
+                if (config.MaxConnectionPoolSize > 0)
+                {
+                    Settings.MaxConnectionPoolSize = config.MaxConnectionPoolSize;
+                }
+                //设置认证
                 if(!string.IsNullOrEmpty(dbconfig.Username) && !string.IsNullOrEmpty(dbconfig.Password))
                 {
                     var credential = MongoCredential.CreateCredential(dbconfig.DatabaseName, dbconfig.Username, dbconfig.Password);
