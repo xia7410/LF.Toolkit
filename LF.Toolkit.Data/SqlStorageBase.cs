@@ -360,6 +360,10 @@ namespace LF.Toolkit.Data
             try
             {
                 var cmd = SqlMapping[commandKey];
+                if (cmd.CommandTimeOut > 0)
+                {
+                    commandTimeout = cmd.CommandTimeOut;
+                }
                 result = base.Query<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
             }
             catch (Exception e)
@@ -386,6 +390,10 @@ namespace LF.Toolkit.Data
             try
             {
                 var cmd = SqlMapping[commandKey];
+                if (cmd.CommandTimeOut > 0)
+                {
+                    commandTimeout = cmd.CommandTimeOut;
+                }
                 result = base.Query<dynamic>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
             }
             catch (Exception e)
@@ -412,6 +420,10 @@ namespace LF.Toolkit.Data
             {
                 if (conn == null) throw new ArgumentNullException("conn");
                 var cmd = SqlMapping[commandKey];
+                if (cmd.CommandTimeOut > 0)
+                {
+                    commandTimeout = cmd.CommandTimeOut;
+                }
                 result = base.QueryMultiple(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
             }
             catch (Exception e)
@@ -438,6 +450,10 @@ namespace LF.Toolkit.Data
             {
                 if (transaction == null) throw new ArgumentNullException("transaction");
                 var cmd = SqlMapping[commandKey];
+                if (cmd.CommandTimeOut > 0)
+                {
+                    commandTimeout = cmd.CommandTimeOut;
+                }
                 result = base.QueryMultiple(cmd.CommandText, transaction, param as object, cmd.CommandType, commandTimeout);
             }
             catch (Exception e)
@@ -463,7 +479,10 @@ namespace LF.Toolkit.Data
             try
             {
                 var cmd = SqlMapping[commandKey];
-
+                if (cmd.CommandTimeOut > 0)
+                {
+                    commandTimeout = cmd.CommandTimeOut;
+                }
                 result = base.Execute(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
             }
             catch (Exception e)
@@ -492,6 +511,10 @@ namespace LF.Toolkit.Data
                 if (string.IsNullOrEmpty(commandKey)) throw new ArgumentNullException("commandText");
 
                 var cmd = SqlMapping[commandKey];
+                if (cmd.CommandTimeOut > 0)
+                {
+                    commandTimeout = cmd.CommandTimeOut;
+                }
                 result = base.ExecuteScalar<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
             }
             catch (Exception e)

@@ -25,5 +25,10 @@ namespace LF.Toolkit.Data
         /// 获取Sql命令的文本
         /// </summary>
         string CommandText { get; }
+
+        /// <summary>
+        /// 获取Sql命令执行超时时间（单位：秒）
+        /// </summary>
+        int CommandTimeOut { get; }
     }
 }

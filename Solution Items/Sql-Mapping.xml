@@ -6,7 +6,7 @@
   <type></type>
   <connectionKey></connectionKey>
 
-  <command key="" commandType="Text"></command>
-  <command key="" commandType="StoredProcedure"></command>
+  <command key="" commandType="Text" commandTimeOut="30"></command>
+  <command key="" commandType="StoredProcedure" commandTimeOut="30"></command>
     
 </sql-mapping>

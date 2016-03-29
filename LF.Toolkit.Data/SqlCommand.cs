@@ -17,6 +17,9 @@ namespace LF.Toolkit.Data
         [XmlAttribute("commandType")]
         public CommandType CommandType { get; set; }
 
+        [XmlAttribute("commandTimeOut")]
+        public int CommandTimeOut { get; set; }
+
         [XmlText]
         public string CommandText { get; set; }
     }

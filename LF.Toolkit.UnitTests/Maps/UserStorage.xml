@@ -6,7 +6,7 @@
   <type>LF.Toolkit.UnitTests.UserMappingStorage</type>
   <connectionKey>LocalDB</connectionKey>
 
-  <command key="GetInt" commandType="Text">
+  <command key="GetInt" commandType="Text" commandTimeOut="30">
     select 100
   </command>
 
