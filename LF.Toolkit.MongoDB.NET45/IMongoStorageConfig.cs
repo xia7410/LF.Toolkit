@@ -17,7 +17,7 @@ namespace LF.Toolkit.MongoDB
         /// <summary>
         /// MongoDB服务器地址集合
         /// </summary>
-        IList<MongoServerAddress> ServerAddress { get;  }
+        IList<MongoServerAddress> ServerAddress { get; }
 
         /// <summary>
         /// 连接池连接最大个数
@@ -27,7 +27,7 @@ namespace LF.Toolkit.MongoDB
         /// <summary>
         /// MongoDB数据库配置集合
         /// </summary>
-        IDictionary<string, MongoDatabaseConfig> Databases { get;}
+        IDictionary<string, MongoDatabaseConfig> Databases { get; }
 
         /// <summary>
         /// 从配置文件载入配置

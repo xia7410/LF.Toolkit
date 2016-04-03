@@ -56,9 +56,6 @@
     <Compile Include="..\LF.Toolkit.Data\ISqlMappingCollection.cs">
       <Link>ISqlMappingCollection.cs</Link>
     </Compile>
-    <Compile Include="..\LF.Toolkit.Data\Properties\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\LF.Toolkit.Data\SqlCommand.cs">
       <Link>SqlCommand.cs</Link>
     </Compile>
@@ -77,14 +74,13 @@
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlStorageBaseNET45.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\LF.Toolkit.DataEngine\LF.Toolkit.DataEngine.csproj">
       <Project>{a46f5418-69a2-451e-9a03-5fe4f924c145}</Project>

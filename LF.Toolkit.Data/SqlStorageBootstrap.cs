@@ -12,13 +12,13 @@ namespace LF.Toolkit.Data
     /// </summary>
     public class SqlStorageBootstrap : StorageBootstrap<ISqlMappingCollection>
     {
-        ISqlMappingCollection Collection { get; set; }
+        ISqlMappingCollection m_Collection;
 
         public SqlStorageBootstrap(ISqlMappingCollection collection)
         {
             if (collection == null) throw new ArgumentNullException("collection");
 
-            Collection = collection;
+            m_Collection = collection;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace LF.Toolkit.Data
             if (constructor != null)
             {
                 return type.Assembly.CreateInstance(type.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance
-                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { Collection[type.FullName] }, null, null);
+                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { m_Collection[type.FullName] }, null, null);
             }
 
             return null;

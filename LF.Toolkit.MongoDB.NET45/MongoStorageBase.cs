@@ -17,12 +17,10 @@ namespace LF.Toolkit.MongoDB
         /// </summary>
         /// <param name="config">存储配置</param>
         /// <param name="databaseName">当前存储类使用的数据库名称</param>
-        /// <param name="collectionName">当前存储类使用的集合名称</param>
-        public MongoStorageBase(IMongoStorageConfig config, string databaseName, string collectionName)
+        public MongoStorageBase(IMongoStorageConfig config, string databaseName)
         {
-            if(config == null) throw new ArgumentNullException("config");
+            if (config == null) throw new ArgumentNullException("config");
             if (string.IsNullOrEmpty(databaseName)) throw new ArgumentNullException("databaseName");
-            if (string.IsNullOrEmpty(collectionName)) throw new ArgumentNullException("collectionName");
 
             if (config.Databases.ContainsKey(databaseName))
             {
@@ -43,7 +41,7 @@ namespace LF.Toolkit.MongoDB
                     Settings.MaxConnectionPoolSize = config.MaxConnectionPoolSize;
                 }
                 //设置认证
-                if(!string.IsNullOrEmpty(dbconfig.Username) && !string.IsNullOrEmpty(dbconfig.Password))
+                if (!string.IsNullOrEmpty(dbconfig.Username) && !string.IsNullOrEmpty(dbconfig.Password))
                 {
                     var credential = MongoCredential.CreateCredential(dbconfig.DatabaseName, dbconfig.Username, dbconfig.Password);
                     Settings.Credentials = new MongoCredential[] { credential };
@@ -56,6 +54,18 @@ namespace LF.Toolkit.MongoDB
             {
                 throw new Exception("Could not find the '" + databaseName + "' database config");
             }
+        }
+
+        /// <summary>
+        /// MongoDB存储基类
+        /// </summary>
+        /// <param name="config">存储配置</param>
+        /// <param name="databaseName">当前存储类使用的数据库名称</param>
+        /// <param name="collectionName">当前存储类使用的集合名称</param>
+        public MongoStorageBase(IMongoStorageConfig config, string databaseName, string collectionName)
+            : this(config, databaseName)
+        {
+            if (string.IsNullOrEmpty(collectionName)) throw new ArgumentNullException("collectionName");
 
             this.CollectionName = collectionName;
         }
@@ -86,67 +96,81 @@ namespace LF.Toolkit.MongoDB
         }
 
         /// <summary>
-        /// 根据ObjectId获取一条文档记录
+        /// 返回指定过滤条件的第一条文档记录
         /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
-        /// <param name="objectId">文档对象Id</param>
-        /// <param name="projection">投影对象linq表达式</param>
+        /// <typeparam name="TDocument">文档类型</typeparam>
+        /// <param name="filter">过滤条件Linq表达式</param>
         /// <returns></returns>
-        public Task<TDocument> FindOneByIdAsync<TDocument>(ObjectId objectId, Expression<Func<TDocument, TDocument>> projection = null)
-            where TDocument : MongoBsonId
+        public Task<TDocument> FindOneAsync<TDocument>(string collectionName, Expression<Func<TDocument, bool>> filter)
         {
-            Task<TDocument> doc = null;
-
-            var collection = GetDatabase().GetCollection<TDocument>(CollectionName);
-            var fileter = Builders<TDocument>.Filter.Eq<ObjectId>(i => i.Id, objectId);
-            if (projection == null)
-            {
-                doc = collection.Find<TDocument>(i => i.Id.Equals(objectId)).FirstOrDefaultAsync();
-            }
-            else
-            {
-                doc = collection.Find<TDocument>(fileter).Project(projection).FirstOrDefaultAsync();
-            }
-
-            return doc;
+            var collection = GetDatabase().GetCollection<TDocument>(collectionName);
+            return collection.Find<TDocument>(filter).FirstOrDefaultAsync();
         }
 
         /// <summary>
-        /// 根据指定过滤条件获取一条文档记录
+        /// 返回指定过滤条件的第一条BsonDocument文档记录并转换为指定类型对象
         /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
-        /// <param name="filter">过滤条件linq表达式</param>
-        /// <param name="projection">投影对象定义linq表达式</param>
+        /// <typeparam name="TDocument">文档类型</typeparam>
+        /// <param name="filter">过滤条件Linq表达式</param>
         /// <returns></returns>
-        public Task<TDocument> FindOneAsync<TDocument>(Expression<Func<TDocument, bool>> filter, Expression<Func<TDocument, TDocument>> projection = null)
-            where TDocument : new()
+        public Task<TDocument> FindOneAsync<TDocument>(string collectionName, FilterDefinition<BsonDocument> filter)
         {
-            Task<TDocument> doc = null;
-            var collection = GetDatabase().GetCollection<TDocument>(CollectionName);
-            if (projection == null)
-            {
-                doc = collection.Find<TDocument>(filter).FirstOrDefaultAsync();
-            }
-            else
-            {
-                doc = collection.Find<TDocument>(filter).Project(projection).FirstOrDefaultAsync();
-            }
+            var collection = GetDatabase().GetCollection<BsonDocument>(collectionName);
+            return collection.Find<BsonDocument>(filter).As<TDocument>().FirstOrDefaultAsync();
+        }
 
-            return doc;
+        /// <summary>
+        /// 返回指定过滤条件的第一条文档记录并转换为新的文档类型对象
+        /// </summary>
+        /// <typeparam name="TDocument">文档类型</typeparam>
+        /// <typeparam name="TNewDocument">返回的新文档类型</typeparam>
+        /// <param name="filter">过滤条件Linq表达式</param>
+        /// <param name="projection">投影对象定义</param>
+        /// <returns></returns>
+        public Task<TNewDocument> FindOneAsync<TDocument, TNewDocument>(string collectionName, Expression<Func<TDocument, bool>> filter, ProjectionDefinition<TDocument, TNewDocument> projection)
+        {
+            var collection = GetDatabase().GetCollection<TDocument>(collectionName);
+            return collection.Find<TDocument>(filter).Project<TNewDocument>(projection).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// 根据指定过滤条件获取一条文档记录并转换为新的文档类型对象
+        /// </summary>
+        /// <typeparam name="TDocument">文档类型</typeparam>
+        /// <typeparam name="TNewDocument">返回的新文档类型</typeparam>
+        /// <param name="filter">过滤条件定义</param>
+        /// <param name="projection">投影对象定义</param>
+        /// <returns></returns>
+        public Task<TNewDocument> FindOneAsync<TDocument, TNewDocument>(string collectionName, FilterDefinition<TDocument> filter, ProjectionDefinition<TDocument, TNewDocument> projection)
+        {
+            var collection = GetDatabase().GetCollection<TDocument>(collectionName);
+            return collection.Find<TDocument>(filter).Project<TNewDocument>(projection).FirstOrDefaultAsync();
         }
 
         /// <summary>
         /// 计算当前集合指定查询条件的文档个数
         /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
-        /// <param name="filter">过滤条件</param>
+        /// <typeparam name="TDocument">文档类型</typeparam>
+        /// <param name="filter">过滤条件Linq表达式</param>
         /// <param name="options"></param>
         /// <returns></returns>
         public Task<long> CountAsync<TDocument>(Expression<Func<TDocument, bool>> filter, CountOptions options = null)
         {
             var collection = GetDatabase().GetCollection<TDocument>(CollectionName);
-
             return collection.CountAsync<TDocument>(filter, options);
+        }
+
+        /// <summary>
+        /// 计算当前集合指定查询条件的文档个数
+        /// </summary>
+        /// <typeparam name="TDocument">文档类型</typeparam>
+        /// <param name="filter">过滤条件定义</param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public Task<long> CountAsync<TDocument>(FilterDefinition<TDocument> filter, CountOptions options = null)
+        {
+            var collection = GetDatabase().GetCollection<TDocument>(CollectionName);
+            return collection.CountAsync(filter, options);
         }
     }
 }

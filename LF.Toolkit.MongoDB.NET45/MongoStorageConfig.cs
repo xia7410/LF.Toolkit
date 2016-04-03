@@ -63,6 +63,8 @@ namespace LF.Toolkit.MongoDB
                         if (cfg.AddressList == null || cfg.AddressList.Count <= 0) throw new Exception("serverAddress not configure");
                         if (cfg.DatabaseList == null || cfg.DatabaseList.Count <= 0) throw new Exception("databases not configure");
 
+                        AddressList = cfg.AddressList;
+                        DatabaseList = cfg.DatabaseList;
                         ServerAddress = cfg.AddressList.Select(i => MongoServerAddress.Parse(i)).ToList();
                         Databases = cfg.DatabaseList.ToDictionary(i => i.DatabaseName, i => i);
                         MaxConnectionPoolSize = cfg.MaxConnectionPoolSize;

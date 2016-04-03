@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace LF.Toolkit.MongoDB
 {
-    public class MongoBsonId
+    public class MongoBsonId<T>
     {
         /// <summary>
         /// 获取或设置ObjectId
         /// </summary>
         [BsonId]
-        public ObjectId Id { get; set; } 
+        public T Id { get; set; }
     }
 }

@@ -351,15 +351,15 @@ namespace LF.Toolkit.Data
         /// <param name="param"></param>
         /// <param name="transaction"></param>
         /// <param name="buffered"></param>
-        /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected IEnumerable<T> Query<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null)
+        protected IEnumerable<T> Query<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true)
         {
             IEnumerable<T> result = null;
 
             try
             {
                 var cmd = SqlMapping[commandKey];
+                int? commandTimeout = null;
                 if (cmd.CommandTimeOut > 0)
                 {
                     commandTimeout = cmd.CommandTimeOut;
@@ -381,15 +381,15 @@ namespace LF.Toolkit.Data
         /// <param name="param"></param>
         /// <param name="transaction"></param>
         /// <param name="buffered"></param>
-        /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected IEnumerable<dynamic> Query(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null)
+        protected IEnumerable<dynamic> Query(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true)
         {
             IEnumerable<dynamic> result = null;
 
             try
             {
                 var cmd = SqlMapping[commandKey];
+                int? commandTimeout = null;
                 if (cmd.CommandTimeOut > 0)
                 {
                     commandTimeout = cmd.CommandTimeOut;
@@ -410,9 +410,8 @@ namespace LF.Toolkit.Data
         /// <param name="commandKey"></param>
         /// <param name="conn"></param>
         /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbConnection conn, dynamic param = null, int? commandTimeout = null)
+        protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbConnection conn, dynamic param = null)
         {
             SqlMapper.GridReader result = null;
 
@@ -420,6 +419,7 @@ namespace LF.Toolkit.Data
             {
                 if (conn == null) throw new ArgumentNullException("conn");
                 var cmd = SqlMapping[commandKey];
+                int? commandTimeout = null;
                 if (cmd.CommandTimeOut > 0)
                 {
                     commandTimeout = cmd.CommandTimeOut;
@@ -440,9 +440,8 @@ namespace LF.Toolkit.Data
         /// <param name="commandKey"></param>
         /// <param name="transaction"></param>
         /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbTransaction transaction, dynamic param = null, int? commandTimeout = null)
+        protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbTransaction transaction, dynamic param = null)
         {
             SqlMapper.GridReader result = null;
 
@@ -450,6 +449,7 @@ namespace LF.Toolkit.Data
             {
                 if (transaction == null) throw new ArgumentNullException("transaction");
                 var cmd = SqlMapping[commandKey];
+                int? commandTimeout = null;
                 if (cmd.CommandTimeOut > 0)
                 {
                     commandTimeout = cmd.CommandTimeOut;
@@ -470,15 +470,15 @@ namespace LF.Toolkit.Data
         /// <param name="commandKey"></param>
         /// <param name="param"></param>
         /// <param name="transaction"></param>
-        /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected int Execute(string commandKey, dynamic param = null, IDbTransaction transaction = null, int? commandTimeout = null)
+        protected int Execute(string commandKey, dynamic param = null, IDbTransaction transaction = null)
         {
             int result = 0;
 
             try
             {
                 var cmd = SqlMapping[commandKey];
+                int? commandTimeout = null;
                 if (cmd.CommandTimeOut > 0)
                 {
                     commandTimeout = cmd.CommandTimeOut;
@@ -500,9 +500,8 @@ namespace LF.Toolkit.Data
         /// <param name="commandKey"></param>
         /// <param name="param"></param>
         /// <param name="transaction"></param>
-        /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected T ExecuteScalar<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, int? commandTimeout = null)
+        protected T ExecuteScalar<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null)
         {
             T result = default(T);
 
@@ -511,6 +510,7 @@ namespace LF.Toolkit.Data
                 if (string.IsNullOrEmpty(commandKey)) throw new ArgumentNullException("commandText");
 
                 var cmd = SqlMapping[commandKey];
+                int? commandTimeout = null;
                 if (cmd.CommandTimeOut > 0)
                 {
                     commandTimeout = cmd.CommandTimeOut;

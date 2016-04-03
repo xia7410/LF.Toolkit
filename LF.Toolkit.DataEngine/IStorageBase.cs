@@ -10,5 +10,6 @@ namespace LF.Toolkit.DataEngine
     /// </summary>
     public interface IStorageBase
     {
+
     }
 }

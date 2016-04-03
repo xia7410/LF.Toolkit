@@ -11,6 +11,7 @@ using MongoDB.Driver.GridFS;
 using System.Text;
 using System.Linq;
 using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace LF.Toolkit.UnitTests.NET45
 {
@@ -37,7 +38,7 @@ namespace LF.Toolkit.UnitTests.NET45
         public byte[] ThumbData { get; set; }
     }
 
-    public class ChatFileEntity : MongoBsonId
+    public class ChatFileEntity : MongoBsonId<ObjectId>
     {
         /// <summary>
         /// 获取或设置文件名称
@@ -106,10 +107,25 @@ namespace LF.Toolkit.UnitTests.NET45
 
         }
 
-        Task<ChatFileEntity> IChatFileStorage.FindOneAsync(string objectId)
+        async Task<ChatFileEntity> IChatFileStorage.FindOneAsync(string objectId)
         {
-            Console.WriteLine(this.GetType().FullName + "." + MethodBase.GetCurrentMethod().Name + " Running");
-            return base.FindOneByIdAsync<ChatFileEntity>(new ObjectId(objectId));
+            //var projection = Builders<BsonDocument>.Projection.Include("fileName").Include("fileSize").Exclude("_id");
+            var projection = Builders<BsonDocument>.Projection.As<ChatFileEntity>();
+            //FilterDefinition
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(objectId));
+            var findOne = await base.FindOneAsync<BsonDocument, ChatFileEntity>(base.CollectionName, filter, projection);
+            Assert.IsNotNull(findOne);
+
+            //expression
+            var pj = Builders<ChatFileEntity>.Projection.Include(i => i.FileSize);
+            findOne = await base.FindOneAsync<ChatFileEntity, ChatFileEntity>(base.CollectionName, b => b.Id == new ObjectId(objectId), pj);
+
+            Assert.IsNotNull(findOne);
+
+            //find as
+            findOne = await base.FindOneAsync<ChatFileEntity>(base.CollectionName, filter);
+
+            return findOne;
         }
     }
 
@@ -164,7 +180,7 @@ namespace LF.Toolkit.UnitTests.NET45
             var storage = bootstrap.CreateInstanceRef<IChatFileStorage>();
 
             Assert.IsInstanceOfType(storage, typeof(IChatFileStorage));
-            var entity = await storage.FindOneAsync("552b3d904a4a961d4c0d5001");
+            var entity = await storage.FindOneAsync("5700ee72016ff92ef825c14b");
 
             Assert.IsNotNull(entity);
         }

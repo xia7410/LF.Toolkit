@@ -13,13 +13,14 @@ namespace LF.Toolkit.MongoDB
     /// </summary>
     public class MongoStroageBootstrap : StorageBootstrap<IMongoStorageConfig>
     {
-        IMongoStorageConfig Config { get; set; }
+        IMongoStorageConfig m_Config;
+
 
         public MongoStroageBootstrap(IMongoStorageConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");
 
-            this.Config = config;
+            m_Config = config;
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace LF.Toolkit.MongoDB
             if (constructor != null)
             {
                 return type.Assembly.CreateInstance(type.FullName, false, BindingFlags.Default | BindingFlags.CreateInstance
-                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { Config }, null, null);
+                        | BindingFlags.Instance | BindingFlags.Public, null, new object[] { m_Config }, null, null);
             }
 
             return null;

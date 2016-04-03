@@ -12,14 +12,13 @@ namespace LF.Toolkit.DataEngine
     /// </summary>
     public abstract class StorageBootstrapBase : IStorageBootstrap
     {
-        ConcurrentDictionary<Type, object> storageInstancePool;
-
-        ConcurrentDictionary<Type, object> quueryCachePool;
+        ConcurrentDictionary<Type, object> m_StorageInstancePool;
+        ConcurrentDictionary<Type, object> m_QuueryCachePool;
 
         public StorageBootstrapBase()
         {
-            storageInstancePool = new ConcurrentDictionary<Type, object>();
-            quueryCachePool = new ConcurrentDictionary<Type, object>();
+            m_StorageInstancePool = new ConcurrentDictionary<Type, object>();
+            m_QuueryCachePool = new ConcurrentDictionary<Type, object>();
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace LF.Toolkit.DataEngine
                     var value = createInstance.MakeGenericMethod(t).Invoke(this, null);
                     if (value != null)
                     {
-                        storageInstancePool.AddOrUpdate(t, value, (k, v) => value);
+                        m_StorageInstancePool.AddOrUpdate(t, value, (k, v) => value);
                     }
                 });
             }
@@ -72,13 +71,13 @@ namespace LF.Toolkit.DataEngine
 
             object value = null;
             //先从查询缓存池中查找实例，若不存在则从实例池中查找
-            if (!quueryCachePool.TryGetValue(interType, out value))
+            if (!m_QuueryCachePool.TryGetValue(interType, out value))
             {
-                var kv = storageInstancePool.FirstOrDefault(i => interType.IsAssignableFrom(i.Key));
+                var kv = m_StorageInstancePool.FirstOrDefault(i => interType.IsAssignableFrom(i.Key));
                 if (kv.Key != null)
                 {
                     value = kv.Value;
-                    quueryCachePool.AddOrUpdate(interType, value, (k, v) => value);
+                    m_QuueryCachePool.AddOrUpdate(interType, value, (k, v) => value);
                 }
             }
 
