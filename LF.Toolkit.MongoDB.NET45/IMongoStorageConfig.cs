@@ -10,29 +10,23 @@ namespace LF.Toolkit.MongoDB
     public interface IMongoStorageConfig
     {
         /// <summary>
-        /// 单个BsonDocument容量最大字节值（16M）
+        /// 获取单个BsonDocument容量最大字节值（16M）
         /// </summary>
         long MaxBsonDocumentSize { get; }
 
         /// <summary>
-        /// MongoDB服务器地址集合
+        /// 获取MongoDB服务器地址集合
         /// </summary>
-        IList<MongoServerAddress> ServerAddress { get; }
+        IReadOnlyList<MongoServerAddress> ServerAddress { get; }
 
         /// <summary>
-        /// 连接池连接最大个数
+        /// 获取连接池连接最大个数
         /// </summary>
         int MaxConnectionPoolSize { get; }
 
         /// <summary>
-        /// MongoDB数据库配置集合
+        /// 获取MongoDB数据库配置集合
         /// </summary>
-        IDictionary<string, MongoDatabaseConfig> Databases { get; }
-
-        /// <summary>
-        /// 从配置文件载入配置
-        /// </summary>
-        /// <param name="path"></param>
-        void LoadFrom(string path);
+        IReadOnlyDictionary<string, MongoDatabaseConfig> Databases { get; }
     }
 }

@@ -17,9 +17,9 @@ namespace LF.Toolkit.MongoDB
         /// 
         /// </summary>
         /// <param name="config">存储配置</param>
-        /// <param name="databaseName">当前存储类使用的数据库名称</param>
-        public MongoStorage(IMongoStorageConfig config, string databaseName)
-            : base(config, databaseName)
+        /// <param name="databaseKey">当前存储类使用的数据库标识名称</param>
+        public MongoStorage(IMongoStorageConfig config, string databaseKey)
+            : base(config, databaseKey)
         {
 
         }

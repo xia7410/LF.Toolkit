@@ -4,9 +4,11 @@
   ],
   "databases": [
     {
+      "databaseKey": "localim",
       "databaseName": "im"
     },
     {
+      "databaseKey": "admin",
       "databaseName": "admin",
       "username": "root",
       "password": "admin"

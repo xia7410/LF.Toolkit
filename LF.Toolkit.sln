@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B7CF04E9-3A35-48E5-B9DD-AC417F3FBD16}"
 	ProjectSection(SolutionItems) = preProject
@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Solution Items\GlobalAssemblyInfo.cs = Solution Items\GlobalAssemblyInfo.cs
 		Solution Items\log4net.config = Solution Items\log4net.config
 		Solution Items\mongocfg.json = Solution Items\mongocfg.json
+		Solution Items\mongocfg_multiple.json = Solution Items\mongocfg_multiple.json
 		Solution Items\Sql-Mapping.xml = Solution Items\Sql-Mapping.xml
 		Solution Items\Web.config = Solution Items\Web.config
 	EndProjectSection

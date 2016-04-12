@@ -16,15 +16,15 @@ namespace LF.Toolkit.MongoDB
         /// MongoDB存储基类
         /// </summary>
         /// <param name="config">存储配置</param>
-        /// <param name="databaseName">当前存储类使用的数据库名称</param>
-        public MongoStorageBase(IMongoStorageConfig config, string databaseName)
+        /// <param name="databaseKey">当前存储类使用的数据库标识名称</param>
+        public MongoStorageBase(IMongoStorageConfig config, string databaseKey)
         {
             if (config == null) throw new ArgumentNullException("config");
-            if (string.IsNullOrEmpty(databaseName)) throw new ArgumentNullException("databaseName");
+            if (string.IsNullOrEmpty(databaseKey)) throw new ArgumentNullException("databaseKey");
 
-            if (config.Databases.ContainsKey(databaseName))
+            if (config.Databases.ContainsKey(databaseKey))
             {
-                var dbconfig = config.Databases[databaseName];
+                var dbConfig = config.Databases[databaseKey];
                 //设置客户端配置
                 Settings = new MongoClientSettings();
                 if (config.ServerAddress.Count <= 1)
@@ -41,18 +41,18 @@ namespace LF.Toolkit.MongoDB
                     Settings.MaxConnectionPoolSize = config.MaxConnectionPoolSize;
                 }
                 //设置认证
-                if (!string.IsNullOrEmpty(dbconfig.Username) && !string.IsNullOrEmpty(dbconfig.Password))
+                if (!string.IsNullOrEmpty(dbConfig.Username) && !string.IsNullOrEmpty(dbConfig.Password))
                 {
-                    var credential = MongoCredential.CreateCredential(dbconfig.DatabaseName, dbconfig.Username, dbconfig.Password);
+                    var credential = MongoCredential.CreateCredential(dbConfig.DatabaseName, dbConfig.Username, dbConfig.Password);
                     Settings.Credentials = new MongoCredential[] { credential };
                 }
 
                 //设置数据库名称
-                this.DatabaseName = databaseName;
+                this.DatabaseName = databaseKey;
             }
             else
             {
-                throw new Exception("Could not find the '" + databaseName + "' database config");
+                throw new Exception("Could not find the '" + databaseKey + "' database config");
             }
         }
 
@@ -60,10 +60,10 @@ namespace LF.Toolkit.MongoDB
         /// MongoDB存储基类
         /// </summary>
         /// <param name="config">存储配置</param>
-        /// <param name="databaseName">当前存储类使用的数据库名称</param>
+        /// <param name="databaseKey">当前存储类使用的数据库名称</param>
         /// <param name="collectionName">当前存储类使用的集合名称</param>
-        public MongoStorageBase(IMongoStorageConfig config, string databaseName, string collectionName)
-            : this(config, databaseName)
+        public MongoStorageBase(IMongoStorageConfig config, string databaseKey, string collectionName)
+            : this(config, databaseKey)
         {
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentNullException("collectionName");
 

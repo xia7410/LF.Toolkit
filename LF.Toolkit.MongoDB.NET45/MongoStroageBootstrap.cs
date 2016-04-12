@@ -15,7 +15,6 @@ namespace LF.Toolkit.MongoDB
     {
         IMongoStorageConfig m_Config;
 
-
         public MongoStroageBootstrap(IMongoStorageConfig config)
         {
             if (config == null) throw new ArgumentNullException("config");

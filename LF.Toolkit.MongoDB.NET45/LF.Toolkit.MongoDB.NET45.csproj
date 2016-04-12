@@ -64,12 +64,15 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IMongoStorageConfig.cs" />
+    <Compile Include="IMultipleMongoStorageConfig.cs" />
     <Compile Include="MongoBsonId.cs" />
     <Compile Include="MongoDatabaseConfig.cs" />
     <Compile Include="MongoGridFSBase.cs" />
     <Compile Include="MongoStorage.cs" />
     <Compile Include="MongoStorageConfig.cs" />
     <Compile Include="MongoStorageBase.cs" />
+    <Compile Include="MultipleMongoStorageConfig.cs" />
+    <Compile Include="NamedMongoStorageConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MongoStroageBootstrap.cs" />
   </ItemGroup>

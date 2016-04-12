@@ -102,7 +102,7 @@ namespace LF.Toolkit.UnitTests.NET45
     public class ChatFileStorage : MongoStorageBase, IChatFileStorage
     {
         public ChatFileStorage(IMongoStorageConfig config)
-            : base(config, "im", "chatfile")
+            : base(config, "localim", "chatfile")
         {
 
         }
@@ -171,6 +171,19 @@ namespace LF.Toolkit.UnitTests.NET45
     [TestClass]
     public class MongoStorageBaseTests
     {
+        [TestMethod]
+        public void TestMongoStorageConfig()
+        {
+            var config = new MongoStorageConfig("mongocfg.json");
+            Assert.IsTrue(config.Databases.ContainsKey("localim"));
+            Assert.IsTrue(config.Databases["localim"].DatabaseName == "im");
+            var multiple_config = new MultipleMongoStorageConfig("mongocfg_multiple.json");
+            var _config  = multiple_config.GetMongoStorageConfig("localConfig");
+            Assert.IsNotNull(_config);
+            Assert.IsTrue(_config.Databases.ContainsKey("localfile"));
+            Assert.IsTrue(_config.Databases["localfile"].DatabaseName == "file");
+        }
+
         [TestMethod]
         public async Task TestCreateBootstrap()
         {

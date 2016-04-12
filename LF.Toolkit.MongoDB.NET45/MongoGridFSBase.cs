@@ -14,8 +14,8 @@ namespace LF.Toolkit.MongoDB
     {
         public GridFSBucketOptions BucketOptions { get; private set; }
 
-        public MongoGridFSBase(IMongoStorageConfig config, string databaseName, string bucketName, int chunkSizeBytes = 261120)
-            : this(config, databaseName, bucketName, new GridFSBucketOptions
+        public MongoGridFSBase(IMongoStorageConfig config, string databaseKey, string bucketName, int chunkSizeBytes = 261120)
+            : this(config, databaseKey, bucketName, new GridFSBucketOptions
             {
                 BucketName = bucketName,
                 ChunkSizeBytes = chunkSizeBytes,
@@ -26,8 +26,8 @@ namespace LF.Toolkit.MongoDB
 
         }
 
-        public MongoGridFSBase(IMongoStorageConfig config, string databaseName, string bucketName, GridFSBucketOptions options)
-            : base(config, databaseName, bucketName)
+        public MongoGridFSBase(IMongoStorageConfig config, string databaseKey, string bucketName, GridFSBucketOptions options)
+            : base(config, databaseKey, bucketName)
         {
             BucketOptions = options;
         }

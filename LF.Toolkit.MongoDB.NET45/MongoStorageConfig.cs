@@ -30,7 +30,7 @@ namespace LF.Toolkit.MongoDB
         public int MaxConnectionPoolSize { get; set; }
 
         /// <summary>
-        /// 当个BsonDocument容量最大字节值（16M）
+        /// 单个个BsonDocument容量最大字节值（16M）
         /// </summary>
         [JsonIgnore]
         public long MaxBsonDocumentSize { get { return 16777216; } }
@@ -39,16 +39,26 @@ namespace LF.Toolkit.MongoDB
         /// MongoDB服务器地址集合
         /// </summary>
         [JsonIgnore]
-        public IList<MongoServerAddress> ServerAddress { get; private set; }
+        public IReadOnlyList<MongoServerAddress> ServerAddress { get; internal set; }
 
         /// <summary>
         /// MongoDB数据库配置集合
         /// </summary>
         [JsonIgnore]
-        public IDictionary<string, MongoDatabaseConfig> Databases { get; private set; }
+        public IReadOnlyDictionary<string, MongoDatabaseConfig> Databases { get; internal set; }
+
+        public MongoStorageConfig()
+        {
+
+        }
+
+        public MongoStorageConfig(string path)
+        {
+            LoadFrom(path);
+        }
 
         /// <summary>
-        /// 从配置文件载入配置
+        /// 从JSON配置文件载入配置
         /// </summary>
         /// <param name="path"></param>
         public void LoadFrom(string path)
@@ -66,7 +76,7 @@ namespace LF.Toolkit.MongoDB
                         AddressList = cfg.AddressList;
                         DatabaseList = cfg.DatabaseList;
                         ServerAddress = cfg.AddressList.Select(i => MongoServerAddress.Parse(i)).ToList();
-                        Databases = cfg.DatabaseList.ToDictionary(i => i.DatabaseName, i => i);
+                        Databases = cfg.DatabaseList.ToDictionary(i => i.DatabaseKey, i => i);
                         MaxConnectionPoolSize = cfg.MaxConnectionPoolSize;
                     }
                     else
