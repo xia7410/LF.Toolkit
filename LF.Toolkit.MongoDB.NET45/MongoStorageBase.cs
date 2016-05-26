@@ -48,7 +48,7 @@ namespace LF.Toolkit.MongoDB
                 }
 
                 //设置数据库名称
-                this.DatabaseName = databaseKey;
+                this.DatabaseName = dbConfig.DatabaseName;
             }
             else
             {
