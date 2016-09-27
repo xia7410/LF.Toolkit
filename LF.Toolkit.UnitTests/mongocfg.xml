@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MongoStorageConfigs xmlns="https://github.com/bigsupersniper" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <MongoStorageConfig Name="Crawler" MaxConnectionPoolSize="100" >
+    <ServerAddress>127.0.0.1</ServerAddress>
+    <DatabaseConfig Name="Crawler" DatabaseName="Crawler"/>        
+  </MongoStorageConfig>
+  
+</MongoStorageConfigs>

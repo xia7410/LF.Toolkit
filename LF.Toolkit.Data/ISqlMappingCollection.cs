@@ -11,12 +11,6 @@ namespace LF.Toolkit.Data
     public interface ISqlMappingCollection
     {
         /// <summary>
-        /// 从指定路径目录载入Sql映射文件集合
-        /// </summary>
-        /// <param name="path"></param>
-        void LoadFrom(string path);
-
-        /// <summary>
         /// 获取指定关键字的Sql映射
         /// </summary>
         /// <param name="key"></param>

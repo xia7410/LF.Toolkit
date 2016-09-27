@@ -1,5 +1,4 @@
-﻿using LF.Toolkit.DataEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +27,7 @@ namespace LF.Toolkit.Data
             get
             {
                 ISqlCommand cmd = null;
-                if (!CommandDictionary.TryGetValue(key, out cmd)) throw new Exception(string.Format("Could not find the '{0}' SqlCommand", key));
+                if (!CommandDictionary.TryGetValue(key, out cmd)) throw new Exception(string.Format("未找到指定名称 '{0}' 的命令", key));
 
                 return cmd;
             }

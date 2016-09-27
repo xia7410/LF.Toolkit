@@ -4,14 +4,13 @@ using Dapper;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
-using LF.Toolkit.DataEngine;
 
 namespace LF.Toolkit.Data
 {
     /// <summary>
     /// 表示Sql数据库存储基类
     /// </summary>
-    public abstract partial class SqlStorageBase : IStorageBase
+    public abstract partial class SqlStorageBase
     {
         private ConnectionStringSettings connectionStringSettings;
         private DbProviderFactory dbProviderFactory;

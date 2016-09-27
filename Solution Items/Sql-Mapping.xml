@@ -3,9 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://github.com/bigsupersniper https://raw.githubusercontent.com/bigsupersniper/LF.Toolkit/master/xsd/sql-mapping.xsd" >
   
+  <!--类名全称-->
   <type></type>
+  <!--连接关键字-->
   <connectionKey></connectionKey>
-
+  <!--
+    key ：命令名称
+    commandType ： 命令类型（Text / StoredProcedure），当为“StoredProcedure”时，命令文本为空
+    commandTimeOut ：命令执行超时时间（单位：秒）   
+  -->
   <command key="" commandType="Text" commandTimeOut="30"></command>
   <command key="" commandType="StoredProcedure" commandTimeOut="30"></command>
     

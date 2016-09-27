@@ -12,127 +12,61 @@ namespace LF.Toolkit.Common
     public class AesAlgorithmProvider
     {
         /// <summary>
-        /// 转换制定数组的制定区域
+        /// 转换指定数组的制定区域
         /// </summary>
-        /// <param name="ciperType">加解密类型</param>
+        /// <param name="encrypt">是否加密</param>
         /// <param name="buffer">字节数组</param>
-        /// <param name="key">密钥字节数组(128,192,256 bit)</param>
+        /// <param name="keys">密钥字节数组(128,192,256 bit)</param>
         /// <param name="mode">加密块密码模式</param>
         /// <param name="padding">填充模式</param>
         /// <returns></returns>
-        public static byte[] TransformFinalBlock(CipherType ciperType, byte[] buffer, byte[] key, CipherMode mode, PaddingMode padding)
+        public static byte[] TransformFinalBlock(bool encrypt, byte[] keys, byte[] buffer, CipherMode mode, PaddingMode padding)
         {
-            if (key.Length != 16 && key.Length != 24 && key.Length != 32) throw new ArgumentException("key");
-
             using (var algorithm = SymmetricAlgorithm.Create("Aes"))
             {
-                algorithm.Key = key;
+                algorithm.Key = keys;
                 var iv = new byte[16];
-                Array.Copy(key, 0, iv, 0, 16);
+                Array.Copy(keys, 0, iv, 0, 16);
                 algorithm.IV = iv;
                 algorithm.Mode = mode;
                 algorithm.Padding = padding;
                 ICryptoTransform transform = null;
-                switch (ciperType)
+                if (encrypt)
                 {
-                    case CipherType.Encrypt:
-                        transform = algorithm.CreateEncryptor();
-                        break;
-                    case CipherType.Decrypt:
-                        transform = algorithm.CreateDecryptor();
-                        break;
-                    default:
-                        break;
+                    transform = algorithm.CreateEncryptor();
+                }
+                else
+                {
+                    transform = algorithm.CreateDecryptor();
                 }
 
                 return transform.TransformFinalBlock(buffer, 0, buffer.Length);
             }
         }
 
-        /// <summary>
-        /// 加密并用base64编码加密结果
-        /// </summary>
-        /// <param name="input">输入字符串</param>
-        /// <param name="key">密钥</param>
-        /// <param name="mode">加密块密码模式</param>
-        /// <param name="padding">填充模式</param>
-        /// <returns></returns>
-        public static string EncryptToBase64(string input, string key, CipherMode mode, PaddingMode padding)
+        public static byte[] Encrypt(byte[] keys, byte[] buffer, CipherMode mode, PaddingMode padding)
         {
-            return EncryptToBase64(Encoding.UTF8, input, key, mode, padding);
+            return TransformFinalBlock(true, keys, buffer, mode, padding);
         }
 
-        /// <summary>
-        /// 加密并用base64编码加密结果
-        /// </summary>
-        /// <param name="encoding">字符编码</param>
-        /// <param name="input">输入字符串</param>
-        /// <param name="key">密钥</param>
-        /// <param name="mode">加密块密码模式</param>
-        /// <param name="padding">填充模式</param>
-        /// <returns></returns>
-        public static string EncryptToBase64(Encoding encoding, string input, string key, CipherMode mode, PaddingMode padding)
+        public static byte[] Encrypt(Encoding encoding, string key, string text, CipherMode mode, PaddingMode padding)
         {
-            return EncryptToBase64(encoding.GetBytes(input), encoding.GetBytes(key), mode, padding);
+            return Encrypt(encoding.GetBytes(key), encoding.GetBytes(text), mode, padding);
         }
 
-        /// <summary>
-        /// 加密并用base64编码加密结果
-        /// </summary>
-        /// <param name="buffer">字节数组</param>
-        /// <param name="key">密钥字节数组</param>
-        /// <param name="mode">加密块密码模式</param>
-        /// <param name="padding">填充模式</param>
-        /// <returns></returns>
-        public static string EncryptToBase64(byte[] buffer, byte[] key, CipherMode mode, PaddingMode padding)
+        public static byte[] Encrypt(string key, string text, CipherMode mode, PaddingMode padding)
         {
-            var data = TransformFinalBlock(CipherType.Encrypt, buffer, key, mode, padding);
-
-            return Convert.ToBase64String(data);
+            return Encrypt(Encoding.UTF8, key, text, mode, padding);
         }
 
-        /// <summary>
-        /// 解密用base64编码的字符串
-        /// </summary>
-        /// <param name="cipherBase64">加密字符串</param>
-        /// <param name="key">密钥</param>
-        /// <param name="mode">加密块密码模式</param>
-        /// <param name="padding">填充模式</param>
-        /// <returns></returns>
-        public static string DecryptFromBase64(string cipherBase64, string key, CipherMode mode, PaddingMode padding)
+        public static byte[] Decrypt(byte[] keys, byte[] buffer, CipherMode mode, PaddingMode padding)
         {
-            return DecryptFromBase64(Encoding.UTF8, cipherBase64, key, mode, padding);
+            return TransformFinalBlock(false, keys, buffer, mode, padding);
         }
 
-        /// <summary>
-        /// 解密用base64编码的字符串
-        /// </summary>
-        /// <param name="encoding">字符编码</param>
-        /// <param name="cipherBase64">加密字符串</param>
-        /// <param name="key">密钥</param>
-        /// <param name="mode">加密块密码模式</param>
-        /// <param name="padding">填充模式</param>
-        /// <returns></returns>
-        public static string DecryptFromBase64(Encoding encoding, string cipherBase64, string key, CipherMode mode, PaddingMode padding)
+        public static string Decrypt(Encoding encoding, byte[] keys, byte[] buffer, CipherMode mode, PaddingMode padding)
         {
-            return DecryptFromBase64(Encoding.UTF8, Convert.FromBase64String(cipherBase64), encoding.GetBytes(key), mode, padding);
+            return encoding.GetString(Decrypt(keys, buffer, mode, padding));
         }
-
-        /// <summary>
-        /// 解密加密的字节数组
-        /// </summary>
-        /// <param name="encoding">字符编码</param>
-        /// <param name="buffer">字节数组</param>
-        /// <param name="key">密钥字节数组</param>
-        /// <param name="mode">加密块密码模式</param>
-        /// <param name="padding">填充模式</param>
-        /// <returns></returns>
-        public static string DecryptFromBase64(Encoding encoding, byte[] buffer, byte[] key, CipherMode mode, PaddingMode padding)
-        {
-            var data = TransformFinalBlock(CipherType.Decrypt, buffer, key, mode, padding);
-
-            return encoding.GetString(data);
-        }
-
     }
 }

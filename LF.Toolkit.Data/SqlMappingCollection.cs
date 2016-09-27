@@ -1,5 +1,4 @@
-﻿using LF.Toolkit.DataEngine;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
@@ -16,7 +15,7 @@ namespace LF.Toolkit.Data
     /// </summary>
     public class SqlMappingCollection : ISqlMappingCollection
     {
-        ConcurrentDictionary<string, ISqlMapping> SqlMappings { get; set; }
+        internal ConcurrentDictionary<string, ISqlMapping> SqlMappings { get; set; }
 
         public SqlMappingCollection()
         {
@@ -34,7 +33,7 @@ namespace LF.Toolkit.Data
             {
                 ISqlMapping mapping = null;
                 if (!SqlMappings.TryGetValue(key, out mapping))
-                    throw new Exception(string.Format("Could not find the '{0}' mapping file", key));
+                    throw new Exception(string.Format("未找到指定类型 '{0}' 的映射文件", key));
 
                 return mapping;
             }
@@ -44,13 +43,16 @@ namespace LF.Toolkit.Data
         /// 从指定路径目录载入Sql映射文件集合
         /// </summary>
         /// <param name="path"></param>
-        void ISqlMappingCollection.LoadFrom(string path)
+        public static ISqlMappingCollection LoadFrom(string path)
         {
+            SqlMappingCollection collection = null;
+
             if (Directory.Exists(path))
             {
                 string[] files = Directory.GetFiles(path, "*.xml");
                 if (files.Length > 0)
                 {
+                    collection = new SqlMappingCollection();
                     var attr = (typeof(SqlMapping).GetCustomAttributes(typeof(XmlRootAttribute), false)
                         [0] as XmlRootAttribute);
                     //获取默认的命名空间
@@ -66,10 +68,10 @@ namespace LF.Toolkit.Data
                         try
                         {
                             xd.Load(file);
-                            if(xd.DocumentElement != null)
+                            if (xd.DocumentElement != null)
                             {
                                 //排除非sql-mapping架构xml文件
-                                if(xd.DocumentElement.Name != defaultElementName)
+                                if (xd.DocumentElement.Name != defaultElementName)
                                 {
                                     return;
                                 }
@@ -80,8 +82,6 @@ namespace LF.Toolkit.Data
                                 }
                                 xd.Save(ms);
                                 ms.Position = 0;
-
-                                //声明一个制定类型的序列化实例
                                 XmlSerializer serializer = new XmlSerializer(typeof(SqlMapping));
                                 var mapping = (SqlMapping)serializer.Deserialize(ms);
                                 if (mapping != null)
@@ -93,7 +93,7 @@ namespace LF.Toolkit.Data
                                         return i as ISqlCommand;
                                     });
                                     //添加到映射集合中
-                                    SqlMappings.AddOrUpdate(mapping.Type, mapping, (k, v) => mapping);
+                                    collection.SqlMappings.AddOrUpdate(mapping.Type, mapping, (k, v) => mapping);
                                 }
                             }
                         }
@@ -108,13 +108,15 @@ namespace LF.Toolkit.Data
                 }
                 else
                 {
-                    throw new Exception("Could not find Sql Xml mapping files");
+                    throw new Exception("未找到映射文件");
                 }
             }
             else
             {
-                throw new Exception("Could not find Sql Xml mapping folder");
+                throw new Exception("未找到映射文件目录");
             }
+
+            return collection;
         }
     }
 }
