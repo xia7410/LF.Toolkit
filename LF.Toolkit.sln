@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Solution Items\GlobalAssemblyInfo.cs = Solution Items\GlobalAssemblyInfo.cs
 		Solution Items\log4net.config = Solution Items\log4net.config
 		Solution Items\mongocfg.xml = Solution Items\mongocfg.xml
+		Solution Items\NLog.config = Solution Items\NLog.config
 		Solution Items\Sql-Mapping.xml = Solution Items\Sql-Mapping.xml
 		Solution Items\Web.config = Solution Items\Web.config
 	EndProjectSection
