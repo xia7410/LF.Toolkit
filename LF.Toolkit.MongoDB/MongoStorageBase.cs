@@ -64,6 +64,7 @@ namespace LF.Toolkit.MongoDB
                 }
                 //设置数据库名称
                 this.DatabaseName = dbConfig.DatabaseName;
+                this.MongoStorageConfig = config;
             }
             else
             {
@@ -91,6 +92,11 @@ namespace LF.Toolkit.MongoDB
         public MongoClientSettings Settings { get; private set; }
 
         /// <summary>
+        /// 获取存储配置
+        /// </summary>
+        public IMongoStorageConfig MongoStorageConfig { get; private set; }
+
+        /// <summary>
         /// 获取当前数据库名称
         /// </summary>
         public string DatabaseName { get; private set; }
@@ -103,7 +109,7 @@ namespace LF.Toolkit.MongoDB
         /// <summary>
         /// 缓存客户端类
         /// </summary>
-        ConcurrentDictionary<int, MongoClient> m_Clients = new ConcurrentDictionary<int, MongoClient>();
+        static readonly ConcurrentDictionary<int, MongoClient> m_Clients = new ConcurrentDictionary<int, MongoClient>();
 
         /// <summary>
         /// 获取当前数据库实例
@@ -111,7 +117,7 @@ namespace LF.Toolkit.MongoDB
         /// <returns></returns>
         protected virtual IMongoDatabase GetDatabase()
         {
-            var client = m_Clients.GetOrAdd(this.Settings.GetHashCode(), new MongoClient(this.Settings));
+            var client = m_Clients.GetOrAdd(this.MongoStorageConfig.GetHashCode(), new MongoClient(this.Settings));
             return client.GetDatabase(this.DatabaseName);
         }
 
