@@ -10,9 +10,12 @@
   <!--
     key ：命令名称
     commandType ： 命令类型（Text / StoredProcedure），当为“StoredProcedure”时，命令文本为空
-    commandTimeOut ：命令执行超时时间（单位：秒）   
+    commandTimeOut ：命令执行超时时间（单位：秒） 
+    sql语句 ： 若sql语句中带转义的字符则使用<![CDATA[select * from table]]> 
   -->
-  <command key="" commandType="Text" commandTimeOut="30"></command>
+  <command key="" commandType="Text" commandTimeOut="30">
+    <![CDATA[select * from table]]>
+  </command>
   <command key="" commandType="StoredProcedure" commandTimeOut="30"></command>
     
 </sql-mapping>
