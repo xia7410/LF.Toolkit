@@ -8,6 +8,6 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LF.Toolkit")]
-[assembly: AssemblyCopyright("Copyright © LAMFUNG 2015 - 2016")]
+[assembly: AssemblyCopyright("Copyright © LAMFUNG 2015 - 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

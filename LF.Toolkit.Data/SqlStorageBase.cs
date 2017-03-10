@@ -25,7 +25,7 @@ namespace LF.Toolkit.Data
 
         public SqlStorageBase(string connectionKey)
         {
-            DbProviderConfig(connectionKey);
+            ConfigureDbProvider(connectionKey);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace LF.Toolkit.Data
         /// 数据库连接配置
         /// </summary>
         /// <param name="connectionKey"></param>
-        protected virtual void DbProviderConfig(string connectionKey)
+        protected virtual void ConfigureDbProvider(string connectionKey)
         {
             this.connectionStringSettings = ConfigurationManager.ConnectionStrings[connectionKey];
             if (connectionStringSettings == null) throw new Exception(string.Format("未找到 {0} 对应的连接字符串配置项", connectionKey));
@@ -72,16 +72,9 @@ namespace LF.Toolkit.Data
             IDbConnection connection = null;
             if (dbProviderFactory == null) throw new Exception("未配置数据库连接项");
 
-            try
-            {
-                connection = this.dbProviderFactory.CreateConnection();
-                connection.ConnectionString = connectionStringSettings.ConnectionString;
-                connection.Open();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            connection = this.dbProviderFactory.CreateConnection();
+            connection.ConnectionString = connectionStringSettings.ConnectionString;
+            connection.Open();
 
             return connection;
         }
@@ -157,10 +150,6 @@ namespace LF.Toolkit.Data
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
                 result = conn.Query<T>(commandText, param as object, transaction, buffered, commandTimeout, commandType);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
             finally
             {
                 CloseDbConnection(conn, transaction);
@@ -191,10 +180,6 @@ namespace LF.Toolkit.Data
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
                 result = conn.Query(commandText, param as object, transaction, buffered, commandTimeout, commandType);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
             finally
             {
                 CloseDbConnection(conn, transaction);
@@ -214,20 +199,9 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected SqlMapper.GridReader QueryMultiple(string commandText, IDbConnection conn, dynamic param = null, CommandType? commandType = null, int? commandTimeout = null)
         {
-            SqlMapper.GridReader result = null;
+            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
 
-            try
-            {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
-                result = conn.QueryMultiple(commandText, param as object, null, commandTimeout, commandType);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-            return result;
+            return conn.QueryMultiple(commandText, param as object, null, commandTimeout, commandType);
         }
 
         /// <summary>
@@ -241,21 +215,10 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected SqlMapper.GridReader QueryMultiple(string commandText, IDbTransaction transaction, dynamic param = null, CommandType? commandType = null, int? commandTimeout = null)
         {
-            SqlMapper.GridReader result = null;
+            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
 
-            try
-            {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
-                var conn = transaction.Connection;
-                result = conn.QueryMultiple(commandText, param as object, transaction, commandTimeout, commandType);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-            return result;
+            var conn = transaction.Connection;
+            return conn.QueryMultiple(commandText, param as object, transaction, commandTimeout, commandType);
         }
 
         /// <summary>
@@ -278,10 +241,6 @@ namespace LF.Toolkit.Data
 
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
                 result = conn.Execute(commandText, param as object, transaction, commandTimeout, commandType);
-            }
-            catch (Exception e)
-            {
-                throw e;
             }
             finally
             {
@@ -313,10 +272,6 @@ namespace LF.Toolkit.Data
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
                 result = conn.ExecuteScalar<T>(commandText, param as object, transaction, commandTimeout, commandType);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
             finally
             {
                 CloseDbConnection(conn, transaction);
@@ -339,7 +294,7 @@ namespace LF.Toolkit.Data
             if (sqlMapping == null) throw new ArgumentNullException("sqlMapping");
 
             SqlMapping = sqlMapping;
-            base.DbProviderConfig(sqlMapping.ConnectionKey);
+            base.ConfigureDbProvider(sqlMapping.ConnectionKey);
         }
 
         /// <summary>
@@ -353,24 +308,14 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected IEnumerable<T> Query<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true)
         {
-            IEnumerable<T> result = null;
-
-            try
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                result = base.Query<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return result;
+            return base.Query<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
         }
 
         /// <summary>
@@ -383,24 +328,14 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected IEnumerable<dynamic> Query(string commandKey, dynamic param = null, IDbTransaction transaction = null, bool buffered = true)
         {
-            IEnumerable<dynamic> result = null;
-
-            try
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                result = base.Query<dynamic>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return result;
+            return base.Query<dynamic>(cmd.CommandText, param as object, transaction, cmd.CommandType, buffered, commandTimeout);
         }
 
         /// <summary>
@@ -412,25 +347,15 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbConnection conn, dynamic param = null)
         {
-            SqlMapper.GridReader result = null;
-
-            try
+            if (conn == null) throw new ArgumentNullException("conn");
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                if (conn == null) throw new ArgumentNullException("conn");
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                result = base.QueryMultiple(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return result;
+            return base.QueryMultiple(cmd.CommandText, conn, param as object, cmd.CommandType, commandTimeout);
         }
 
         /// <summary>
@@ -442,25 +367,15 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected SqlMapper.GridReader QueryMultiple(string commandKey, IDbTransaction transaction, dynamic param = null)
         {
-            SqlMapper.GridReader result = null;
-
-            try
+            if (transaction == null) throw new ArgumentNullException("transaction");
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                if (transaction == null) throw new ArgumentNullException("transaction");
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                result = base.QueryMultiple(cmd.CommandText, transaction, param as object, cmd.CommandType, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return result;
+            return base.QueryMultiple(cmd.CommandText, transaction, param as object, cmd.CommandType, commandTimeout);
         }
 
         /// <summary>
@@ -472,24 +387,14 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected int Execute(string commandKey, dynamic param = null, IDbTransaction transaction = null)
         {
-            int result = 0;
-
-            try
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                result = base.Execute(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return result;
+            return base.Execute(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
         }
 
         /// <summary>
@@ -502,26 +407,16 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected T ExecuteScalar<T>(string commandKey, dynamic param = null, IDbTransaction transaction = null)
         {
-            T result = default(T);
+            if (string.IsNullOrEmpty(commandKey)) throw new ArgumentNullException("commandText");
 
-            try
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                if (string.IsNullOrEmpty(commandKey)) throw new ArgumentNullException("commandText");
-
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                result = base.ExecuteScalar<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return result;
+            return base.ExecuteScalar<T>(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
         }
     }
 }

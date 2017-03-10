@@ -1,11 +1,12 @@
 ﻿using Autofac;
+using LF.Toolkit.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace LF.Toolkit.Data
+namespace LF.Toolkit.UnitTests.Container
 {
     public static class SqlStorageContainer
     {

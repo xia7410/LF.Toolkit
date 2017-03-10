@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using LF.Toolkit.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LF.Toolkit.MongoDB
+namespace LF.Toolkit.UnitTests.Container
 {
     public static class MongoStorageContainer
     {

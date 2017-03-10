@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.1.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.1.1\lib\net45\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.4.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.4.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MongoDB.Bson, Version=2.3.0.157, Culture=neutral, processorArchitecture=MSIL">
@@ -81,8 +81,10 @@
   <ItemGroup>
     <Compile Include="GroupTaskUnitTest.cs" />
     <Compile Include="LogUnitTest.cs" />
+    <Compile Include="Container\MongoStorageContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MongoStorageUnitTest.cs" />
+    <Compile Include="Container\SqlStorageContainer.cs" />
     <Compile Include="SqlStorageUnitTest.cs" />
     <Compile Include="StringProviderUnitTest.cs" />
   </ItemGroup>
@@ -116,6 +118,10 @@
     <ProjectReference Include="..\LF.Toolkit.Data.NET45\LF.Toolkit.Data.NET45.csproj">
       <Project>{54A2BC60-9852-47EB-B755-D4771722CE24}</Project>
       <Name>LF.Toolkit.Data.NET45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LF.Toolkit.IOC\LF.Toolkit.IOC.csproj">
+      <Project>{5d6b6956-fc38-476c-85bc-ed5b9b1ffec1}</Project>
+      <Name>LF.Toolkit.IOC</Name>
     </ProjectReference>
     <ProjectReference Include="..\LF.Toolkit.MongoDB\LF.Toolkit.MongoDB.csproj">
       <Project>{8B9E6453-9E67-49C8-89F3-6A4211E1E83E}</Project>
