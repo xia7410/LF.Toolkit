@@ -78,17 +78,22 @@ namespace LF.Toolkit.IOC
         /// <summary>
         /// Create a new container with the component registrations that have been made.
         /// </summary>
-        /// <param name="beforeBuild"></param>
-        public static void Build(Action<ContainerBuilder> beforeBuild = null)
+        /// <param name="beforBuild"></param>
+        /// <param name="afterBuild"></param>
+        public static void Build(Action<ContainerBuilder> beforBuild = null, Action<IContainer> afterBuild = null)
         {
             //return if continer is builded
             if (m_Container != null) return;
 
-            if(beforeBuild != null)
+            if (beforBuild != null)
             {
-                beforeBuild(m_ContainerBuilder);
+                beforBuild(m_ContainerBuilder);
             }
             m_Container = m_ContainerBuilder.Build();
+            if (afterBuild != null)
+            {
+                afterBuild(m_Container);
+            }
         }
 
         /// <summary>
@@ -99,7 +104,7 @@ namespace LF.Toolkit.IOC
         public static T Resolve<T>()
             where T : class
         {
-            if(m_Container != null)
+            if (m_Container != null)
             {
                 return m_Container.Resolve<T>();
             }
