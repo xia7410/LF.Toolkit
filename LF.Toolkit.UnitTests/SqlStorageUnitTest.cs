@@ -4,25 +4,89 @@ using System.Threading.Tasks;
 using LF.Toolkit.Data;
 using Autofac;
 using LF.Toolkit.UnitTests.Container;
+using LF.Toolkit.IOC;
+using System.Collections.Generic;
 
 namespace LF.Toolkit.UnitTests
 {
-    public interface IProxy
+    public class Product
     {
-        Task<int> GetCountAsync();
+
+        /// <summary>
+        /// 获取或设置
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// 获取或设置
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 获取或设置
+        /// </summary>
+        public string Category { get; set; }
+
+        /// <summary>
+        /// 获取或设置
+        /// </summary>
+        public decimal? Price { get; set; }
+
+        /// <summary>
+        /// 获取或设置
+        /// </summary>
+        public DateTime Created { get; set; }
+
     }
 
-    public class MappedProxy : SqlStorageBase<ISqlMapping>, IProxy
+    public interface IProductStorage
     {
-        public MappedProxy(ISqlMapping mapping)
+        /// <summary>
+        /// 插入
+        /// </summary>
+        Task<int> InsertAsync(Product model);
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        Task<int> UpdateAsync(Product model);
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        Task<int> DeleteAsync(int id);
+    }
+
+    public class ProductStorage : SqlStorageBase<ISqlMapping>, IProductStorage
+    {
+        public ProductStorage(ISqlMapping mapping)
             : base(mapping)
         {
 
         }
 
-        Task<int> IProxy.GetCountAsync()
+        /// <summary>
+        /// 插入
+        /// </summary>
+        Task<int> IProductStorage.InsertAsync(Product model)
         {
-            return base.ExecuteScalarAsync<int>("GetCountAsync");
+            return base.ExecuteAsync("InsertAsync", model);
+        }
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        Task<int> IProductStorage.UpdateAsync(Product model)
+        {
+            return base.ExecuteAsync("InsertAsync", model);
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        Task<int> IProductStorage.DeleteAsync(int id)
+        {
+            return base.ExecuteAsync("DeleteAsync", new { Id = id });
         }
     }
 
@@ -32,12 +96,19 @@ namespace LF.Toolkit.UnitTests
         [TestMethod]
         public async Task TestMappedGetCountAsync()
         {
-            var container = SqlStorageContainer.Register("maps", this.GetType().Assembly);
-            var inter = container.Resolve<IProxy>();
-            var obj = container.Resolve<MappedProxy>();
+            var mapings = SqlMappingCollection.LoadFrom("maps");
+            InjectionContainer.Register<SqlStorageBase>(this.GetType().Assembly, (t) =>
+            {
+                var dict = new Dictionary<Type, object>();
+                dict.Add(typeof(ISqlMapping), mapings[t.FullName]);
 
-            Assert.AreEqual(inter, obj);
-            Assert.AreEqual(await inter.GetCountAsync(), 100);
+                return dict;
+            });
+            InjectionContainer.Build();
+
+            var storage = InjectionContainer.Resolve<IProductStorage>();
+            await storage.DeleteAsync(1);
+            await storage.DeleteAsync(2);
         }
     }
 }

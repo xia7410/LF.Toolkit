@@ -58,7 +58,7 @@ namespace LF.Toolkit.UnitTests
             if (!configs.StorageConfigs.TryGetValue("Crawler", out config)) throw new Exception("未找到指定名称的存储配置");
 
             dict.Add(typeof(IMongoStorageConfig), config);
-            InjectionContainer.Register<MongoStorageBase>(this.GetType().Assembly, dict);
+            InjectionContainer.Register<MongoStorageBase>(this.GetType().Assembly, (t) => dict);
             InjectionContainer.Build();
 
             var crawler = InjectionContainer.Resolve<ICrawler>();

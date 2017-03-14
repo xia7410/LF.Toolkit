@@ -16,17 +16,16 @@ namespace LF.Toolkit.IOC
         static IContainer m_Container = null;
 
         /// <summary>
-        /// Register components to be created through reflection.
+        /// Register components to be created through reflection. which components is marked InjectableAttribute
         /// </summary>
-        /// <typeparam name="T">base type</typeparam>
         /// <param name="assembly"></param>
-        /// <param name="parameters"></param>
-        public static void Register<T>(Assembly assembly, IDictionary<Type, object> parameters = null)
+        /// <param name="func"></param>
+        public static void Register(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null)
         {
             //return if continer is builded
             if (m_Container != null) return;
 
-            var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract && typeof(T).IsAssignableFrom(i));
+            var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract);
             foreach (var t in types)
             {
                 var attr = t.GetCustomAttribute<InjectableAttribute>(true);
@@ -34,7 +33,25 @@ namespace LF.Toolkit.IOC
                 {
                     continue;
                 }
-                Register(t, parameters: parameters, asSelf: attr.AsSelf, asImplementedInterfaces: attr.AsImplementedInterfaces, singleInstance: attr.SingleInstance);
+                Register(t, parameters: func != null ? func.Invoke(t) : null, asSelf: attr.AsSelf, asImplementedInterfaces: attr.AsImplementedInterfaces, singleInstance: attr.SingleInstance);
+            }
+        }
+
+        /// <summary>
+        /// Register components to be created through reflection. which components Inherited from T
+        /// </summary>
+        /// <typeparam name="T">baseType</typeparam>
+        /// <param name="assembly"></param>
+        /// <param name="func"></param>
+        public static void Register<T>(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null)
+        {
+            //return if continer is builded
+            if (m_Container != null) return;
+
+            var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract && typeof(T).IsAssignableFrom(i));
+            foreach (var t in types)
+            {
+                Register(t, parameters: func != null ? func.Invoke(t) : null);
             }
         }
 
@@ -87,12 +104,12 @@ namespace LF.Toolkit.IOC
 
             if (beforBuild != null)
             {
-                beforBuild(m_ContainerBuilder);
+                beforBuild.Invoke(m_ContainerBuilder);
             }
             m_Container = m_ContainerBuilder.Build();
             if (afterBuild != null)
             {
-                afterBuild(m_Container);
+                afterBuild.Invoke(m_Container);
             }
         }
 

@@ -29,23 +29,20 @@ namespace LF.Toolkit.Data
         protected async Task<IEnumerable<T>> QueryAsync<T>(string commandText, dynamic param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null
             , CommandFlags flags = CommandFlags.Buffered, CancellationToken cancellationToken = default(CancellationToken))
         {
-            IEnumerable<T> result = null;
+            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
             IDbConnection conn = null;
 
             try
             {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
                 var commandDefinition = new CommandDefinition(commandText, param as object, transaction, commandTimeout, commandType, flags, cancellationToken);
-                result = await conn.QueryAsync<T>(commandDefinition);
+
+                return await conn.QueryAsync<T>(commandDefinition);
             }
             finally
             {
                 CloseDbConnection(conn, transaction);
             }
-
-            return result;
         }
 
         /// <summary>
@@ -62,23 +59,20 @@ namespace LF.Toolkit.Data
         protected async Task<IEnumerable<dynamic>> QueryAsync(string commandText, dynamic param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null
             , CommandFlags flags = CommandFlags.Buffered, CancellationToken cancellationToken = default(CancellationToken))
         {
-            IEnumerable<dynamic> result = null;
+            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
             IDbConnection conn = null;
 
             try
             {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
                 var commandDefinition = new CommandDefinition(commandText, param as object, transaction, commandTimeout, commandType, flags, cancellationToken);
-                result = await conn.QueryAsync(commandDefinition);
+
+                return await conn.QueryAsync(commandDefinition);
             }
             finally
             {
                 CloseDbConnection(conn, transaction);
             }
-
-            return result;
         }
 
         /// <summary>
@@ -112,7 +106,6 @@ namespace LF.Toolkit.Data
             if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
 
             var conn = transaction.Connection;
-
             return conn.QueryMultipleAsync(commandText, param as object, transaction, commandTimeout, commandType);
         }
 
@@ -125,24 +118,20 @@ namespace LF.Toolkit.Data
         /// <param name="commandType"></param>
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected Task<int> ExecuteAsync(string commandText, dynamic param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null)
+        protected async Task<int> ExecuteAsync(string commandText, dynamic param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null)
         {
-            Task<int> result = null;
+            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
             IDbConnection conn = null;
 
             try
             {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
-                result = conn.ExecuteAsync(commandText, param as object, transaction, commandTimeout, commandType);
+                return await conn.ExecuteAsync(commandText, param as object, transaction, commandTimeout, commandType);
             }
             finally
             {
                 CloseDbConnection(conn, transaction);
             }
-
-            return result;
         }
 
         /// <summary>
@@ -155,24 +144,20 @@ namespace LF.Toolkit.Data
         /// <param name="commandType"></param>
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        protected Task<T> ExecuteScalarAsync<T>(string commandText, dynamic param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null)
+        protected async Task<T> ExecuteScalarAsync<T>(string commandText, dynamic param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null)
         {
-            Task<T> result = null;
+            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
             IDbConnection conn = null;
 
             try
             {
-                if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
                 conn = transaction != null ? transaction.Connection : this.GetDbConnection();
-                result = conn.ExecuteScalarAsync<T>(commandText, param as object, transaction, commandTimeout, commandType);
+                return await conn.ExecuteScalarAsync<T>(commandText, param as object, transaction, commandTimeout, commandType);
             }
             finally
             {
                 CloseDbConnection(conn, transaction);
             }
-
-            return result;
         }
     }
 
@@ -278,24 +263,14 @@ namespace LF.Toolkit.Data
         /// <returns></returns>
         protected Task<int> ExecuteAsync(string commandKey, dynamic param = null, IDbTransaction transaction = null)
         {
-            Task<int> task = null;
-
-            try
+            var cmd = SqlMapping[commandKey];
+            int? commandTimeout = null;
+            if (cmd.CommandTimeOut > 0)
             {
-                var cmd = SqlMapping[commandKey];
-                int? commandTimeout = null;
-                if (cmd.CommandTimeOut > 0)
-                {
-                    commandTimeout = cmd.CommandTimeOut;
-                }
-                task = base.ExecuteAsync(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                commandTimeout = cmd.CommandTimeOut;
             }
 
-            return task;
+            return base.ExecuteAsync(cmd.CommandText, param as object, transaction, cmd.CommandType, commandTimeout);
         }
 
         /// <summary>

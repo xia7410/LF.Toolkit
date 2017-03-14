@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sql-mapping xmlns="https://github.com/bigsupersniper"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://github.com/bigsupersniper https://raw.githubusercontent.com/bigsupersniper/LF.Toolkit/master/xsd/sql-mapping.xsd" >
+
+    <type>LF.Toolkit.UnitTests.ProductStorage</type>
+    <connectionKey>Test</connectionKey>
+    
+    <command key="InsertAsync" commandType="Text" commandTimeOut="30">
+        <![CDATA[
+            INSERT INTO Product (Name, Category, Price, Created) values (@Name, @Category, @Price, @Created);
+        ]]>
+    </command>
+
+    <command key="UpdateAsync" commandType="Text" commandTimeOut="30">
+        <![CDATA[
+            UPDATE Product SET Name = @Name, Category = @Category, Price = @Price, Created = @Created WHERE Id = @Id;
+        ]]>
+    </command>
+
+    <command key="DeleteAsync" commandType="Text" commandTimeOut="30">
+        <![CDATA[
+            DELETE FROM Product WHERE Id = @Id
+        ]]>
+    </command>
+
+</sql-mapping>
