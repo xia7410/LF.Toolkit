@@ -86,6 +86,8 @@ namespace LF.Toolkit.Data
                                 var mapping = (SqlMapping)serializer.Deserialize(ms);
                                 if (mapping != null)
                                 {
+                                    mapping.Type = mapping.Type.Trim();
+                                    mapping.ConnectionKey = mapping.ConnectionKey.Trim();
                                     mapping.CommandDictionary = mapping.Commands.ToDictionary(i => i.CommandKey, i =>
                                     {
                                         //去除空格与换行符
