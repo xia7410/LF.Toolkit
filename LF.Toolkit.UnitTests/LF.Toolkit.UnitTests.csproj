@@ -39,6 +39,9 @@
       <HintPath>..\packages\Autofac.4.4.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.3.0.157, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.3.0\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
@@ -61,8 +64,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -89,7 +96,9 @@
     <Compile Include="StringProviderUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -115,9 +124,17 @@
       <Project>{01BA6D6A-F4CC-4DB8-AB3C-DAA8461F2057}</Project>
       <Name>LF.Toolkit.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LF.Toolkit.Data.Extensions\LF.Toolkit.Data.Extensions.csproj">
+      <Project>{545c2a27-d431-464f-8200-cc7b8e440d0e}</Project>
+      <Name>LF.Toolkit.Data.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LF.Toolkit.Data.NET45\LF.Toolkit.Data.NET45.csproj">
       <Project>{54A2BC60-9852-47EB-B755-D4771722CE24}</Project>
       <Name>LF.Toolkit.Data.NET45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LF.Toolkit.Data.SqlBuilder\LF.Toolkit.Data.SqlBuilder.csproj">
+      <Project>{c10b6a8f-2b5d-4df7-8a34-26c18fa11062}</Project>
+      <Name>LF.Toolkit.Data.SqlBuilder</Name>
     </ProjectReference>
     <ProjectReference Include="..\LF.Toolkit.IOC\LF.Toolkit.IOC.csproj">
       <Project>{5d6b6956-fc38-476c-85bc-ed5b9b1ffec1}</Project>
