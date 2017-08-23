@@ -37,6 +37,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
@@ -45,10 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BaseProxyStorage.cs" />
     <Compile Include="InjectableAttribute.cs" />
     <Compile Include="InjectionContainer.cs" />
+    <Compile Include="InjectionContainerBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
