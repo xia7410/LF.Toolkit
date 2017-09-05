@@ -103,6 +103,16 @@ namespace LF.Toolkit.IOC
         }
 
         /// <summary>
+        /// 获取缓存中是否包含指定键名的缓存项
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected bool Contians(string key)
+        {
+            return m_Cached.Contains(key);
+        }
+
+        /// <summary>
         /// 删除指定名称的缓存对象
         /// </summary>
         /// <param name="key"></param>
