@@ -167,7 +167,7 @@ namespace LF.Toolkit.Data
             {
                 param = value;
                 if (leftWrapper) param = "%" + param;
-                if (rightWrapper) param = "%";
+                if (rightWrapper) param += "%";
             }
 
             return param;
