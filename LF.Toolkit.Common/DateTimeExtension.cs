@@ -31,12 +31,12 @@ namespace LF.Toolkit.Common
         }
 
         /// <summary>
-        /// 获取当前时间对应的时间戳
+        /// 获取当前时间对应的时间戳(总秒数)
         /// </summary>
-        public static long CurrentTimestamp { get { return (long)(DateTime.Now - UnixEpoch).TotalMilliseconds; } }
+        public static long CurrentTimestamp { get { return (long)(DateTime.Now - UnixEpoch).TotalSeconds; } }
 
         /// <summary>
-        /// 转换指定时间的时间戳
+        /// 转换指定时间的时间戳(总秒数)
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
@@ -44,11 +44,11 @@ namespace LF.Toolkit.Common
         {
             if (time < UnixEpoch) throw new ArgumentException("time");
 
-            return (long)(time - UnixEpoch).TotalMilliseconds;
+            return (long)(time - UnixEpoch).TotalSeconds;
         }
 
         /// <summary>
-        /// 转换时间戳为日期
+        /// 转换时间戳为日期(总秒数)
         /// </summary>
         /// <param name="timestamp"></param>
         /// <returns></returns>
@@ -56,7 +56,7 @@ namespace LF.Toolkit.Common
         {
             if (timestamp < 0) throw new ArgumentException("timestamp");
 
-            return UnixEpoch.AddMilliseconds(timestamp);
+            return UnixEpoch.AddSeconds(timestamp);
         }
 
         /// <summary>

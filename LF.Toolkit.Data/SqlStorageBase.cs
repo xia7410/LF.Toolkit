@@ -4,6 +4,7 @@ using Dapper;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace LF.Toolkit.Data
 {
@@ -123,6 +124,53 @@ namespace LF.Toolkit.Data
                 }
             }
             catch { }
+        }
+
+        #endregion
+
+        #region 通用函数
+
+        static readonly string[] m_Orders = new string[] { "ASC", "DESC" };
+
+        /// <summary>
+        /// 解析并生成排序语句
+        /// 若解析失败则返回默认排序语句
+        /// </summary>
+        /// <param name="orderBy">格式为：field_(DESC/ASC)</param>
+        /// <param name="defaultOrderBy">默认排序语句(可空)</param>
+        /// <returns></returns>
+        protected string GetOrderBySql(string orderBy, string defaultOrderBy = "")
+        {
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                var arrs = orderBy.Replace(" ", "").Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
+                if (arrs.Length >= 2 && m_Orders.Contains(arrs[1].ToUpper()))
+                {
+                    return string.Format(" ORDER BY {0} {1} ", arrs[0], arrs[1]);
+                }
+            }
+
+            return defaultOrderBy;
+        }
+
+        /// <summary>
+        /// 转换为dapper支持的like参数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="leftWrapper">是否包含左边%</param>
+        /// <param name="rightWrapper">是否包含右边%</param>
+        /// <returns></returns>
+        protected string ConvertToLikeWrapper(string value, bool leftWrapper = true, bool rightWrapper = true)
+        {
+            string param = "";
+            if (!string.IsNullOrEmpty(value))
+            {
+                param = value;
+                if (leftWrapper) param = "%" + param;
+                if (rightWrapper) param = "%";
+            }
+
+            return param;
         }
 
         #endregion
@@ -291,9 +339,7 @@ namespace LF.Toolkit.Data
 
         public SqlStorageBase(TSqlMapping sqlMapping)
         {
-            if (sqlMapping == null) throw new ArgumentNullException("sqlMapping");
-
-            SqlMapping = sqlMapping;
+            SqlMapping = sqlMapping ?? throw new ArgumentNullException("sqlMapping");
             base.ConfigureDbProvider(sqlMapping.ConnectionKey);
         }
 
