@@ -339,7 +339,9 @@ namespace LF.Toolkit.Data
 
         public SqlStorageBase(TSqlMapping sqlMapping)
         {
-            SqlMapping = sqlMapping ?? throw new ArgumentNullException("sqlMapping");
+            if (sqlMapping == null) throw new ArgumentNullException("sqlMapping");
+
+            SqlMapping = sqlMapping;
             base.ConfigureDbProvider(sqlMapping.ConnectionKey);
         }
 
