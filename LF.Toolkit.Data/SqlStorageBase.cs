@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Data.SqlTypes;
 
 namespace LF.Toolkit.Data
 {
@@ -130,27 +131,54 @@ namespace LF.Toolkit.Data
 
         #region 通用函数
 
-        static readonly string[] m_Orders = new string[] { "ASC", "DESC" };
-
         /// <summary>
         /// 解析并生成排序语句
         /// 若解析失败则返回默认排序语句
         /// </summary>
         /// <param name="orderBy">格式为：field_(DESC/ASC)</param>
         /// <param name="defaultOrderBy">默认排序语句(可空)</param>
+        /// <param name="allowOrderFields">允许排序的字段</param>
         /// <returns></returns>
-        protected string GetOrderBySql(string orderBy, string defaultOrderBy = "")
+        protected string GetOrderBySql(string orderBy, string defaultOrderBy = "", IEnumerable<string> allowOrderFields = null)
         {
+            string order = "";
             if (!string.IsNullOrEmpty(orderBy))
             {
-                var arrs = orderBy.Replace(" ", "").Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
-                if (arrs.Length >= 2 && m_Orders.Contains(arrs[1].ToUpper()))
+                string field = "";
+                string sort = "";
+                if (orderBy.IndexOf("ASC", StringComparison.OrdinalIgnoreCase) > 0)
                 {
-                    return string.Format(" ORDER BY {0} {1} ", arrs[0], arrs[1]);
+                    sort = "ASC";
+                    field = orderBy.Substring(0, orderBy.IndexOf("ASC", StringComparison.OrdinalIgnoreCase) - 1);
+                }
+                else if (orderBy.IndexOf("DESC", StringComparison.OrdinalIgnoreCase) > 0)
+                {
+                    sort = "DESC";
+                    field = orderBy.Substring(0, orderBy.IndexOf("DESC", StringComparison.OrdinalIgnoreCase) - 1);
+                }
+                if (field != "" && sort != "")
+                {
+                    //判断是否在允许排序的字段内
+                    if (allowOrderFields != null && allowOrderFields.Any())
+                    {
+                        if (allowOrderFields.Contains(field))
+                        {
+                            order = string.Format(" ORDER BY {0} {1} ", field, sort);
+                        }
+                    }
+                    else
+                    {
+                        order = string.Format(" ORDER BY {0} {1} ", field, sort);
+                    }
                 }
             }
 
-            return defaultOrderBy;
+            if (order == "")
+            {
+                order = defaultOrderBy;
+            }
+
+            return order;
         }
 
         /// <summary>
@@ -171,6 +199,25 @@ namespace LF.Toolkit.Data
             }
 
             return param;
+        }
+
+        /// <summary>
+        /// 转换日期字符串为Sql时间
+        /// 若日期转换失败、日期小于1753-01-01或大于9999-12-31，则返回Sql最小时间1753-01-01
+        /// </summary>
+        /// <param name="timeStr"></param>
+        /// <returns></returns>
+        protected DateTime ParseSqlDateTime(string timeStr)
+        {
+            var date = DateTime.MinValue;
+            DateTime.TryParse(timeStr, out date);
+
+            if (date < SqlDateTime.MinValue.Value || date > SqlDateTime.MaxValue.Value)
+            {
+                date = SqlDateTime.MinValue.Value;
+            }
+
+            return date;
         }
 
         #endregion
