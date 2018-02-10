@@ -10,6 +10,68 @@ using System.Data.SqlTypes;
 namespace LF.Toolkit.Data
 {
     /// <summary>
+    /// 排序信息
+    /// </summary>
+    public class OrderByInfo
+    {
+        /// <summary>
+        /// 获取或设置排序字段
+        /// </summary>
+        public string Column { get; set; }
+
+        /// <summary>
+        /// 获取或设置排序方式（ASC、DESC）
+        /// </summary>
+        public string SortType { get; set; }
+
+        public OrderByInfo() { }
+
+        public OrderByInfo(string column, string sortType)
+        {
+            this.Column = column;
+            this.SortType = sortType;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("ORDER BY {0} {1}", this.Column, this.SortType);
+        }
+    }
+
+    /// <summary>
+    /// 获取或设置字段信息
+    /// </summary>
+    public class OrderColumn
+    {
+        /// <summary>
+        /// 获取或设置排序字段
+        /// </summary>
+        public string Column { get; set; }
+
+        /// <summary>
+        /// 获取或设置别名
+        /// </summary>
+        public string Alias { get; set; }
+
+        public OrderColumn(string column)
+            : this(column, "")
+        {
+
+        }
+
+        public OrderColumn(string column, string alias)
+        {
+            this.Column = column;
+            this.Alias = alias;
+        }
+
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(this.Alias) ? this.Column : this.Alias + "." + this.Column;
+        }
+    }
+
+    /// <summary>
     /// 表示Sql数据库存储基类
     /// </summary>
     public abstract partial class SqlStorageBase
@@ -23,7 +85,6 @@ namespace LF.Toolkit.Data
         }
 
         #region Connection & Config
-
 
         public SqlStorageBase(string connectionKey)
         {
@@ -133,15 +194,15 @@ namespace LF.Toolkit.Data
 
         /// <summary>
         /// 解析并生成排序语句
-        /// 若解析失败则返回默认排序语句
+        /// 若解析失败则返回默认排序信息
         /// </summary>
         /// <param name="orderBy">格式为：field_(DESC/ASC)</param>
         /// <param name="defaultOrderBy">默认排序语句(可空)</param>
-        /// <param name="allowOrderFields">允许排序的字段</param>
+        /// <param name="allowOrderColumns">允许排序的字段信息集合</param>
         /// <returns></returns>
-        protected string GetOrderBySql(string orderBy, string defaultOrderBy = "", IEnumerable<string> allowOrderFields = null)
+        protected OrderByInfo GetOrderByInfo(string orderBy, OrderByInfo defaultOrderBy, IEnumerable<OrderColumn> allowOrderColumns = null)
         {
-            string order = "";
+            var orderByInfo = defaultOrderBy;
             if (!string.IsNullOrEmpty(orderBy))
             {
                 string field = "";
@@ -159,26 +220,22 @@ namespace LF.Toolkit.Data
                 if (field != "" && sort != "")
                 {
                     //判断是否在允许排序的字段内
-                    if (allowOrderFields != null && allowOrderFields.Any())
+                    if (allowOrderColumns == null)
                     {
-                        if (allowOrderFields.Contains(field))
-                        {
-                            order = string.Format(" ORDER BY {0} {1} ", field, sort);
-                        }
+                        orderByInfo = new OrderByInfo(field, sort);
                     }
                     else
                     {
-                        order = string.Format(" ORDER BY {0} {1} ", field, sort);
+                        var column = allowOrderColumns.FirstOrDefault(i => i.Column == field);
+                        if (column != null)
+                        {
+                            orderByInfo = new OrderByInfo(column.ToString(), sort);
+                        }
                     }
                 }
             }
 
-            if (order == "")
-            {
-                order = defaultOrderBy;
-            }
-
-            return order;
+            return orderByInfo;
         }
 
         /// <summary>
