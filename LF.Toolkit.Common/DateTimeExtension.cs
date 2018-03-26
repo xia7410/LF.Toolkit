@@ -11,24 +11,17 @@ namespace LF.Toolkit.Common
         /// <summary>
         /// 获取Sql数据库支持的最小时间点
         /// </summary>
-        public static readonly DateTime MinSqlDateTime;
+        public static readonly DateTime MinSqlDateTime = SqlDateTime.MinValue.Value;
 
         /// <summary>
         /// 获取Sql数据库支持的最大时间点
         /// </summary>
-        public static readonly DateTime MaxSqlDateTime;
+        public static readonly DateTime MaxSqlDateTime = SqlDateTime.MaxValue.Value;
 
         /// <summary>
         /// 获取Unix新纪元开始日期
         /// </summary>
-        public static readonly DateTime UnixEpoch;
-
-        static DateTimeExtension()
-        {
-            MinSqlDateTime = SqlDateTime.MinValue.Value;
-            MaxSqlDateTime = SqlDateTime.MaxValue.Value;
-            UnixEpoch = new DateTime(1970, 1, 1);
-        }
+        public static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 
         /// <summary>
         /// 获取当前时间对应的时间戳(总秒数)

@@ -22,7 +22,6 @@ namespace LF.Toolkit.IOC
         /// <param name="func"></param>
         public static void Register(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null)
         {
-            //return if continer is builded
             if (m_Container != null) return;
 
             var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract);
@@ -33,14 +32,14 @@ namespace LF.Toolkit.IOC
                 {
                     continue;
                 }
-                Register(t, parameters: func != null ? func.Invoke(t) : null, asSelf: attr.AsSelf, asImplementedInterfaces: attr.AsImplementedInterfaces, singleInstance: attr.SingleInstance);
+                Register(t, func?.Invoke(t), attr.AsSelf, attr.AsImplementedInterfaces, attr.SingleInstance);
             }
         }
 
         /// <summary>
         /// Register components to be created through reflection. which components Inherited from T
         /// </summary>
-        /// <typeparam name="T">baseType</typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="assembly"></param>
         /// <param name="func"></param>
         public static void Register<T>(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null)
@@ -51,7 +50,7 @@ namespace LF.Toolkit.IOC
             var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract && typeof(T).IsAssignableFrom(i));
             foreach (var t in types)
             {
-                Register(t, parameters: func != null ? func.Invoke(t) : null);
+                Register(t, func?.Invoke(t));
             }
         }
 
@@ -65,15 +64,10 @@ namespace LF.Toolkit.IOC
         /// <param name="singleInstance"></param>
         public static void Register(Type type, IDictionary<Type, object> parameters = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true)
         {
-            //return if continer is builded
             if (m_Container != null) return;
 
-            IEnumerable<Parameter> list = null;
-            if (parameters != null)
-            {
-                list = parameters.Select(p => new TypedParameter(p.Key, p.Value));
-            }
             var builder = m_ContainerBuilder.RegisterType(type);
+            var list = parameters?.Select(p => new TypedParameter(p.Key, p.Value));
             if (list != null)
             {
                 builder = builder.WithParameters(list);
@@ -102,15 +96,9 @@ namespace LF.Toolkit.IOC
             //return if continer is builded
             if (m_Container != null) return;
 
-            if (beforBuild != null)
-            {
-                beforBuild.Invoke(m_ContainerBuilder);
-            }
+            beforBuild?.Invoke(m_ContainerBuilder);
             m_Container = m_ContainerBuilder.Build();
-            if (afterBuild != null)
-            {
-                afterBuild.Invoke(m_Container);
-            }
+            afterBuild?.Invoke(m_Container);
         }
 
         /// <summary>
@@ -121,12 +109,7 @@ namespace LF.Toolkit.IOC
         public static T Resolve<T>()
             where T : class
         {
-            if (m_Container != null)
-            {
-                return m_Container.Resolve<T>();
-            }
-
-            return default(T);
+            return m_Container?.Resolve<T>();
         }
     }
 }

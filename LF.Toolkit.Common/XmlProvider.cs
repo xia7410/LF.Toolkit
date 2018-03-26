@@ -36,18 +36,12 @@ namespace LF.Toolkit.Common
                         ms.Position = 0;
                         XmlSerializer serializer = new XmlSerializer(typeof(T));
                         obj = (T)serializer.Deserialize(ms);
-                        if(action != null)
-                        {
-                            action(obj);
-                        }
+                        action?.Invoke(obj);
                     }
                 }
                 finally
                 {
-                    if (ms != null)
-                    {
-                        ms.Close();
-                    }
+                    ms?.Close();
                 }
             }
             else

@@ -20,7 +20,6 @@ namespace LF.Toolkit.IOC
         /// <param name="assembly"></param>
         /// <param name="func"></param>
         /// <param name="beforBuild"></param>
-        /// <param name="afterBuild"></param>
         /// <returns></returns>
         public static IContainer Build(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null, Action<ContainerBuilder> beforBuild = null)
         {
@@ -33,7 +32,7 @@ namespace LF.Toolkit.IOC
                 {
                     continue;
                 }
-                Register(containerBuilder, t, parameters: func != null ? func.Invoke(t) : null, asSelf: attr.AsSelf, asImplementedInterfaces: attr.AsImplementedInterfaces, singleInstance: attr.SingleInstance);
+                Register(containerBuilder, t, func?.Invoke(t), attr.AsSelf, attr.AsImplementedInterfaces, attr.SingleInstance);
             }
 
             if (beforBuild != null)
@@ -54,7 +53,6 @@ namespace LF.Toolkit.IOC
         /// <param name="asImplementedInterfaces"></param>
         /// <param name="singleInstance"></param>
         /// <param name="beforBuild"></param>
-        /// <param name="afterBuild"></param>
         /// <returns></returns>
         public static IContainer Build<T>(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true
             , Action<ContainerBuilder> beforBuild = null)
@@ -63,13 +61,9 @@ namespace LF.Toolkit.IOC
             var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract && typeof(T).IsAssignableFrom(i));
             foreach (var t in types)
             {
-                Register(containerBuilder, t, parameters: func != null ? func.Invoke(t) : null);
+                Register(containerBuilder, t, func?.Invoke(t));
             }
-
-            if (beforBuild != null)
-            {
-                beforBuild.Invoke(containerBuilder);
-            }
+            beforBuild?.Invoke(containerBuilder);
 
             return containerBuilder.Build();
         }

@@ -14,7 +14,7 @@ namespace LF.Toolkit.IOC
     public interface IProxyStorage
     {
         /// <summary>
-        /// 存储类容器
+        /// 存储实现类容器
         /// </summary>
         IContainer Container { get; }
     }
@@ -122,6 +122,15 @@ namespace LF.Toolkit.IOC
             var obj = m_Cached.Remove(key);
 
             return obj != null;
+        }
+
+        /// <summary>
+        /// 获取所有缓存信息
+        /// </summary>
+        /// <returns></returns>
+        protected IEnumerable<KeyValuePair<string, object>> GetAllCache()
+        {
+            return m_Cached.AsEnumerable();
         }
     }
 }
