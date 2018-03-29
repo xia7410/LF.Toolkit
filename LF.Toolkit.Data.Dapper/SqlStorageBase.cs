@@ -31,10 +31,10 @@ namespace LF.Toolkit.Data.Dapper
         protected virtual void InitializeDbProvider(string connectionKey)
         {
             this.m_ConnectionStringSettings = ConfigurationManager.ConnectionStrings[connectionKey];
-            if (m_ConnectionStringSettings == null) throw new Exception(string.Format("未找到Key为 {0} 对应的连接字符串配置项", connectionKey));
+            if (m_ConnectionStringSettings == null) throw new Exception($"未找到名称为 {connectionKey} 对应的连接字符串配置项");
 
             m_DbProviderFactory = DbProviderFactories.GetFactory(m_ConnectionStringSettings.ProviderName);
-            if (m_DbProviderFactory == null) throw new Exception(string.Format("未找到 {0} 对应的 system.data/DbProviderFactories 配置项", m_ConnectionStringSettings.ProviderName));
+            if (m_DbProviderFactory == null) throw new Exception($"未找到 { m_ConnectionStringSettings.ProviderName} 对应的 system.data/DbProviderFactories 配置项");
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace LF.Toolkit.Data.Dapper
         protected virtual IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.ReadCommitted)
         {
             var conn = GetConnection();
-            return conn.BeginTransaction(il); ;
+            return conn.BeginTransaction(il);
         }
 
         /// <summary>

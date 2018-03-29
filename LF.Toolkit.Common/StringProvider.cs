@@ -22,6 +22,17 @@ namespace LF.Toolkit.Common
             return Regex.IsMatch(value, pattern);
         }
 
+        /// <summary>
+        /// 判断字符串是否合法的URL
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsURL(string value)
+        {
+            const string pattern = @"^(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&$%\$#\=~])*$";
+            return Regex.IsMatch(value, pattern);
+        }
+
         static MethodInfo GetTryParseMethodInfo(Type numericType)
         {
             MethodInfo method = null;
