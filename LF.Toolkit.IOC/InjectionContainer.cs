@@ -111,5 +111,15 @@ namespace LF.Toolkit.IOC
         {
             return m_Container?.Resolve<T>();
         }
+
+        /// <summary>
+        ///  Retrieve a service from the context.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static object Resolve(Type type)
+        {
+            return m_Container?.Resolve(type);
+        }
     }
 }

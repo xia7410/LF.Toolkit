@@ -61,7 +61,7 @@ namespace LF.Toolkit.IOC
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="expiration"></param>
+        /// <param name="expiration">若为空则设置为最大值</param>
         protected void SetCache(string key, object value, TimeSpan? expiration = null)
         {
             if (!string.IsNullOrEmpty(key) && value != null)

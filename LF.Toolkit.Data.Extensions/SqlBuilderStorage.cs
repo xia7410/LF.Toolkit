@@ -1,4 +1,5 @@
-﻿using LF.Toolkit.Data.SqlBuilder;
+﻿using LF.Toolkit.Data.Dapper;
+using LF.Toolkit.Data.SqlBuilder;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -162,7 +163,7 @@ namespace LF.Toolkit.Data.Extensions
         /// <param name="sortColumns">排序列（必须）（默认第一个作为分页排序字段）</param>
         /// <param name="occur">查询组合条件</param>
         /// <returns></returns>
-        public async Task<PagedList<T>> GetPagedListAsync<T>(IEnumerable<string> columns, int page, int pageSize, IEnumerable<ClauseColumn> cluaseColumns, IEnumerable<SortableColumn> sortColumns, Occur occur = Occur.AND)
+        public Task<PagedList<T>> GetPagedListAsync<T>(IEnumerable<string> columns, int page, int pageSize, IEnumerable<ClauseColumn> cluaseColumns, IEnumerable<SortableColumn> sortColumns, Occur occur = Occur.AND)
         {
             string sql = m_SqlBuilder.PagedList(m_TableName, columns, cluaseColumns, sortColumns, occur);
 
@@ -191,21 +192,7 @@ namespace LF.Toolkit.Data.Extensions
             dict["page"] = page;
             dict["pageSize"] = pageSize;
 
-            var connection = base.GetDbConnection();
-            var pageList = new PagedList<T>();
-
-            try
-            {
-                var grid = await base.QueryMultipleAsync(sql, connection, dict);
-                pageList.RowSet = grid.Read<T>();
-                pageList.Count = grid.Read<int>().First();
-            }
-            finally
-            {
-                base.CloseDbConnection(connection);
-            }
-
-            return pageList;
+            return base.GetPagedListAsync<T>(sql, dict);
         }
     }
 }

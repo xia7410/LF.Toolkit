@@ -6,7 +6,10 @@ using System.Text;
 
 namespace LF.Toolkit.Common
 {
-    public class DateTimeExtension
+    /// <summary>
+    /// 表示日期工具类
+    /// </summary>
+    public class DateTimeUtil
     {
         /// <summary>
         /// 获取Sql数据库支持的最小时间点
@@ -26,14 +29,19 @@ namespace LF.Toolkit.Common
         /// <summary>
         /// 获取当前时间对应的时间戳(总秒数)
         /// </summary>
-        public static long CurrentTimestamp { get { return (long)(DateTime.Now - UnixEpoch).TotalSeconds; } }
+        public static long Timestamp { get { return (long)(DateTime.Now - UnixEpoch).TotalSeconds; } }
+
+        /// <summary>
+        /// 获取UTC当前时间对应的时间戳(总秒数)
+        /// </summary>
+        public static long UtcTimestamp { get { return (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds; } }
 
         /// <summary>
         /// 转换指定时间的时间戳(总秒数)
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public static long ConvertToTimestamp(DateTime time)
+        public static long GetTimestamp(DateTime time)
         {
             if (time < UnixEpoch) throw new ArgumentException("time");
 
@@ -41,15 +49,42 @@ namespace LF.Toolkit.Common
         }
 
         /// <summary>
-        /// 转换时间戳为日期(总秒数)
+        /// 转换指定时间的时间戳(总秒数)
+        /// </summary>
+        /// <param name="utcTime"></param>
+        /// <returns></returns>
+        public static long GetUtcTimestamp(DateTime utcTime)
+        {
+            if (utcTime < UnixEpoch) throw new ArgumentException("time");
+            if (utcTime.Kind != DateTimeKind.Utc)
+            {
+                utcTime = utcTime.ToUniversalTime();
+            }
+            return (long)(utcTime - UnixEpoch).TotalSeconds;
+        }
+
+        /// <summary>
+        /// 转换本地时间戳为本地日期(总秒数)
         /// </summary>
         /// <param name="timestamp"></param>
         /// <returns></returns>
-        public static DateTime ConvertToDateTime(long timestamp)
+        public static DateTime FromTimeStamp(long timestamp)
         {
             if (timestamp < 0) throw new ArgumentException("timestamp");
 
             return UnixEpoch.AddSeconds(timestamp);
+        }
+
+        /// <summary>
+        /// 转换UTC时间戳为UTC日期(总秒数)
+        /// </summary>
+        /// <param name="utcTimestamp"></param>
+        /// <returns></returns>
+        public static DateTime FormUtcTimeStamp(long utcTimestamp)
+        {
+            if (utcTimestamp < 0) throw new ArgumentException("timestamp");
+
+            return UnixEpoch.AddSeconds(utcTimestamp);
         }
 
         /// <summary>
