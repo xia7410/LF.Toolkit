@@ -14,27 +14,32 @@ namespace LF.Toolkit.Data.Dapper
     /// </summary>
     public abstract partial class SqlStorageBase
     {
-        private ConnectionStringSettings m_ConnectionStringSettings;
         private DbProviderFactory m_DbProviderFactory;
+        /// <summary>
+        /// 获取数据库连接字符串设置
+        /// </summary>
+        protected ConnectionStringSettings ConnectionStringSettings { get; private set; }
 
         #region Connection & Config
 
+        /// <summary>
+        /// Sql存储基类构造器
+        /// </summary>
+        /// <param name="connectionKey"></param>
         public SqlStorageBase(string connectionKey)
         {
-            InitializeDbProvider(connectionKey);
+            this.ConnectionStringSettings = ConfigurationManager.ConnectionStrings[connectionKey];
+            if (ConnectionStringSettings == null) throw new Exception($"未找到名称为 {connectionKey} 对应的连接字符串配置项");
+            InitializeDbProvider();
         }
 
         /// <summary>
         /// 初始化数据库连接配置
         /// </summary>
-        /// <param name="connectionKey"></param>
-        protected virtual void InitializeDbProvider(string connectionKey)
+        protected virtual void InitializeDbProvider()
         {
-            this.m_ConnectionStringSettings = ConfigurationManager.ConnectionStrings[connectionKey];
-            if (m_ConnectionStringSettings == null) throw new Exception($"未找到名称为 {connectionKey} 对应的连接字符串配置项");
-
-            m_DbProviderFactory = DbProviderFactories.GetFactory(m_ConnectionStringSettings.ProviderName);
-            if (m_DbProviderFactory == null) throw new Exception($"未找到 { m_ConnectionStringSettings.ProviderName} 对应的 system.data/DbProviderFactories 配置项");
+            m_DbProviderFactory = DbProviderFactories.GetFactory(ConnectionStringSettings.ProviderName);
+            if (m_DbProviderFactory == null) throw new Exception($"未找到 { ConnectionStringSettings.ProviderName} 对应的 system.data/DbProviderFactories 配置项");
         }
 
         /// <summary>
@@ -46,7 +51,7 @@ namespace LF.Toolkit.Data.Dapper
             if (m_DbProviderFactory == null) throw new Exception("未配置数据库连接项");
 
             var connection = this.m_DbProviderFactory.CreateConnection();
-            connection.ConnectionString = m_ConnectionStringSettings.ConnectionString;
+            connection.ConnectionString = ConnectionStringSettings.ConnectionString;
             connection.Open();
 
             return connection;
