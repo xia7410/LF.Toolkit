@@ -14,7 +14,7 @@ namespace LF.Toolkit.IOC
     public interface IProxyStorage
     {
         /// <summary>
-        /// 存储实现类容器
+        /// 存储实现类容器实例
         /// </summary>
         IContainer Container { get; }
     }
@@ -35,6 +35,10 @@ namespace LF.Toolkit.IOC
         /// </summary>
         public IContainer Container { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="container">包含实际存储类的容器</param>
         public BaseProxyStorage(IContainer container)
         {
             Container = container;
@@ -50,6 +54,10 @@ namespace LF.Toolkit.IOC
     {
         readonly MemoryCache m_Cached;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="container">包含实际存储类的容器</param>
         public BaseMemoryCacheProxyStorage(IContainer container)
             : base(container)
         {
@@ -130,7 +138,7 @@ namespace LF.Toolkit.IOC
         /// <returns></returns>
         protected IEnumerable<KeyValuePair<string, object>> GetAllCache()
         {
-            return m_Cached.AsEnumerable();
+            return m_Cached.AsQueryable();
         }
     }
 }

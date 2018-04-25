@@ -15,53 +15,74 @@ namespace LF.Toolkit.IOC
     public static class InjectionContainerBuilder
     {
         /// <summary>
-        /// Register components to be created through reflection. which components is marked InjectableAttribute
+        /// Create a new container with the component registrations (which components is marked InjectableAttribute) that have been made. 
         /// </summary>
         /// <param name="assembly"></param>
-        /// <param name="func"></param>
+        /// <param name="parameters"></param>
         /// <param name="beforBuild"></param>
         /// <returns></returns>
-        public static IContainer Build(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null, Action<ContainerBuilder> beforBuild = null)
+        public static IContainer Build(Assembly assembly, IDictionary<Type, object> parameters = null, Action<ContainerBuilder> beforBuild = null)
         {
             var containerBuilder = new ContainerBuilder();
             var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract);
             foreach (var t in types)
             {
                 var attr = t.GetCustomAttribute<InjectableAttribute>(true);
-                if (attr == null)
-                {
-                    continue;
-                }
-                Register(containerBuilder, t, func?.Invoke(t), attr.AsSelf, attr.AsImplementedInterfaces, attr.SingleInstance);
+                // 跳过非标识为InjectableAttribute的类型
+                if (attr == null) continue;
+                Register(containerBuilder, t, parameters, attr.AsSelf, attr.AsImplementedInterfaces, attr.SingleInstance);
             }
-
-            if (beforBuild != null)
-            {
-                beforBuild.Invoke(containerBuilder);
-            }
+            beforBuild?.Invoke(containerBuilder);
 
             return containerBuilder.Build();
         }
 
         /// <summary>
-        /// Register components to be created through reflection. which components Inherited from T
+        /// Create a new container with the component registrations (which components Inherited from T) that have been made.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="assembly"></param>
-        /// <param name="func"></param>
+        /// <param name="assemblyString"></param>
+        /// <param name="parameters"></param>
         /// <param name="asSelf"></param>
         /// <param name="asImplementedInterfaces"></param>
         /// <param name="singleInstance"></param>
         /// <param name="beforBuild"></param>
         /// <returns></returns>
-        public static IContainer Build<T>(Assembly assembly, Func<Type, IDictionary<Type, object>> func = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true
+        public static IContainer Build<T>(string assemblyString, IDictionary<Type, object> parameters = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true
+            , Action<ContainerBuilder> beforBuild = null)
+        {
+            if (string.IsNullOrEmpty(assemblyString)) throw new ArgumentNullException("assemblyString");
+
+            var containerBuilder = new ContainerBuilder();
+            var types = Assembly.Load(assemblyString).GetTypes().Where(i => i.IsClass && !i.IsAbstract && typeof(T).IsAssignableFrom(i));
+            foreach (var t in types)
+            {
+                Register(containerBuilder, t, parameters, asSelf, asImplementedInterfaces, singleInstance);
+            }
+            beforBuild?.Invoke(containerBuilder);
+
+            return containerBuilder.Build();
+        }
+
+        /// <summary>
+        /// Create a new container with the component registrations (which components Inherited from T) that have been made.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="assembly"></param>
+        /// <param name="parameters"></param>
+        /// <param name="asSelf"></param>
+        /// <param name="asImplementedInterfaces"></param>
+        /// <param name="singleInstance"></param>
+        /// <param name="beforBuild"></param>
+        /// <returns></returns>
+        public static IContainer Build<T>(Assembly assembly, IDictionary<Type, object> parameters = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true
             , Action<ContainerBuilder> beforBuild = null)
         {
             var containerBuilder = new ContainerBuilder();
             var types = assembly.GetTypes().Where(i => i.IsClass && !i.IsAbstract && typeof(T).IsAssignableFrom(i));
             foreach (var t in types)
             {
-                Register(containerBuilder, t, func?.Invoke(t));
+                Register(containerBuilder, t, parameters, asSelf, asImplementedInterfaces, singleInstance);
             }
             beforBuild?.Invoke(containerBuilder);
 
@@ -77,14 +98,10 @@ namespace LF.Toolkit.IOC
         /// <param name="asSelf"></param>
         /// <param name="asImplementedInterfaces"></param>
         /// <param name="singleInstance"></param>
-        static void Register(ContainerBuilder containerBuilder, Type type, IDictionary<Type, object> parameters = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true)
+        internal static void Register(ContainerBuilder containerBuilder, Type type, IDictionary<Type, object> parameters = null, bool asSelf = true, bool asImplementedInterfaces = true, bool singleInstance = true)
         {
-            IEnumerable<Parameter> list = null;
-            if (parameters != null)
-            {
-                list = parameters.Select(p => new TypedParameter(p.Key, p.Value));
-            }
-            var builder = containerBuilder.RegisterType(type);
+            var builder = containerBuilder.RegisterType(type).IfNotRegistered(type);
+            var list = parameters?.Select(p => new TypedParameter(p.Key, p.Value));
             if (list != null)
             {
                 builder = builder.WithParameters(list);
