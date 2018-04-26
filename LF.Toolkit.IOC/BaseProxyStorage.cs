@@ -133,12 +133,12 @@ namespace LF.Toolkit.IOC
         }
 
         /// <summary>
-        /// 获取所有缓存信息
+        /// 获取当前类关联的缓存列表信息
         /// </summary>
         /// <returns></returns>
-        protected IEnumerable<KeyValuePair<string, object>> GetAllCache()
+        protected IEnumerable<KeyValuePair<string, object>> GetCacheList()
         {
-            return m_Cached.AsQueryable();
+            return m_Cached.AsEnumerable();
         }
     }
 }

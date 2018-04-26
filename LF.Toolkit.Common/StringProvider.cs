@@ -23,13 +23,13 @@ namespace LF.Toolkit.Common
         }
 
         /// <summary>
-        /// 判断字符串是否合法的URL
+        /// 判断字符串是否合法的HTTP/HTTPS URL
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool IsURL(string value)
+        public static bool IsHttpURL(string value)
         {
-            const string pattern = @"^(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&$%\$#\=~])*$";
+            const string pattern = @"^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&$%\$#\=~])*$";
             return Regex.IsMatch(value, pattern);
         }
 

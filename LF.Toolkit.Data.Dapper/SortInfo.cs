@@ -7,15 +7,6 @@ using System.Threading.Tasks;
 namespace LF.Toolkit.Data.Dapper
 {
     /// <summary>
-    /// 排序类型枚举
-    /// </summary>
-    public enum SortType
-    {
-        ASC,
-        DESC
-    }
-
-    /// <summary>
     /// 排序信息类
     /// </summary>
     public class SortInfo
@@ -26,19 +17,28 @@ namespace LF.Toolkit.Data.Dapper
         public string Column { get; set; }
 
         /// <summary>
-        /// 获取或设置排序类型
+        /// 获取或设置是否升序
         /// </summary>
-        public SortType Type { get; set; }
+        public bool Ascending { get; set; }
 
-        public SortInfo(string column, SortType type = SortType.DESC)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="ascending"></param>
+        public SortInfo(string column, bool ascending = false)
         {
             this.Column = column;
-            this.Type = type;
+            this.Ascending = ascending;
         }
 
+        /// <summary>
+        /// 返回SQL ORDER BY 语句
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return $"ORDER BY {this.Column} {this.Type}";
+            return $"ORDER BY {this.Column} {(this.Ascending ? "ASC" : "DESC")}";
         }
 
         /// <summary>
@@ -52,20 +52,20 @@ namespace LF.Toolkit.Data.Dapper
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
                 string field = "";
-                SortType type = SortType.DESC;
+                bool ascending = false;
                 if (orderBy.IndexOf("ASC", StringComparison.OrdinalIgnoreCase) > 0)
                 {
-                    type = SortType.ASC;
+                    ascending = true;
                     field = orderBy.Substring(0, orderBy.IndexOf("ASC", StringComparison.OrdinalIgnoreCase) - 1);
                 }
                 else if (orderBy.IndexOf("DESC", StringComparison.OrdinalIgnoreCase) > 0)
                 {
-                    type = SortType.DESC;
+                    ascending = false;
                     field = orderBy.Substring(0, orderBy.IndexOf("DESC", StringComparison.OrdinalIgnoreCase) - 1);
                 }
                 if (!string.IsNullOrEmpty(field))
                 {
-                    sortInfo = new SortInfo(field, type);
+                    sortInfo = new SortInfo(field, ascending);
                 }
             }
 
@@ -74,9 +74,9 @@ namespace LF.Toolkit.Data.Dapper
     }
 
     /// <summary>
-    /// 排序字段
+    /// 带有别名的字段信息
     /// </summary>
-    public class SortColumn
+    public class AliasColumn
     {
         /// <summary>
         /// 获取或设置排序字段
@@ -88,18 +88,31 @@ namespace LF.Toolkit.Data.Dapper
         /// </summary>
         public string Alias { get; set; }
 
-        public SortColumn(string column)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="column"></param>
+        public AliasColumn(string column)
             : this(column, "")
         {
 
         }
 
-        public SortColumn(string column, string alias)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="alias"></param>
+        public AliasColumn(string column, string alias)
         {
             this.Column = column;
             this.Alias = alias;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return string.IsNullOrEmpty(this.Alias) ? this.Column : this.Alias + "." + this.Column;

@@ -90,9 +90,9 @@ namespace LF.Toolkit.Data.Dapper
         /// </summary>
         /// <param name="orderBy">>格式为：field_(DESC/ASC)</param>
         /// <param name="defaultSort"></param>
-        /// <param name="allowSortColumns">允许排序的字段信息集合</param>
+        /// <param name="includeSortableColumns">允许排序的字段信息集合</param>
         /// <returns></returns>
-        protected SortInfo GetSortInfo(string orderBy, SortInfo defaultSort, IEnumerable<SortColumn> allowSortColumns = null)
+        protected SortInfo GetSortInfo(string orderBy, SortInfo defaultSort, IEnumerable<AliasColumn> includeSortableColumns = null)
         {
             var sortInfo = SortInfo.Parse(orderBy);
             if (sortInfo == null)
@@ -101,12 +101,12 @@ namespace LF.Toolkit.Data.Dapper
             }
             else
             {
-                var sortColumn = allowSortColumns.SingleOrDefault(i => i.Column == sortInfo.Column);
-                if (sortColumn == null) throw new ArgumentException("无效的排序字符串");
+                var column = includeSortableColumns.SingleOrDefault(i => i.Column == sortInfo.Column);
+                if (column == null) throw new ArgumentException("无效的排序字符串");
                 //判断排序字段是否有别名若有则转换为含有别名的字段
-                if (!string.IsNullOrEmpty(sortColumn.Alias))
+                if (!string.IsNullOrEmpty(column.Alias))
                 {
-                    sortInfo.Column = sortColumn.ToString();
+                    sortInfo.Column = column.ToString();
                 }
             }
 
