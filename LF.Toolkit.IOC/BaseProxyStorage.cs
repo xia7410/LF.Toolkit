@@ -133,12 +133,12 @@ namespace LF.Toolkit.IOC
         }
 
         /// <summary>
-        /// 获取当前类关联的缓存列表信息
+        /// 获取当前类的只读的缓存对象实例
         /// </summary>
         /// <returns></returns>
-        protected IEnumerable<KeyValuePair<string, object>> GetCacheList()
+        protected MemoryCache GetReadOnlyCacheInstance()
         {
-            return m_Cached.AsEnumerable();
+            return this.m_Cached;
         }
     }
 }
