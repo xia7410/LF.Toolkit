@@ -7,8 +7,19 @@ using System.Threading.Tasks;
 
 namespace LF.Toolkit.Data.Dapper
 {
+    /// <summary>
+    /// Linq查询扩展
+    /// </summary>
     public static class QueryableExtensions
     {
+        /// <summary>
+        /// Linq排序扩展方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">排序源</param>
+        /// <param name="name">排序字段名称</param>
+        /// <param name="ascending">是否升序; True=升序 False=降序</param>
+        /// <returns></returns>
         public static IQueryable<T> OrderBy<T>(this IQueryable<T> source, string name, bool ascending = false) where T : class
         {
             var param = Expression.Parameter(typeof(T), "c");

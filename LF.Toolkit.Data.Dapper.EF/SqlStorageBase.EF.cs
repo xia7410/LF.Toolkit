@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace LF.Toolkit.Data.Dapper
 {
+    /// <summary>
+    /// 基于Entity Framework DbContext 的存储基类
+    /// </summary>
+    /// <typeparam name="TDbContext"></typeparam>
     public abstract class SqlStorageBase<TDbContext> : SqlStorageBase
         where TDbContext : DbContext
     {
@@ -27,6 +31,114 @@ namespace LF.Toolkit.Data.Dapper
             return (TDbContext)Activator.CreateInstance(typeof(TDbContext), new object[] { base.ConnectionStringSettings.ConnectionString });
         }
 
+        #region 同步方法
+
+        /// <summary>
+        /// 获取符合指定条件的首个对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        protected T FirstOrDefault<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+            where T : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<T>().AsQueryable<T>();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                return query.FirstOrDefault(predicate);
+            }
+        }
+
+        /// <summary>
+        /// 获取符合指定条件的首个对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="order">排序</param>
+        /// <param name="predicate">查询条件</param>
+        /// <param name="ascending">是否升序; True=升序 False=降序</param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        protected T FirstOrDefault<T, TKey>(Expression<Func<T, TKey>> order, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
+            where T : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<T>().AsQueryable<T>();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                //排序
+                if (ascending)
+                {
+                    query = query.OrderBy(order);
+                }
+                else
+                {
+                    query = query.OrderByDescending(order);
+                }
+                //查询
+                if (predicate != null)
+                {
+                    return query.FirstOrDefault(predicate);
+                }
+                else
+                {
+                    return query.FirstOrDefault();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取符合指定条件的数量
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        protected int Count<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+            where T : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<T>().AsQueryable<T>();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                return query.Count(predicate);
+            }
+        }
+
+        /// <summary>
+        /// 获取符合指定条件的首个对象，若多个则报错
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        protected T SingleOrDefault<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+            where T : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<T>().AsQueryable<T>();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                return query.SingleOrDefault(predicate);
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// 添加并提交指定对象到数据库
         /// </summary>
@@ -41,6 +153,30 @@ namespace LF.Toolkit.Data.Dapper
                 ctx.Set<T>().Add(entity);
                 return await ctx.SaveChangesAsync();
             }
+        }
+
+        /// <summary>
+        /// 添加并提交指定对象到数据库，若对象已存在则插入失败
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="predicate">判断插入的对象是否存在</param>
+        /// <returns></returns>
+        protected async Task<int> AddAsync<T>(T entity, Expression<Func<T, bool>> predicate)
+            where T : class
+        {
+            int count = 0;
+            using (var ctx = GetDbContext())
+            {
+                var set = ctx.Set<T>();
+                if (await set.CountAsync(predicate) <= 0)
+                {
+                    set.Add(entity);
+                    count = await ctx.SaveChangesAsync();
+                }
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -121,6 +257,68 @@ namespace LF.Toolkit.Data.Dapper
                     query = query.AsNoTracking();
                 }
                 return await query.FirstOrDefaultAsync(predicate);
+            }
+        }
+
+        /// <summary>
+        /// 获取符合指定条件的首个对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="order">排序</param>
+        /// <param name="predicate">查询条件</param>
+        /// <param name="ascending">是否升序; True=升序 False=降序</param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        protected async Task<T> FirstOrDefaultAsync<T, TKey>(Expression<Func<T, TKey>> order, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
+            where T : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<T>().AsQueryable<T>();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                //排序
+                if (ascending)
+                {
+                    query = query.OrderBy(order);
+                }
+                else
+                {
+                    query = query.OrderByDescending(order);
+                }
+                //查询
+                if (predicate != null)
+                {
+                    return await query.FirstOrDefaultAsync(predicate);
+                }
+                else
+                {
+                    return await query.FirstOrDefaultAsync();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取符合指定条件的数量
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        protected async Task<int> CountAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+            where T : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<T>().AsQueryable<T>();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                return await query.CountAsync(predicate);
             }
         }
 
