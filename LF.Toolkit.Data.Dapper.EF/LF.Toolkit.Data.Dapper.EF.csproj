@@ -54,7 +54,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExtensions.cs" />
-    <Compile Include="SqlStorageBase.EF.cs" />
+    <Compile Include="SqlStorageBase.Async.cs" />
+    <Compile Include="SqlStorageBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LF.Toolkit.Data.Dapper\LF.Toolkit.Data.Dapper.csproj">

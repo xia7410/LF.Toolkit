@@ -1,5 +1,4 @@
-﻿using LF.Toolkit.Data.Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -10,135 +9,11 @@ using System.Threading.Tasks;
 namespace LF.Toolkit.Data.Dapper
 {
     /// <summary>
-    /// 基于Entity Framework DbContext 的存储基类
+    /// 基于Entity Framework DbContext 的存储基类【异步部分】
     /// </summary>
-    /// <typeparam name="TDbContext"></typeparam>
-    public abstract class SqlStorageBase<TDbContext> : SqlStorageBase
+    public abstract partial class SqlStorageBase<TDbContext> : SqlStorageBase
         where TDbContext : DbContext
     {
-        public SqlStorageBase(string connectionKey)
-            : base(connectionKey)
-        {
-
-        }
-
-        /// <summary>
-        /// 获取当前存储对应的数据库实体上下文
-        /// </summary>
-        /// <returns></returns>
-        protected TDbContext GetDbContext()
-        {
-            return (TDbContext)Activator.CreateInstance(typeof(TDbContext), new object[] { base.ConnectionStringSettings.ConnectionString });
-        }
-
-        #region 同步方法
-
-        /// <summary>
-        /// 获取符合指定条件的首个对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tracking"></param>
-        /// <returns></returns>
-        protected T FirstOrDefault<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
-            where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return query.FirstOrDefault(predicate);
-            }
-        }
-
-        /// <summary>
-        /// 获取符合指定条件的首个对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
-        /// <param name="order">排序</param>
-        /// <param name="predicate">查询条件</param>
-        /// <param name="ascending">是否升序; True=升序 False=降序</param>
-        /// <param name="tracking"></param>
-        /// <returns></returns>
-        protected T FirstOrDefault<T, TKey>(Expression<Func<T, TKey>> order, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
-            where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                //排序
-                if (ascending)
-                {
-                    query = query.OrderBy(order);
-                }
-                else
-                {
-                    query = query.OrderByDescending(order);
-                }
-                //查询
-                if (predicate != null)
-                {
-                    return query.FirstOrDefault(predicate);
-                }
-                else
-                {
-                    return query.FirstOrDefault();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 获取符合指定条件的数量
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tracking"></param>
-        /// <returns></returns>
-        protected int Count<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
-            where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return query.Count(predicate);
-            }
-        }
-
-        /// <summary>
-        /// 获取符合指定条件的首个对象，若多个则报错
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tracking"></param>
-        /// <returns></returns>
-        protected T SingleOrDefault<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
-            where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return query.SingleOrDefault(predicate);
-            }
-        }
-
-        #endregion
-
         /// <summary>
         /// 添加并提交指定对象到数据库
         /// </summary>
@@ -343,40 +218,40 @@ namespace LF.Toolkit.Data.Dapper
             }
         }
 
-        /// <summary>
-        /// 删除指定对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        protected async Task<int> DeleteAsync<T>(T model)
-            where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                ctx.Set<T>().Remove(model);
-                return await ctx.SaveChangesAsync();
-            }
-        }
+        ///// <summary>
+        ///// 删除指定对象
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="model"></param>
+        ///// <returns></returns>
+        //protected async Task<int> DeleteAsync<T>(T model)
+        //    where T : class
+        //{
+        //    using (var ctx = GetDbContext())
+        //    {
+        //        ctx.Set<T>().Remove(model);
+        //        return await ctx.SaveChangesAsync();
+        //    }
+        //}
 
-        /// <summary>
-        /// 删除符合条件的对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        protected async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
-            where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                await ctx.Set<T>().Where(predicate).ForEachAsync(t =>
-                {
-                    ctx.Set<T>().Remove(t);
-                });
-                return await ctx.SaveChangesAsync();
-            }
-        }
+        ///// <summary>
+        ///// 删除符合条件的对象
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="predicate"></param>
+        ///// <returns></returns>
+        //protected async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
+        //    where T : class
+        //{
+        //    using (var ctx = GetDbContext())
+        //    {
+        //        await ctx.Set<T>().Where(predicate).ForEachAsync(t =>
+        //        {
+        //            ctx.Set<T>().Remove(t);
+        //        });
+        //        return await ctx.SaveChangesAsync();
+        //    }
+        //}
 
         /// <summary>
         /// 获取当前集合列表
