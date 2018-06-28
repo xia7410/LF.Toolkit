@@ -288,7 +288,7 @@ namespace LF.Toolkit.Data.Dapper
                     query = query.AsNoTracking();
                 }
                 //排序
-                query.OrderBy(sortInfo.Column, sortInfo.Ascending);
+                query = query.OrderBy(sortInfo.Column, sortInfo.Ascending);
                 //筛选条件
                 if (predicate != null)
                 {

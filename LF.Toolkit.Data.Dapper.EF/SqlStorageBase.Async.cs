@@ -218,41 +218,6 @@ namespace LF.Toolkit.Data.Dapper
             }
         }
 
-        ///// <summary>
-        ///// 删除指定对象
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="model"></param>
-        ///// <returns></returns>
-        //protected async Task<int> DeleteAsync<T>(T model)
-        //    where T : class
-        //{
-        //    using (var ctx = GetDbContext())
-        //    {
-        //        ctx.Set<T>().Remove(model);
-        //        return await ctx.SaveChangesAsync();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 删除符合条件的对象
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="predicate"></param>
-        ///// <returns></returns>
-        //protected async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
-        //    where T : class
-        //{
-        //    using (var ctx = GetDbContext())
-        //    {
-        //        await ctx.Set<T>().Where(predicate).ForEachAsync(t =>
-        //        {
-        //            ctx.Set<T>().Remove(t);
-        //        });
-        //        return await ctx.SaveChangesAsync();
-        //    }
-        //}
-
         /// <summary>
         /// 获取当前集合列表
         /// </summary>
@@ -307,7 +272,7 @@ namespace LF.Toolkit.Data.Dapper
                     query = query.AsNoTracking();
                 }
                 //排序
-                query.OrderBy(sortInfo.Column, sortInfo.Ascending);
+                query = query.OrderBy(sortInfo.Column, sortInfo.Ascending);
                 //筛选条件
                 if (predicate != null)
                 {
