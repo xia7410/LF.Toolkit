@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace LF.Toolkit.Data.Dapper
@@ -28,6 +30,48 @@ namespace LF.Toolkit.Data.Dapper
         protected TDbContext GetDbContext()
         {
             return (TDbContext)Activator.CreateInstance(typeof(TDbContext), new object[] { base.ConnectionStringSettings.ConnectionString });
+        }
+
+        /// <summary>
+        /// 生成一个新的参数化查询参数
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected SqlParameter PrepareParameter(string name, object value)
+        {
+            return new SqlParameter($"@{name}", value);
+        }
+
+        /// <summary>
+        /// 生成简单符合参数化查询的参数类型集合
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        protected IEnumerable<SqlParameter> PrepareParameters(object data)
+        {
+            var list = new List<SqlParameter>();
+            foreach (var property in data.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                list.Add(new SqlParameter($"@{property.Name}", property.GetValue(data)));
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// 执行简单的参数化查询语句
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        protected int ExecuteSqlCommand(string sql, object param)
+        {
+            using (var ctx = GetDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand(sql, PrepareParameters(param).ToArray());
+                return ctx.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -156,12 +200,12 @@ namespace LF.Toolkit.Data.Dapper
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TKey"></typeparam>
-        /// <param name="order">排序</param>
+        /// <param name="orderBy">排序</param>
         /// <param name="predicate">查询条件</param>
         /// <param name="ascending">是否升序; True=升序 False=降序</param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected T FirstOrDefault<T, TKey>(Expression<Func<T, TKey>> order, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
+        protected T FirstOrDefault<T, TKey>(Expression<Func<T, TKey>> orderBy, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
             where T : class
         {
             using (var ctx = GetDbContext())
@@ -174,11 +218,11 @@ namespace LF.Toolkit.Data.Dapper
                 //排序
                 if (ascending)
                 {
-                    query = query.OrderBy(order);
+                    query = query.OrderBy(orderBy);
                 }
                 else
                 {
-                    query = query.OrderByDescending(order);
+                    query = query.OrderByDescending(orderBy);
                 }
                 //查询
                 if (predicate != null)

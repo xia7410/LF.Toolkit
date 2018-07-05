@@ -14,6 +14,21 @@ namespace LF.Toolkit.Data.Dapper
     public abstract partial class SqlStorageBase<TDbContext> : SqlStorageBase
         where TDbContext : DbContext
     {
+
+        /// <summary>
+        /// 执行简单的参数化查询语句
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        protected async Task<int> ExecuteSqlCommandAsync(string sql, object param)
+        {
+            using (var ctx = GetDbContext())
+            {
+                return await ctx.Database.ExecuteSqlCommandAsync(sql, PrepareParameters(param).ToArray());
+            }
+        }
+
         /// <summary>
         /// 添加并提交指定对象到数据库
         /// </summary>
@@ -140,12 +155,12 @@ namespace LF.Toolkit.Data.Dapper
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TKey"></typeparam>
-        /// <param name="order">排序</param>
+        /// <param name="orderBy">排序</param>
         /// <param name="predicate">查询条件</param>
         /// <param name="ascending">是否升序; True=升序 False=降序</param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<T> FirstOrDefaultAsync<T, TKey>(Expression<Func<T, TKey>> order, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
+        protected async Task<T> FirstOrDefaultAsync<T, TKey>(Expression<Func<T, TKey>> orderBy, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
             where T : class
         {
             using (var ctx = GetDbContext())
@@ -158,11 +173,11 @@ namespace LF.Toolkit.Data.Dapper
                 //排序
                 if (ascending)
                 {
-                    query = query.OrderBy(order);
+                    query = query.OrderBy(orderBy);
                 }
                 else
                 {
-                    query = query.OrderByDescending(order);
+                    query = query.OrderByDescending(orderBy);
                 }
                 //查询
                 if (predicate != null)
