@@ -30,6 +30,7 @@ namespace LF.Toolkit.Data.Dapper
         {
             this.ConnectionStringSettings = ConfigurationManager.ConnectionStrings[connectionKey];
             if (ConnectionStringSettings == null) throw new Exception($"未找到名称为 {connectionKey} 对应的连接字符串配置项");
+
             InitializeDbProvider();
         }
 
@@ -43,15 +44,26 @@ namespace LF.Toolkit.Data.Dapper
         }
 
         /// <summary>
-        /// 获取数据库连接
+        /// 创建一个数据库连接实例
         /// </summary>
         /// <returns></returns>
-        protected virtual IDbConnection GetConnection()
+        internal protected IDbConnection CreateConnection()
         {
             if (m_DbProviderFactory == null) throw new Exception("未配置数据库连接项");
 
             var connection = this.m_DbProviderFactory.CreateConnection();
             connection.ConnectionString = ConnectionStringSettings.ConnectionString;
+
+            return connection;
+        }
+
+        /// <summary>
+        /// 获取并打开一个数据库连接
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IDbConnection OpenConnection()
+        {
+            var connection = this.CreateConnection();
             connection.Open();
 
             return connection;
@@ -64,19 +76,60 @@ namespace LF.Toolkit.Data.Dapper
         /// <returns></returns>
         protected virtual IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.ReadCommitted)
         {
-            var conn = GetConnection();
+            var conn = OpenConnection();
             return conn.BeginTransaction(il);
         }
 
         /// <summary>
-        /// 关闭（非事务查询）数据库连接
+        /// 开启一个事务并返回事务执行结果，执行完毕后会自动释放连接
         /// </summary>
-        /// <param name="connection"></param>
-        protected virtual void CloseConnection(IDbConnection connection)
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func">查询委托</param>
+        /// <param name="li"></param>
+        /// <returns></returns>
+        protected T BeginTransaction<T>(Func<IDbTransaction, T> func, IsolationLevel li = IsolationLevel.ReadCommitted)
         {
-            if (connection != null && connection.State != ConnectionState.Closed)
+            using (var transaction = this.BeginTransaction(li))
             {
-                connection.Close();
+                try
+                {
+                    return func(transaction);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 连接数据库并返回数据库查询结果，查询完毕后会自动释放连接
+        /// </summary>
+        /// <typeparam name="T">查询委托</typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        protected T Connect<T>(Func<IDbConnection, T> func) => Connect<T>(func, null);
+
+        /// <summary>
+        /// 连接数据库并返回数据库查询结果，查询完毕后会自动释放连接
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func">查询委托</param>
+        /// <param name="transaction">查询事务，若事务不为空则使用事务中的数据库连接</param>
+        /// <returns></returns>
+        internal protected T Connect<T>(Func<IDbConnection, T> func, IDbTransaction transaction)
+        {
+            if (transaction != null)
+            {
+                return func(transaction.Connection);
+            }
+            else
+            {
+                using (var connection = this.OpenConnection())
+                {
+                    return func(connection);
+                }
             }
         }
 
@@ -141,7 +194,6 @@ namespace LF.Toolkit.Data.Dapper
         {
             var date = DateTime.MinValue;
             DateTime.TryParse(timeStr, out date);
-
             if (date < SqlDateTime.MinValue.Value || date > SqlDateTime.MaxValue.Value)
             {
                 date = SqlDateTime.MinValue.Value;
@@ -155,7 +207,8 @@ namespace LF.Toolkit.Data.Dapper
         #region 通用Dapper查询函数封装
 
         /// <summary>
-        /// 查询第一行数据【注意：事务查询需要在执行完毕后手动释放】 
+        /// 查询第一行数据
+        /// 【注意：事务查询需要在执行完毕后手动释放】 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="commandText"></param>
@@ -165,25 +218,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
         protected T QueryFirstOrDefault<T>(string commandText, object param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-            var connection = transaction?.Connection ?? this.GetConnection();
-
-            try
-            {
-                return connection.QueryFirstOrDefault<T>(commandText, param, transaction, commandTimeout, commandType);
-            }
-            finally
-            {
-                if (transaction == null)
-                {
-                    this.CloseConnection(connection);
-                }
-            }
-        }
+            => Connect<T>(conn => conn.QueryFirstOrDefault<T>(commandText, param, transaction, commandTimeout, commandType), transaction);
 
         /// <summary>
-        /// 查询第一行数据，若多于一行则抛出异常【注意：事务查询需要在执行完毕后手动释放】 
+        /// 查询第一行数据，若多于一行则抛出异常
+        /// 【注意：事务查询需要在执行完毕后手动释放】 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="commandText"></param>
@@ -193,25 +232,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
         protected T QuerySingleOrDefault<T>(string commandText, object param = null, IDbTransaction transaction = null, CommandType? commandType = null, int? commandTimeout = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-            var connection = transaction?.Connection ?? this.GetConnection();
-
-            try
-            {
-                return connection.QuerySingleOrDefault<T>(commandText, param, transaction, commandTimeout, commandType);
-            }
-            finally
-            {
-                if (transaction == null)
-                {
-                    this.CloseConnection(connection);
-                }
-            }
-        }
+            => Connect<T>(conn => conn.QuerySingleOrDefault<T>(commandText, param, transaction, commandTimeout, commandType), transaction);
 
         /// <summary>
-        /// 指定类型结果集查询【注意：事务查询需要在执行完毕后手动释放】 
+        /// 指定类型结果集查询
+        /// 【注意：事务查询需要在执行完毕后手动释放】 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="commandText"></param>
@@ -222,58 +247,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="commandType"></param>
         /// <returns></returns>
         protected IEnumerable<T> Query<T>(string commandText, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-            var connection = transaction?.Connection ?? this.GetConnection();
-
-            try
-            {
-                return connection.Query<T>(commandText, param, transaction, buffered, commandTimeout, commandType);
-            }
-            finally
-            {
-                if (transaction == null)
-                {
-                    this.CloseConnection(connection);
-                }
-            }
-        }
+            => Connect<IEnumerable<T>>(conn => conn.Query<T>(commandText, param, transaction, buffered, commandTimeout, commandType), transaction);
 
         /// <summary>
-        /// 多个结果集务查询【注意：需要在查询完毕后手动关闭连接】
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="commandText"></param>
-        /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
-        /// <param name="commandType"></param>
-        /// <returns></returns>
-        protected SqlMapper.GridReader QueryMultiple(IDbConnection conn, string commandText, object param = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
-            return conn.QueryMultiple(commandText, param, null, commandTimeout, commandType);
-        }
-
-        /// <summary>
-        /// 多个结果集务查询【注意：需要在查询完毕后手动释放连接】 
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="commandText"></param>
-        /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
-        /// <param name="commandType"></param>
-        /// <returns></returns>
-        protected SqlMapper.GridReader QueryMultiple(IDbTransaction transaction, string commandText, object param = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-
-            var conn = transaction.Connection;
-            return conn.QueryMultiple(commandText, param, transaction, commandTimeout, commandType);
-        }
-
-        /// <summary>
-        /// 执行SQL查询并返回影响的行数【注意：事务查询需要在执行完毕后手动释放】
+        /// 执行SQL查询并返回影响的行数
+        /// 【注意：事务查询需要在执行完毕后手动释放】
         /// </summary>
         /// <param name="commandText"></param>
         /// <param name="param"></param>
@@ -282,25 +260,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="commandType"></param>
         /// <returns></returns>
         protected int Execute(string commandText, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-            var connection = transaction?.Connection ?? this.GetConnection();
-
-            try
-            {
-                return connection.Execute(commandText, param, transaction, commandTimeout, commandType);
-            }
-            finally
-            {
-                if (transaction == null)
-                {
-                    this.CloseConnection(connection);
-                }
-            }
-        }
+            => Connect<int>(conn => conn.Execute(commandText, param, transaction, commandTimeout, commandType), transaction);
 
         /// <summary>
-        /// 执行SQL查询并返回第一行第一列【注意：事务查询需要在执行完毕后手动释放】
+        /// 执行SQL查询并返回第一行第一列
+        /// 【注意：事务查询需要在执行完毕后手动释放】
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="commandText"></param>
@@ -310,27 +274,13 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="commandType"></param>
         /// <returns></returns>
         protected T ExecuteScalar<T>(string commandText, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
-            var connection = transaction?.Connection ?? this.GetConnection();
-
-            try
-            {
-                return connection.ExecuteScalar<T>(commandText, param, transaction, commandTimeout, commandType);
-            }
-            finally
-            {
-                if (transaction == null)
-                {
-                    this.CloseConnection(connection);
-                }
-            }
-        }
+             => Connect<T>(conn => conn.ExecuteScalar<T>(commandText, param, transaction, commandTimeout, commandType), transaction);
 
         #endregion
 
         /// <summary>
-        /// 通用查询分页列表【注意：SQL查询语句顺序为:列表查询、总条数查询】
+        /// 通用查询分页列表
+        /// 【注意：SQL查询语句顺序为:列表查询、总条数查询】
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="commandText"></param>
@@ -339,67 +289,15 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="commandType"></param>
         /// <returns></returns>
         protected PagedList<T> GetPagedList<T>(string commandText, object param = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            var connection = this.GetConnection();
-            var pageList = new PagedList<T>();
+            => Connect(conn =>
+            {
+                var grid = conn.QueryMultiple(commandText, param, null, commandTimeout, commandType);
 
-            try
-            {
-                var grid = connection.QueryMultiple(commandText, param, null, commandTimeout, commandType);
-                pageList.RowSet = grid.Read<T>();
-                pageList.Count = grid.Read<int>().First();
-            }
-            finally
-            {
-                this.CloseConnection(connection);
-            }
-
-            return pageList;
-        }
-
-        /// <summary>
-        /// 执行委托查询并返回指定类型结果
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        protected T QueryFunc<T>(Func<IDbConnection, T> func)
-        {
-            var connection = this.GetConnection();
-            try
-            {
-                return func.Invoke(connection);
-            }
-            finally
-            {
-                this.CloseConnection(connection);
-            }
-        }
-
-        /// <summary>
-        /// 执行委托食物并返回指定类型结果
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <param name="li"></param>
-        /// <returns></returns>
-        protected T ExecuteTransactionFunc<T>(Func<IDbTransaction, T> func, IsolationLevel li = IsolationLevel.ReadCommitted)
-        {
-            var transaction = this.BeginTransaction(li);
-
-            try
-            {
-                return func.Invoke(transaction);
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
-            }
-            finally
-            {
-                transaction?.Dispose();
-            }
-        }
+                return new PagedList<T>
+                {
+                    Count = grid.ReadFirst<int>(),
+                    RowSet = grid.Read<T>()
+                };
+            });
     }
 }

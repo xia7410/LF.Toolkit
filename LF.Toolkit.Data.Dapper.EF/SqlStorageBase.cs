@@ -60,6 +60,28 @@ namespace LF.Toolkit.Data.Dapper
         }
 
         /// <summary>
+        /// 将指定对象数据集转为查询类型
+        /// </summary>
+        /// <typeparam name="TSet">数据集类型</typeparam>
+        /// <typeparam name="T">返回类型</typeparam>
+        /// <param name="func"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        internal protected T Queryable<TSet, T>(Func<IQueryable<TSet>, T> func, bool tracking = false)
+            where TSet : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<TSet>().AsQueryable();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                return func(query);
+            }
+        }
+
+        /// <summary>
         /// 执行简单的参数化查询语句
         /// </summary>
         /// <param name="sql"></param>
@@ -183,17 +205,7 @@ namespace LF.Toolkit.Data.Dapper
         /// <returns></returns>
         protected T FirstOrDefault<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
             where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return query.FirstOrDefault(predicate);
-            }
-        }
+            => Queryable<T, T>(query => query.FirstOrDefault(predicate), tracking);
 
         /// <summary>
         /// 获取符合指定条件的首个对象
@@ -208,13 +220,8 @@ namespace LF.Toolkit.Data.Dapper
         protected T FirstOrDefault<T, TKey>(Expression<Func<T, TKey>> orderBy, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
             where T : class
         {
-            using (var ctx = GetDbContext())
+            return this.Queryable<T, T>(query =>
             {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
                 //排序
                 if (ascending)
                 {
@@ -233,7 +240,7 @@ namespace LF.Toolkit.Data.Dapper
                 {
                     return query.FirstOrDefault();
                 }
-            }
+            }, tracking);
         }
 
         /// <summary>
@@ -245,17 +252,7 @@ namespace LF.Toolkit.Data.Dapper
         /// <returns></returns>
         protected int Count<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
             where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return query.Count(predicate);
-            }
-        }
+            => Queryable<T, int>(query => query.Count(predicate));
 
         /// <summary>
         /// 获取符合指定条件的首个对象，若多个则报错
@@ -266,17 +263,7 @@ namespace LF.Toolkit.Data.Dapper
         /// <returns></returns>
         protected T SingleOrDefault<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
             where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return query.SingleOrDefault(predicate);
-            }
-        }
+            => Queryable<T, T>(query => query.SingleOrDefault(predicate), tracking);
 
         /// <summary>
         /// 获取当前集合列表
@@ -289,13 +276,8 @@ namespace LF.Toolkit.Data.Dapper
         protected IEnumerable<T> GetList<T>(Expression<Func<T, bool>> predicate = null, SortInfo sortInfo = null, bool tracking = false)
             where T : class
         {
-            using (var ctx = GetDbContext())
+            return this.Queryable<T, IEnumerable<T>>(query =>
             {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
                 //排序
                 if (sortInfo != null)
                 {
@@ -308,7 +290,7 @@ namespace LF.Toolkit.Data.Dapper
                 }
 
                 return query.ToList();
-            }
+            }, tracking);
         }
 
         /// <summary>
@@ -324,13 +306,8 @@ namespace LF.Toolkit.Data.Dapper
         protected PagedList<T> GetPagedList<T>(int page, int pageSize, SortInfo sortInfo, Expression<Func<T, bool>> predicate = null, bool tracking = false)
             where T : class
         {
-            using (var ctx = GetDbContext())
+            return this.Queryable<T, PagedList<T>>(query =>
             {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
                 //排序
                 query = query.OrderBy(sortInfo.Column, sortInfo.Ascending);
                 //筛选条件
@@ -344,7 +321,7 @@ namespace LF.Toolkit.Data.Dapper
                     RowSet = query.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
                     Count = query.Count()
                 };
-            }
+            }, tracking);
         }
     }
 }

@@ -14,6 +14,19 @@ namespace LF.Toolkit.Data.Dapper
     public abstract partial class SqlStorageBase<TDbContext> : SqlStorageBase
         where TDbContext : DbContext
     {
+        internal protected async Task<T> QueryableAsync<TSet, T>(Func<IQueryable<TSet>, Task<T>> func, bool tracking = false)
+            where TSet : class
+        {
+            using (var ctx = GetDbContext())
+            {
+                var query = ctx.Set<TSet>().AsQueryable();
+                if (!tracking)
+                {
+                    query = query.AsNoTracking();
+                }
+                return await func(query);
+            }
+        }
 
         /// <summary>
         /// 执行简单的参数化查询语句
@@ -136,19 +149,9 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="predicate"></param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<T> FirstOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+        protected Task<T> FirstOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
             where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return await query.FirstOrDefaultAsync(predicate);
-            }
-        }
+            => QueryableAsync<T, T>(query => query.FirstOrDefaultAsync(predicate), tracking);
 
         /// <summary>
         /// 获取符合指定条件的首个对象
@@ -160,16 +163,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="ascending">是否升序; True=升序 False=降序</param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<T> FirstOrDefaultAsync<T, TKey>(Expression<Func<T, TKey>> orderBy, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
+        protected Task<T> FirstOrDefaultAsync<T, TKey>(Expression<Func<T, TKey>> orderBy, Expression<Func<T, bool>> predicate = null, bool ascending = false, bool tracking = false)
             where T : class
         {
-            using (var ctx = GetDbContext())
+            return this.QueryableAsync<T, T>(query =>
             {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
                 //排序
                 if (ascending)
                 {
@@ -182,13 +180,13 @@ namespace LF.Toolkit.Data.Dapper
                 //查询
                 if (predicate != null)
                 {
-                    return await query.FirstOrDefaultAsync(predicate);
+                    return query.FirstOrDefaultAsync(predicate);
                 }
                 else
                 {
-                    return await query.FirstOrDefaultAsync();
+                    return query.FirstOrDefaultAsync();
                 }
-            }
+            }, tracking);
         }
 
         /// <summary>
@@ -198,19 +196,9 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="predicate"></param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<int> CountAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+        protected Task<int> CountAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
             where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return await query.CountAsync(predicate);
-            }
-        }
+            => QueryableAsync<T, int>(query => query.CountAsync(predicate), tracking);
 
         /// <summary>
         /// 获取符合指定条件的首个对象，若多个则报错
@@ -219,19 +207,9 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="predicate"></param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<T> SingleOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
+        protected Task<T> SingleOrDefaultAsync<T>(Expression<Func<T, bool>> predicate, bool tracking = false)
             where T : class
-        {
-            using (var ctx = GetDbContext())
-            {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
-                return await query.SingleOrDefaultAsync(predicate);
-            }
-        }
+            => QueryableAsync<T, T>(query => query.SingleOrDefaultAsync(predicate), tracking);
 
         /// <summary>
         /// 获取当前集合列表
@@ -241,16 +219,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="sortInfo">排序信息</param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<IEnumerable<T>> GetListAsync<T>(Expression<Func<T, bool>> predicate = null, SortInfo sortInfo = null, bool tracking = false)
+        protected Task<IEnumerable<T>> GetListAsync<T>(Expression<Func<T, bool>> predicate = null, SortInfo sortInfo = null, bool tracking = false)
             where T : class
         {
-            using (var ctx = GetDbContext())
+            return this.QueryableAsync<T, IEnumerable<T>>(async query =>
             {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
                 //排序
                 if (sortInfo != null)
                 {
@@ -263,7 +236,7 @@ namespace LF.Toolkit.Data.Dapper
                 }
 
                 return await query.ToListAsync();
-            }
+            }, tracking);
         }
 
         /// <summary>
@@ -276,16 +249,11 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="predicate"></param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        protected async Task<PagedList<T>> GetPagedListAsync<T>(int page, int pageSize, SortInfo sortInfo, Expression<Func<T, bool>> predicate = null, bool tracking = false)
+        protected Task<PagedList<T>> GetPagedListAsync<T>(int page, int pageSize, SortInfo sortInfo, Expression<Func<T, bool>> predicate = null, bool tracking = false)
             where T : class
         {
-            using (var ctx = GetDbContext())
+            return this.QueryableAsync<T, PagedList<T>>(async query =>
             {
-                var query = ctx.Set<T>().AsQueryable<T>();
-                if (!tracking)
-                {
-                    query = query.AsNoTracking();
-                }
                 //排序
                 query = query.OrderBy(sortInfo.Column, sortInfo.Ascending);
                 //筛选条件
@@ -299,7 +267,7 @@ namespace LF.Toolkit.Data.Dapper
                     RowSet = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(),
                     Count = await query.CountAsync()
                 };
-            }
+            }, tracking);
         }
     }
 }

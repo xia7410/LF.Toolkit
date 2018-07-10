@@ -39,10 +39,7 @@ namespace LF.Toolkit.Data.Dapper
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Expression<Func<T, bool>> Empty<T>()
-        {
-            return i => true;
-        }
+        public static Expression<Func<T, bool>> Empty<T>() => i => true;
 
         /// <summary>
         /// 根据指定条件以And方式合并表达式
