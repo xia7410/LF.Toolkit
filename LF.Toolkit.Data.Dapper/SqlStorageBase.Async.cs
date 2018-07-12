@@ -112,32 +112,6 @@ namespace LF.Toolkit.Data.Dapper
              => ConnectAsync<IEnumerable<T>>(conn => conn.QueryAsync<T>(commandText, param, transaction, commandTimeout, commandType), transaction);
 
         /// <summary>
-        /// 【异步】多个结果集务查询
-        /// 【注意：需要在查询完毕后手动关闭连接】
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="commandText"></param>
-        /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
-        /// <param name="commandType"></param>
-        /// <returns></returns>
-        protected Task<SqlMapper.GridReader> QueryMultipleAsync(IDbConnection conn, string commandText, object param = null, int? commandTimeout = null, CommandType? commandType = null)
-            => conn.QueryMultipleAsync(commandText, param, null, commandTimeout, commandType);
-
-        /// <summary>
-        /// 【异步】多个结果集务查询
-        /// 【注意：需要在查询完毕后手动释放连接】 
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="commandText"></param>
-        /// <param name="param"></param>
-        /// <param name="commandTimeout"></param>
-        /// <param name="commandType"></param>
-        /// <returns></returns>
-        protected Task<SqlMapper.GridReader> QueryMultipleAsync(IDbTransaction transaction, string commandText, object param = null, int? commandTimeout = null, CommandType? commandType = null)
-            => transaction.Connection.QueryMultipleAsync(commandText, param, transaction, commandTimeout, commandType);
-
-        /// <summary>
         /// 【异步】执行SQL查询并返回影响的行数
         /// 【注意：事务查询需要在执行完毕后手动释放】
         /// </summary>
@@ -187,28 +161,5 @@ namespace LF.Toolkit.Data.Dapper
                      RowSet = await grid.ReadAsync<T>()
                  };
              });
-
-        /// <summary>
-        /// 【异步】执行委托食物并返回指定类型结果
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <param name="li"></param>
-        /// <returns></returns>
-        protected async Task<T> ExecuteTransactionFuncAsync<T>(Func<IDbTransaction, Task<T>> func, IsolationLevel li = IsolationLevel.ReadCommitted)
-        {
-            using (var transaction = this.BeginTransaction(li))
-            {
-                try
-                {
-                    return await func.Invoke(transaction);
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
-        }
     }
 }
