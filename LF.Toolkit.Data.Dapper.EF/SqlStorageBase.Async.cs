@@ -14,6 +14,14 @@ namespace LF.Toolkit.Data.Dapper
     public abstract partial class SqlStorageBase<TDbContext> : SqlStorageBase
         where TDbContext : DbContext
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TSet"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
         internal protected async Task<T> QueryableAsync<TSet, T>(Func<IQueryable<TSet>, Task<T>> func, bool tracking = false)
             where TSet : class
         {

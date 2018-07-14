@@ -157,8 +157,8 @@ namespace LF.Toolkit.Data.Dapper
 
                  return new PagedList<T>
                  {
+                     RowSet = await grid.ReadAsync<T>(),
                      Count = await grid.ReadFirstAsync<int>(),
-                     RowSet = await grid.ReadAsync<T>()
                  };
              });
     }

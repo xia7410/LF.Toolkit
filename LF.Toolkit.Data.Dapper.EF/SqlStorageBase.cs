@@ -17,6 +17,10 @@ namespace LF.Toolkit.Data.Dapper
     public abstract partial class SqlStorageBase<TDbContext> : SqlStorageBase
         where TDbContext : DbContext
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionKey"></param>
         public SqlStorageBase(string connectionKey)
             : base(connectionKey)
         {

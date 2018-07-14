@@ -52,6 +52,7 @@
     <Compile Include="PagedList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortInfo.cs" />
+    <Compile Include="SqlClauses.cs" />
     <Compile Include="SqlStorageBase.Async.cs" />
     <Compile Include="SqlStorageBase.cs" />
   </ItemGroup>
