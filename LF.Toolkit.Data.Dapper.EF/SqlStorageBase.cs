@@ -1,6 +1,8 @@
 ﻿using LF.Toolkit.Data.Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
@@ -34,6 +36,60 @@ namespace LF.Toolkit.Data.Dapper
         protected TDbContext GetDbContext()
         {
             return (TDbContext)Activator.CreateInstance(typeof(TDbContext), new object[] { base.ConnectionStringSettings.ConnectionString });
+        }
+
+        /// <summary>
+        /// 从现有的连接对象创建数据库实体上下文，并且不会在执行相关操作后关闭连接（需要在传递方关闭）
+        /// 注意：实际的数据库上下文需要提供 DbContext(DbConnection existingConnection, bool contextOwnsConnection)构造
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <returns></returns>
+        protected TDbContext GetDbContext(DbConnection connection)
+        {
+            return (TDbContext)Activator.CreateInstance(typeof(TDbContext), new object[] { connection, false });
+        }
+
+        /// <summary>
+        /// 创建一个新的数据库实体上下文并执行事务操作
+        /// 注意：实际的数据库上下文需要提供 DbContext(DbConnection existingConnection, bool contextOwnsConnection)构造
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        protected T BeginDbTransaction<T>(Func<TDbContext, DbContextTransaction, T> func)
+        {
+            using (var context = GetDbContext())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        return func(context, transaction);
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从现有的事务上创建一个新的数据库实体上下文并执行相关事务操作
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="transaction"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        protected T BeginDbTransaction<T>(DbTransaction transaction, Func<TDbContext, T> func)
+        {
+            using (var context = GetDbContext(transaction.Connection))
+            {
+                context.Database.UseTransaction(transaction);
+
+                return func(context);
+            }
         }
 
         /// <summary>
@@ -82,21 +138,6 @@ namespace LF.Toolkit.Data.Dapper
                     query = query.AsNoTracking();
                 }
                 return func(query);
-            }
-        }
-
-        /// <summary>
-        /// 执行简单的参数化查询语句
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        protected int ExecuteSqlCommand(string sql, object param)
-        {
-            using (var ctx = GetDbContext())
-            {
-                ctx.Database.ExecuteSqlCommand(sql, PrepareParameters(param).ToArray());
-                return ctx.SaveChanges();
             }
         }
 

@@ -192,14 +192,36 @@ namespace LF.Toolkit.Data.Dapper
         /// <returns></returns>
         protected DateTime ParseSqlDateTime(string timeStr)
         {
-            var date = DateTime.MinValue;
-            DateTime.TryParse(timeStr, out date);
+            DateTime.TryParse(timeStr, out DateTime date);
             if (date < SqlDateTime.MinValue.Value || date > SqlDateTime.MaxValue.Value)
             {
                 date = SqlDateTime.MinValue.Value;
             }
 
             return date;
+        }
+
+        /// <summary>
+        /// 解析日期查询字符串，若成功则返回格式为yyyy-MM-dd的日期字符串
+        /// </summary>
+        /// <param name="dateStr"></param>
+        /// <param name="defaultDateStr">解析失败的默认字符串</param>
+        /// <param name="nextDay">是否在解析成功的日期上往后推一天</param>
+        /// <returns></returns>
+        protected string TryParseQueryDate(string dateStr, string defaultDateStr = "", bool nextDay = false)
+        {
+            if (DateTime.TryParse(dateStr, out DateTime d) && d > SqlDateTime.MinValue.Value && d < SqlDateTime.MaxValue.Value)
+            {
+                if (nextDay)
+                {
+                    d = d.AddDays(1);
+                }
+                return d.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                return defaultDateStr;
+            }
         }
 
         #endregion

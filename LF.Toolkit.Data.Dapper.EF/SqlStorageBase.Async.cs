@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,7 +16,7 @@ namespace LF.Toolkit.Data.Dapper
         where TDbContext : DbContext
     {
         /// <summary>
-        /// 
+        /// 创建一个新的上下问并将其转换为Queryable类型
         /// </summary>
         /// <typeparam name="TSet"></typeparam>
         /// <typeparam name="T"></typeparam>
@@ -37,16 +38,46 @@ namespace LF.Toolkit.Data.Dapper
         }
 
         /// <summary>
-        /// 执行简单的参数化查询语句
+        /// 创建一个新的数据库实体上下文并执行事务操作
+        /// 注意：实际的数据库上下文需要提供 DbContext(DbConnection existingConnection, bool contextOwnsConnection)构造
         /// </summary>
-        /// <param name="sql"></param>
-        /// <param name="param"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
         /// <returns></returns>
-        protected async Task<int> ExecuteSqlCommandAsync(string sql, object param)
+        protected async Task<T> BeginDbTransactionAsync<T>(Func<TDbContext, DbContextTransaction, Task<T>> func)
         {
-            using (var ctx = GetDbContext())
+            using (var context = GetDbContext())
             {
-                return await ctx.Database.ExecuteSqlCommandAsync(sql, PrepareParameters(param).ToArray());
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        return await func(context, transaction);
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从现有的事务上创建一个新的数据库实体上下文并执行相关事务操作
+        /// 注意：实际的数据库上下文需要提供 DbContext(DbConnection existingConnection, bool contextOwnsConnection)构造
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="transaction"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        protected async Task<T> BeginDbTransactionAsync<T>(DbTransaction transaction, Func<TDbContext, Task<T>> func)
+        {
+            using (var context = GetDbContext(transaction.Connection))
+            {
+                context.Database.UseTransaction(transaction);
+
+                return await func(context);
             }
         }
 
