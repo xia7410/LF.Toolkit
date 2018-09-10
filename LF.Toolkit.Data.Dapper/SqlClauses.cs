@@ -11,24 +11,24 @@ namespace LF.Toolkit.Data.Dapper
     /// </summary>
     public class SqlClauses
     {
-        bool m_AppendWhere = false;
+        string m_Prefix = null;
         StringBuilder m_Builder = new StringBuilder();
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="appendWhere">是否以 Where 开头</param>
-        public SqlClauses(bool appendWhere = true)
+        /// <param name="prefix">查询条件前缀</param>
+        public SqlClauses(string prefix = "WHERE")
         {
-            this.m_AppendWhere = appendWhere;
+            this.m_Prefix = prefix;
         }
 
         /// <summary>
         /// 生成一个新的查询条件实例
         /// </summary>
-        /// <param name="appendWhere"></param>
+        /// <param name="prefix">查询条件前缀</param>
         /// <returns></returns>
-        public static SqlClauses Create(bool appendWhere = true) => new SqlClauses(appendWhere);
+        public static SqlClauses Create(string prefix = "WHERE") => new SqlClauses(prefix);
 
         /// <summary>
         /// 添加查询条件
@@ -43,15 +43,16 @@ namespace LF.Toolkit.Data.Dapper
 
             if (useCondition)
             {
-                if (m_Builder.Length <= 0 && m_AppendWhere)
+                if (m_Builder.Length <= 0 && !string.IsNullOrEmpty(m_Prefix))
                 {
-                    m_Builder.Append(" WHERE ");
+                    m_Builder.Append($" {m_Prefix} ");
                 }
                 else if (m_Builder.Length > 0)
                 {
                     m_Builder.Append($" {sqlOp} ");
                 }
-                m_Builder.Append($" {condition} ");
+                // 添加括号分隔
+                m_Builder.Append($" ( {condition} ) ");
             }
 
             return this;
@@ -73,10 +74,10 @@ namespace LF.Toolkit.Data.Dapper
         /// <param name="useCondition"></param>
         /// <returns></returns>
         public SqlClauses OrCaluse(string condition, bool useCondition)
-            => AddClause(condition, "AND", useCondition);
+            => AddClause(condition, "OR", useCondition);
 
         /// <summary>
-        /// 生成Where查询条件
+        /// 生成查询条件
         /// </summary>
         /// <returns></returns>
         public string ToSql() => m_Builder.ToString();
