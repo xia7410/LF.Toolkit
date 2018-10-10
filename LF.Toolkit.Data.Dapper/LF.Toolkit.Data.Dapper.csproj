@@ -55,6 +55,7 @@
     <Compile Include="SqlClauses.cs" />
     <Compile Include="SqlStorageBase.Async.cs" />
     <Compile Include="SqlStorageBase.cs" />
+    <Compile Include="SqlStorageEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

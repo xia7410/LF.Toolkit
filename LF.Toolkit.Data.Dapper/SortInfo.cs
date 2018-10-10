@@ -53,15 +53,15 @@ namespace LF.Toolkit.Data.Dapper
             {
                 string field = "";
                 bool ascending = false;
-                if (orderBy.IndexOf("ASC", StringComparison.OrdinalIgnoreCase) > 0)
+                if (orderBy.IndexOf("_ASC", StringComparison.OrdinalIgnoreCase) > 0)
                 {
                     ascending = true;
-                    field = orderBy.Substring(0, orderBy.IndexOf("ASC", StringComparison.OrdinalIgnoreCase) - 1);
+                    field = orderBy.Substring(0, orderBy.IndexOf("_ASC", StringComparison.OrdinalIgnoreCase));
                 }
-                else if (orderBy.IndexOf("DESC", StringComparison.OrdinalIgnoreCase) > 0)
+                else if (orderBy.IndexOf("_DESC", StringComparison.OrdinalIgnoreCase) > 0)
                 {
                     ascending = false;
-                    field = orderBy.Substring(0, orderBy.IndexOf("DESC", StringComparison.OrdinalIgnoreCase) - 1);
+                    field = orderBy.Substring(0, orderBy.IndexOf("_DESC", StringComparison.OrdinalIgnoreCase));
                 }
                 if (!string.IsNullOrEmpty(field))
                 {
